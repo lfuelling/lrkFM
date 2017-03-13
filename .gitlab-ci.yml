@@ -1,0 +1,11 @@
+image: beevelop/android
+
+stages:
+  - build
+
+build_with_tests:
+  stage: build
+  script:
+    - ./gradlew build
+  only:
+    - master
