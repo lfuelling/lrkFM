@@ -1,4 +1,4 @@
-image: beevelop/android
+image: nexus.k40s.net:444/lerk/add
 
 stages:
   - build
