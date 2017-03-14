@@ -1,4 +1,4 @@
-image: nexus.k40s.net:444/lerk/add
+image: lerk/android-ci
 
 stages:
   - build
