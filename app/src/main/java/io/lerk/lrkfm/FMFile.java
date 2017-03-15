@@ -7,16 +7,13 @@ import java.util.Date;
  */
 
 class FMFile {
-    String name, permissions, owner, group;
-    Date lastModified, created;
+    String name, permissions;
+    Date lastModified;
 
-    public FMFile(String name, String permissions, String owner, String group, Date lastModified, Date created) {
+    public FMFile(String name, String permissionString, Date date) {
         this.name = name;
-        this.permissions = permissions;
-        this.owner = owner;
-        this.group = group;
-        this.lastModified = lastModified;
-        this.created = created;
+        this.permissions = permissionString;
+        this.lastModified = date;
     }
 
     public String getName() {
@@ -35,21 +32,6 @@ class FMFile {
         this.permissions = permissions;
     }
 
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
 
     public Date getLastModified() {
         return lastModified;
@@ -57,13 +39,5 @@ class FMFile {
 
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
     }
 }

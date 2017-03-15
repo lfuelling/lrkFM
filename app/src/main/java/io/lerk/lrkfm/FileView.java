@@ -1,6 +1,9 @@
 package io.lerk.lrkfm;
 
 import android.content.Context;
+import android.util.Log;
+
+import org.apache.commons.io.FileSystemUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,7 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Date;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,28 +45,26 @@ public class FileView {
 
     private ArrayList<FMFile> loadLocationFiles(String location) {
         File locationFile = new File(location);
-        if(locationFile.isDirectory()) {
+        if (locationFile.isDirectory()) {
 
-            ProcessBuilder builder = new ProcessBuilder("ls", "-la", location);
-            try {
-                Process start = builder.start();
-                InputStream inputStream = start.getInputStream();
+            ArrayList<FMFile> result = new ArrayList<>();
 
-                try (BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream))) {
-                    String s = buffer.lines().collect(Collectors.joining("\n"));
-                    parseLsOutput(s);
-                }
+            Arrays.asList(locationFile.listFiles()).forEach((f) -> {
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                String permissionString = ((f.isDirectory()) ? "d" : "-") +
+                        ((f.canRead()) ? "r" : "-") +
+                        ((f.canWrite()) ? "w" : "-") +
+                        ((f.canExecute()) ? "x" : "-"); // lol
+
+                FMFile file = new FMFile(f.getName(), permissionString, new Date(f.lastModified()));
+                result.add(file);
+            });
+
+            return result;
         } else {
             return loadLocationFiles(locationFile.getParent());
         }
     }
 
-    private void parseLsOutput(String s) {
-
-    }
 
 }
