@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/fileTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/file_title_fs"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/file_title_fs"
+        android:src="@drawable/ic_launcher"
+        android:layout_alignParentEnd="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/filePermissions"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fileTitle"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="@dimen/file_view_margin"
+        android:text="-rwxrwxrwx"/>
+    <TextView
+        android:id="@+id/fileDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/fileTitle"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:text="01.01.1970"/>
+    <TextView
+        android:id="@+id/fileOwner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fileTitle"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:text="admin:staff"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/primary"
+        android:layout_below="@id/fileOwner"
+        android:layout_marginBottom="@dimen/file_view_margin"
+        android:layout_marginTop="@dimen/fab_margin"/>
+</RelativeLayout>

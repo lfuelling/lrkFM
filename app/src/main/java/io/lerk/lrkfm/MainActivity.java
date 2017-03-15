@@ -1,6 +1,8 @@
 package io.lerk.lrkfm;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -24,8 +26,13 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
+
+        fab.setOnClickListener((v)->{
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            builder.setToolbarColor(getColor(R.color.primary_dark));
+            CustomTabsIntent build = builder.build();
+            build.launchUrl(this, Uri.parse("https://fahlbtharz.k40s.net/FileManagerCompetition/lrkFM/issues/new"));
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -91,4 +98,5 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
