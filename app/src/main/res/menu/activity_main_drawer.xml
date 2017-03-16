@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group>
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/home" />
+        <item
+            android:id="@+id/nav_path"
+            android:icon="@drawable/ic_find_in_page_black_24dp"
+            android:title="@string/nav_path" />
     </group>
 
-    <item android:title="@string/nav_bookmarks"
-        android:icon="@drawable/ic_bookmark_border_black_24dp">
+    <item android:title="@string/nav_bookmarks">
         <menu>
             <item
                 android:id="@+id/nav_todo"
-                android:icon="@drawable/ic_bug_report_black_24dp"
+                android:icon="@drawable/ic_bookmark_border_black_24dp"
                 android:title="@string/todo" />
         </menu>
     </item>

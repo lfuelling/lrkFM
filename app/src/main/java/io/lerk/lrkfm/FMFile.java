@@ -1,19 +1,29 @@
 package io.lerk.lrkfm;
 
+import java.io.File;
 import java.util.Date;
 
 /**
- * Created by lfuelling on 15.03.17.
+ * File object.
+ * @author Lukas Fülling (lukas@k40s.net)
  */
-
 class FMFile {
     String name, permissions;
     Date lastModified;
+    File file;
 
-    public FMFile(String name, String permissionString, Date date) {
-        this.name = name;
-        this.permissions = permissionString;
-        this.lastModified = date;
+    /**
+     * Constructor.
+     * @param f the file
+     */
+    public FMFile(File f) {
+        this.file  = f;
+        this.name = this.file.getName();
+        this.lastModified = new Date(f.lastModified());
+        this.permissions =  ((f.isDirectory()) ? "d" : "-") +
+                ((this.file.canRead()) ? "r" : "-") +
+                ((this.file.canWrite()) ? "w" : "-") +
+                ((this.file.canExecute()) ? "x" : "-"); // lol
     }
 
     public String getName() {
@@ -39,5 +49,13 @@ class FMFile {
 
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }

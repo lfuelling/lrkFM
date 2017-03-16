@@ -11,4 +11,9 @@
     <string name="todo">TODO</string>
     <string name="nav_bookmarks">Bookmarks</string>
     <string name="home">Home</string>
+    <string name="unable_to_load_files">Unable to load files <node>&#x1f612;</node></string>
+    <string name="nav_path">Open Path</string>
+    <string name="okay">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="invalid_path">Invalid path! Only absolute paths pointing to a directory please.</string>
 </resources>

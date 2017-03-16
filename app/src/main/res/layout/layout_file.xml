@@ -48,5 +48,5 @@
         android:background="@color/primary"
         android:layout_below="@id/fileOwner"
         android:layout_marginBottom="@dimen/file_view_margin"
-        android:layout_marginTop="@dimen/fab_margin"/>
+        android:layout_marginTop="@dimen/file_view_margin"/>
 </RelativeLayout>
