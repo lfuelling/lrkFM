@@ -1,4 +1,4 @@
-package io.lerk.lrkfm;
+package io.lerk.lrkfm.util;
 
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+
+import io.lerk.lrkfm.entities.FMFile;
 
 /**
  * This class handles file loading.
@@ -29,11 +31,11 @@ public class FileLoader {
         this.location = location;
     }
 
-    public ArrayList<FMFile> loadLocationFiles() throws NoAccessException {
+    public ArrayList<FMFile> loadLocationFiles() throws NoAccessException, EmptyDirectoryException {
         return this.loadLocationFiles(null);
     }
 
-    private ArrayList<FMFile> loadLocationFiles(@Nullable String parent) throws NoAccessException {
+    private ArrayList<FMFile> loadLocationFiles(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
         if(parent != null) {
             location = parent;
         }
@@ -58,6 +60,7 @@ public class FileLoader {
                         Log.d(TAG, "Loaded " + String.valueOf(result.size()) + " files");
                     } else {
                         Log.d(TAG, "Directory content is null!");
+                        throw new EmptyDirectoryException(location);
                     }
                     return result;
                 } else {
@@ -85,8 +88,14 @@ public class FileLoader {
     }
 
 
-    class NoAccessException extends Exception {
+    public class NoAccessException extends Exception {
         public NoAccessException(String message) {
+            super(message);
+        }
+    }
+
+    public class EmptyDirectoryException extends Exception {
+        public EmptyDirectoryException(String message) {
             super(message);
         }
     }

@@ -1,9 +1,8 @@
-package io.lerk.lrkfm;
+package io.lerk.lrkfm.activities;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -16,18 +15,18 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.text.InputType;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,6 +38,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import io.lerk.lrkfm.entities.FMFile;
+import io.lerk.lrkfm.util.FileArrayAdapter;
+import io.lerk.lrkfm.util.FileLoader;
+import io.lerk.lrkfm.R;
 
 import static android.view.View.GONE;
 
@@ -132,7 +136,7 @@ public class FileActivity extends AppCompatActivity
         loadDirectory(startDir);
     }
 
-    void loadDirectory(String startDir) {
+    public void loadDirectory(String startDir) {
         ArrayList<FMFile> files = null;
         FileLoader fileLoader = new FileLoader(startDir);
         try {
@@ -141,14 +145,15 @@ public class FileActivity extends AppCompatActivity
             if (FileActivity.verifyStoragePermissions(FileActivity.this)) {
                 try {
                     files = fileLoader.loadLocationFiles();
-                } catch (FileLoader.NoAccessException e1) {
+                } catch (FileLoader.NoAccessException | FileLoader.EmptyDirectoryException e1) {
                     Log.w(TAG, "Can't read '" + startDir + "': Permission granted but file.canRead() returned false!");
                 }
             } else {
                 Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
             }
+        } catch (FileLoader.EmptyDirectoryException e) {
+            Toast.makeText(this, R.string.empty_directory, Toast.LENGTH_SHORT).show();
         }
-
         View errorText = findViewById(R.id.unableToLoadText);
         if (files == null || files.isEmpty()) {
             fileListView.setVisibility(GONE);

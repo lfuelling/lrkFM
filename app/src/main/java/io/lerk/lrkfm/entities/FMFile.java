@@ -1,4 +1,4 @@
-package io.lerk.lrkfm;
+package io.lerk.lrkfm.entities;
 
 import java.io.File;
 import java.util.Date;
@@ -7,7 +7,7 @@ import java.util.Date;
  * File object.
  * @author Lukas Fülling (lukas@k40s.net)
  */
-class FMFile {
+public class FMFile {
     String name, permissions;
     Date lastModified;
     File file;

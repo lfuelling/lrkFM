@@ -1,19 +1,23 @@
-package io.lerk.lrkfm;
+package io.lerk.lrkfm.util;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+
+import io.lerk.lrkfm.R;
+import io.lerk.lrkfm.activities.FileActivity;
+import io.lerk.lrkfm.entities.FMFile;
 
 public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
@@ -66,6 +70,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 v.setOnClickListener(v1 -> {
                     Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT, Uri.fromFile(f.getFile()));
                     i.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    i.setType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(f.getFile().getAbsolutePath())));
                     try {
                         getContext().startActivity(i);
                     } catch (ActivityNotFoundException e) {
