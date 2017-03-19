@@ -1,27 +1,13 @@
 package io.lerk.lrkfm;
 
-import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import org.apache.commons.io.FileSystemUtils;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.Date;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class handles file loading.
