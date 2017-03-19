@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="show_toast_on_cd"
+        android:title="@string/pref_show_toast_cd"
+        android:summary="@string/pref_show_toast_cd_desc"
+        android:defaultValue="false" />
+</PreferenceScreen>

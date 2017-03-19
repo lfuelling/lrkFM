@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -43,6 +44,7 @@ public class FileActivity extends AppCompatActivity
 
     private static final String PREF_HOMEDIR = "home_dir";
     private static final String PREF_BOOKMARKS = "bookmarks";
+    private static final String PREF_SHOW_TOAST = "show_toast_on_cd";
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -55,6 +57,7 @@ public class FileActivity extends AppCompatActivity
     private String currentDirectory = "";
     private Toolbar toolbar;
     private NavigationView navigationView;
+    private TextView currentDirectoryTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,8 @@ public class FileActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        currentDirectoryTextView = (TextView) headerView.findViewById(R.id.currentDirectoryTextView);
         loadUserBookmarks();
 
         fab.setOnClickListener((v) -> FileActivity.this.loadDirectory(new File(currentDirectory).getParent()));
@@ -102,7 +107,6 @@ public class FileActivity extends AppCompatActivity
         } else {
             Log.d(TAG, "User has no bookmarks");
         }
-
     }
 
     private void loadHomeDir() {
@@ -150,6 +154,12 @@ public class FileActivity extends AppCompatActivity
             String title = splitPath[(i < 0) ? 0 : i]; // dirty hack to prevent IndexOutOfBoundsException
             toolbar.setTitle(title);
         }
+        if (currentDirectoryTextView != null) {
+            currentDirectoryTextView.setText(currentDirectory);
+        }
+        if (preferences.getBoolean(PREF_SHOW_TOAST, false)) {
+            Toast.makeText(this, getText(R.string.toast_cd_new_dir) + " " + currentDirectory, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -195,7 +205,8 @@ public class FileActivity extends AppCompatActivity
         } else if (id == R.id.nav_path) {
             promptAndLoadPath();
         } else if (id == R.id.nav_settings) {
-
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_share) {
             ApplicationInfo app = getApplicationContext().getApplicationInfo();
             String filePath = app.sourceDir;

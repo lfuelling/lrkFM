@@ -19,4 +19,8 @@
     <string name="add_bookmark">Add Bookmark</string>
     <string name="nav_bug_report">Report Bug</string>
     <string name="share_app">Share App</string>
+    <string name="pref_show_toast_cd">Show Toast on directory change</string>
+    <string name="pref_show_toast_cd_desc">When loading a new directory, a toast will be shown.</string>
+    <string name="toast_cd_new_dir">New Directory:</string>
+    <string name="loading">Loading...</string>
 </resources>
