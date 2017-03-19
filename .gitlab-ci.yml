@@ -9,3 +9,13 @@ build_with_tests:
     - ./gradlew build
   only:
     - master
+
+build_with_artifacts:
+  stage: build
+  script:
+    - ./gradlew assembleDebug
+  artifacts:
+    paths:
+      - app/build/outputs/apk/app-debug.apk
+  only:
+    - tags
