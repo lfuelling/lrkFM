@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -186,6 +187,11 @@ public class FileActivity extends AppCompatActivity
         if (preferences.getBoolean(PREF_SHOW_TOAST, false)) {
             Toast.makeText(this, getText(R.string.toast_cd_new_dir) + " " + currentDirectory, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
