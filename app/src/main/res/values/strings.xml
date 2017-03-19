@@ -16,4 +16,6 @@
     <string name="okay">OK</string>
     <string name="cancel">Cancel</string>
     <string name="invalid_path">Invalid path! Only absolute paths pointing to a directory please.</string>
+    <string name="add_bookmark">Add Bookmark</string>
+    <string name="nav_bug_report">Report Bug</string>
 </resources>

@@ -44,6 +44,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_bug_report_white_24dp" />
+        app:srcCompat="@drawable/ic_keyboard_arrow_up_white_24dp" />
 
 </RelativeLayout>

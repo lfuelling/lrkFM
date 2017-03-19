@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group>
+    <group
+        android:orderInCategory="1">
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home_black_24dp"
@@ -12,17 +13,26 @@
             android:title="@string/nav_path" />
     </group>
 
-    <item android:title="@string/nav_bookmarks">
+    <item
+        android:title="@string/nav_bookmarks"
+        android:orderInCategory="2">
         <menu>
+            <group android:id="@+id/bookmarksMenuGroup"
+                android:orderInCategory="0"/>
             <item
-                android:id="@+id/nav_todo"
-                android:icon="@drawable/ic_bookmark_border_black_24dp"
-                android:title="@string/todo" />
+                android:orderInCategory="1"
+                android:id="@+id/nav_add_bookmark"
+                android:icon="@drawable/ic_add_black_24dp"
+                android:title="@string/add_bookmark" />
         </menu>
     </item>
 
-    <item android:title="@string/nav_app">
+    <item android:title="@string/nav_app"
+        android:orderInCategory="3">
         <menu>
+            <item android:id="@+id/nav_bug_report"
+                android:icon="@drawable/ic_bug_report_black_24dp"
+                android:title="@string/nav_bug_report"/>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_share_black_24dp"

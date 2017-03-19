@@ -11,6 +11,7 @@ class FMFile {
     String name, permissions;
     Date lastModified;
     File file;
+    Boolean directory;
 
     /**
      * Constructor.
@@ -24,6 +25,7 @@ class FMFile {
                 ((this.file.canRead()) ? "r" : "-") +
                 ((this.file.canWrite()) ? "w" : "-") +
                 ((this.file.canExecute()) ? "x" : "-"); // lol
+        this.directory = f.isDirectory();
     }
 
     public String getName() {
@@ -32,6 +34,14 @@ class FMFile {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getDirectory() {
+        return directory;
+    }
+
+    public void setDirectory(Boolean directory) {
+        this.directory = directory;
     }
 
     public String getPermissions() {
