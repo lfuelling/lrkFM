@@ -210,8 +210,6 @@ public class FileActivity extends AppCompatActivity
             stringSet.add(currentDirectory);
             preferences.edit().putStringSet(PREF_BOOKMARKS, stringSet).apply();
             loadUserBookmarks();
-        } else if (id == R.id.nav_view) {
-
         } else if (id == R.id.nav_bug_report) {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(getColor(R.color.primary));
