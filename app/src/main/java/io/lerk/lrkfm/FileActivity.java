@@ -66,7 +66,12 @@ public class FileActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder()
+                .detectActivityLeaks()
+                .detectCleartextNetwork()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .detectLeakedSqlLiteObjects();
         StrictMode.setVmPolicy(builder.build());
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
