@@ -5,4 +5,8 @@
         android:title="@string/pref_show_toast_cd"
         android:summary="@string/pref_show_toast_cd_desc"
         android:defaultValue="false" />
+    <EditTextPreference
+        android:key="home_dir"
+        android:title="@string/pref_home_dir"
+        android:summary="@string/pref_home_dir_desc"/>
 </PreferenceScreen>

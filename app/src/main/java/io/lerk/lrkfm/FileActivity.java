@@ -112,7 +112,11 @@ public class FileActivity extends AppCompatActivity
     private void loadHomeDir() {
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String startDir = preferences.getString(PREF_HOMEDIR, absolutePath);
+        String startDir = preferences.getString(PREF_HOMEDIR, null);
+        if(startDir == null) {
+            preferences.edit().putString(PREF_HOMEDIR, absolutePath).apply();
+            startDir = absolutePath;
+        }
         loadDirectory(startDir);
     }
 
