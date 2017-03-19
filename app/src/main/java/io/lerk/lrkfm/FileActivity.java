@@ -3,7 +3,9 @@ package io.lerk.lrkfm;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -195,7 +197,14 @@ public class FileActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_share) {
-
+            ApplicationInfo app = getApplicationContext().getApplicationInfo();
+            String filePath = app.sourceDir;
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            // MIME of .apk is "application/vnd.android.package-archive".
+            // but Bluetooth does not accept this. Let's use "*/*" instead.
+            intent.setType("*/*");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
+            startActivity(Intent.createChooser(intent, getResources().getString(R.string.share_app)));
         } else if (id == R.id.nav_add_bookmark) {
             Set<String> stringSet = preferences.getStringSet(PREF_BOOKMARKS, new HashSet<>());
             stringSet.add(currentDirectory);
