@@ -37,6 +37,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static android.view.View.GONE;
@@ -49,6 +50,7 @@ public class FileActivity extends AppCompatActivity
     private static final String PREF_SHOW_TOAST = "show_toast_on_cd";
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String ROOT_DIR = "/";
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -123,7 +125,7 @@ public class FileActivity extends AppCompatActivity
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String startDir = preferences.getString(PREF_HOMEDIR, null);
-        if(startDir == null) {
+        if (startDir == null) {
             preferences.edit().putString(PREF_HOMEDIR, absolutePath).apply();
             startDir = absolutePath;
         }
@@ -163,10 +165,14 @@ public class FileActivity extends AppCompatActivity
         }
         currentDirectory = startDir;
         if (toolbar != null) {
-            String[] splitPath = currentDirectory.split("/");
-            int i = splitPath.length - 1;
-            String title = splitPath[(i < 0) ? 0 : i]; // dirty hack to prevent IndexOutOfBoundsException
-            toolbar.setTitle(title);
+            if (!Objects.equals(currentDirectory, ROOT_DIR)) {
+                String[] splitPath = currentDirectory.split("/");
+                int i = splitPath.length - 1;
+                String title = splitPath[(i < 0) ? 0 : i]; // dirty hack to prevent IndexOutOfBoundsException
+                toolbar.setTitle(title);
+            } else {
+                toolbar.setTitle(currentDirectory);
+            }
         }
         if (currentDirectoryTextView != null) {
             currentDirectoryTextView.setText(currentDirectory);
