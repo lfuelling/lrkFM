@@ -36,6 +36,14 @@
         android:text="@string/unable_to_load_files"
         android:textSize="@dimen/file_title_fs"
         android:visibility="gone"/>
+    <TextView
+        android:id="@+id/emptyDirText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/empty_directory"
+        android:textSize="@dimen/file_title_fs"
+        android:visibility="gone"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

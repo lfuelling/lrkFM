@@ -9,4 +9,9 @@
         android:key="home_dir"
         android:title="@string/pref_home_dir"
         android:summary="@string/pref_home_dir_desc"/>
+    <SwitchPreference
+        android:key="bookmark_current_folder"
+        android:title="@string/pref_bookmark_corrent_folder"
+        android:summary="@string/pref_bookmark_corrent_folder_desc"
+        android:defaultValue="false"/>
 </PreferenceScreen>

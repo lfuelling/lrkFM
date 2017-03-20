@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/bookmarkTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="@dimen/prompt_margin"
+        android:layout_marginStart="@dimen/prompt_margin"
+        android:layout_marginTop="@dimen/file_view_margin"
+        android:text="@string/path_input_hint" />
+
+    <EditText
+        android:id="@+id/bookmarkPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bookmarkTextView"
+        android:layout_marginBottom="@dimen/file_view_margin"
+        android:layout_marginEnd="@dimen/prompt_margin"
+        android:layout_marginStart="@dimen/prompt_margin" />
+</RelativeLayout>

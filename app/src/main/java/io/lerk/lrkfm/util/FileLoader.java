@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import io.lerk.lrkfm.activities.FileActivity;
 import io.lerk.lrkfm.entities.FMFile;
 
 /**
@@ -20,7 +23,7 @@ public class FileLoader {
 
     private String location;
 
-    public static final String TAG = FileLoader.class.getCanonicalName();
+    private static final String TAG = FileLoader.class.getCanonicalName();
 
     /**
      * Constructor.
@@ -36,19 +39,21 @@ public class FileLoader {
     }
 
     private ArrayList<FMFile> loadLocationFiles(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
-        if(parent != null) {
+        if (parent != null) {
             location = parent;
+        }
+        if(location.isEmpty()) {
+            location = "/";
         }
         File locationFile = new File(location);
         if (locationFile.isDirectory()) {
             if (locationFile.canRead()) {
                 ArrayList<FMFile> result = new ArrayList<>();
-
                 File[] fileList = locationFile.listFiles();
                 if (fileList != null) {
                     List<File> asList = Arrays.asList(fileList);
-                    if(!asList.isEmpty()) {
-                        //noinspection Convert2Lambda
+                    if (!asList.isEmpty()) {
+                        //noinspection Convert2Lambda,SimplifyStreamApiCallChains
                         asList.stream().forEach(new Consumer<File>() {  // This operation fails if List.forEach or a Lambda is used. Get your shit together Android!
                             @Override
                             public void accept(File f) {
@@ -86,7 +91,6 @@ public class FileLoader {
         Log.w(TAG, "Unable to load files");
         return new ArrayList<>();
     }
-
 
     public class NoAccessException extends Exception {
         public NoAccessException(String message) {

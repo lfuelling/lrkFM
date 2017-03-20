@@ -8,4 +8,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="file_title_fs">18sp</dimen>
     <dimen name="file_view_margin">8dp</dimen>
+    <dimen name="prompt_margin">24dp</dimen>
 </resources>

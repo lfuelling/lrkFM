@@ -1,8 +1,10 @@
 package io.lerk.lrkfm.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
@@ -35,23 +38,28 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import io.lerk.lrkfm.entities.Bookmark;
 import io.lerk.lrkfm.entities.FMFile;
 import io.lerk.lrkfm.util.FileArrayAdapter;
 import io.lerk.lrkfm.util.FileLoader;
 import io.lerk.lrkfm.R;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String PREF_HOMEDIR = "home_dir";
     private static final String PREF_BOOKMARKS = "bookmarks";
+    private static final String PREF_BOOKMARK_CURRENT_FOLDER = "bookmark_current_folder";
     private static final String PREF_SHOW_TOAST = "show_toast_on_cd";
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -62,7 +70,7 @@ public class FileActivity extends AppCompatActivity
     };
     private ListView fileListView;
     private SharedPreferences preferences;
-    private HashMap<String, MenuItem> bookmarkItems;
+    private HashSet<Bookmark> bookmarkItems;
     private String currentDirectory = "";
     private Toolbar toolbar;
     private NavigationView navigationView;
@@ -87,6 +95,13 @@ public class FileActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                loadUserBookmarks();
+                super.onDrawerStateChanged(newState);
+            }
+        });
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         setSupportActionBar(toolbar);
@@ -112,15 +127,18 @@ public class FileActivity extends AppCompatActivity
 
     private void loadUserBookmarks() {
         Menu menu = navigationView.getMenu();
-
         Set<String> bookmarks = preferences.getStringSet(PREF_BOOKMARKS, null);
-        bookmarkItems = new HashMap<>();
-
         if (bookmarks != null) {
+            bookmarkItems = new HashSet<>();
+            menu.removeGroup(R.id.bookmarksMenuGroup);
             bookmarks.forEach((s) -> {
                 String[] split = s.split("/");
                 int i = split.length - 1;
-                bookmarkItems.put(s, menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, split[(i < 0) ? 0 : i])); //FIXME see #11
+                if (i < 0) {
+                    i = 0;
+                }
+                String title = split[i];
+                bookmarkItems.add(new Bookmark(s, title, menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title)));
             });
         } else {
             Log.d(TAG, "User has no bookmarks");
@@ -139,43 +157,42 @@ public class FileActivity extends AppCompatActivity
     }
 
     public void loadDirectory(String startDir) {
-        ArrayList<FMFile> files = null;
+        ArrayList<FMFile> files;
+        FileActivity.verifyStoragePermissions(FileActivity.this);
         FileLoader fileLoader = new FileLoader(startDir);
+        View errorText = findViewById(R.id.unableToLoadText);
+        View emptyText = findViewById(R.id.emptyDirText);
         try {
             files = fileLoader.loadLocationFiles();
-        } catch (FileLoader.NoAccessException e) {
-            if (FileActivity.verifyStoragePermissions(FileActivity.this)) {
-                try {
-                    files = fileLoader.loadLocationFiles();
-                } catch (FileLoader.NoAccessException | FileLoader.EmptyDirectoryException e1) {
-                    Log.w(TAG, "Can't read '" + startDir + "': Permission granted but file.canRead() returned false!");
-                }
-            } else {
-                Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
-            }
-        } catch (FileLoader.EmptyDirectoryException e) {
-            Toast.makeText(this, R.string.empty_directory, Toast.LENGTH_SHORT).show();
-        }
-        View errorText = findViewById(R.id.unableToLoadText);
-        if (files == null || files.isEmpty()) {
-            fileListView.setVisibility(GONE);
-            errorText.setVisibility(View.VISIBLE);
-        } else {
-            if (fileListView.getVisibility() != View.VISIBLE) {
-                fileListView.setVisibility(View.VISIBLE);
-            }
-            if (errorText.getVisibility() != GONE) {
-                errorText.setVisibility(GONE);
-            }
+            fileListView.setVisibility(VISIBLE);
+            errorText.setVisibility(GONE);
+            emptyText.setVisibility(GONE);
             FileArrayAdapter adapter = new FileArrayAdapter(this, R.layout.layout_file, files);
             fileListView.setAdapter(adapter);
+        } catch (FileLoader.NoAccessException e) {
+            Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
+            fileListView.setVisibility(GONE);
+            errorText.setVisibility(VISIBLE);
+            emptyText.setVisibility(GONE);
+        } catch (FileLoader.EmptyDirectoryException e) {
+            Log.w(TAG, "Can't read '" + startDir + "': Empty directory!");
+            fileListView.setVisibility(GONE);
+            errorText.setVisibility(GONE);
+            emptyText.setVisibility(VISIBLE);
         }
         currentDirectory = startDir;
+        setToolbarText();
+    }
+
+    private void setToolbarText() {
         if (toolbar != null) {
             if (!Objects.equals(currentDirectory, ROOT_DIR)) {
                 String[] splitPath = currentDirectory.split("/");
                 int i = splitPath.length - 1;
-                String title = splitPath[(i < 0) ? 0 : i]; // dirty hack to prevent IndexOutOfBoundsException
+                if (i < 0) {
+                    i = 0;
+                }
+                String title = splitPath[i];
                 toolbar.setTitle(title);
             } else {
                 toolbar.setTitle(currentDirectory);
@@ -213,22 +230,11 @@ public class FileActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
@@ -238,28 +244,15 @@ public class FileActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             launchSettings(item);
         } else if (id == R.id.nav_share) {
-            ApplicationInfo app = getApplicationContext().getApplicationInfo();
-            String filePath = app.sourceDir;
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            // MIME of .apk is "application/vnd.android.package-archive".
-            // but Bluetooth does not accept this. Let's use "*/*" instead.
-            intent.setType("*/*");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
-            startActivity(Intent.createChooser(intent, getResources().getString(R.string.share_app)));
+            shareApplication();
         } else if (id == R.id.nav_add_bookmark) {
-            Set<String> stringSet = preferences.getStringSet(PREF_BOOKMARKS, new HashSet<>());
-            stringSet.add(currentDirectory);
-            preferences.edit().putStringSet(PREF_BOOKMARKS, stringSet).apply();
-            loadUserBookmarks();
+            promptAndAddBookmark();
         } else if (id == R.id.nav_bug_report) {
-            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-            builder.setToolbarColor(getColor(R.color.primary));
-            CustomTabsIntent build = builder.build();
-            build.launchUrl(this, Uri.parse("https://fahlbtharz.k40s.net/FileManagerCompetition/lrkFM/issues/new"));
+            launchBugReportTab();
         } else {
-            bookmarkItems.forEach((k, v) -> {
-                if (id == v.getItemId()) {
-                    this.loadDirectory(k);
+            bookmarkItems.forEach(bookmark -> {
+                if (bookmark.getMenuItem().getItemId() == id) {
+                    loadDirectory(bookmark.getPath());
                 }
             });
         }
@@ -269,31 +262,66 @@ public class FileActivity extends AppCompatActivity
         return true;
     }
 
-    public void launchSettings(MenuItem item) {
-        Intent i = new Intent(this, SettingsActivity.class);
-        startActivity(i);
+    private void shareApplication() {
+        ApplicationInfo app = getApplicationContext().getApplicationInfo();
+        String filePath = app.sourceDir;
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        // MIME of .apk is "application/vnd.android.package-archive".
+        // but Bluetooth does not accept this. Let's use "*/*" instead.
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
+        startActivity(Intent.createChooser(intent, getResources().getString(R.string.share_app)));
+    }
+
+    private void launchBugReportTab() {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setToolbarColor(getColor(R.color.primary));
+        CustomTabsIntent build = builder.build();
+        build.launchUrl(this, Uri.parse("https://fahlbtharz.k40s.net/FileManagerCompetition/lrkFM/issues/new"));
+    }
+
+    @SuppressLint("ApplySharedPref")
+    private void promptAndAddBookmark() {
+        Set<String> stringSet = preferences.getStringSet(PREF_BOOKMARKS, new HashSet<>());
+        if (preferences.getBoolean(PREF_BOOKMARK_CURRENT_FOLDER, false)) {
+            stringSet.add(currentDirectory);
+        } else {
+            AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
+            bookmarkDialogBuilder
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
+                    .setNeutralButton(R.string.bookmark_this_folder, (dialog, which) -> {
+                        stringSet.add(currentDirectory);
+                        dialog.cancel();
+                    }).setView(R.layout.layout_path_prompt)
+                    .setTitle(R.string.bookmark_set_path);
+            AlertDialog alertDialog = bookmarkDialogBuilder.create();
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
+                stringSet.add(((EditText) alertDialog.findViewById(R.id.bookmarkPath)).getText().toString());
+                dialog.dismiss();
+            });
+            alertDialog.setOnDismissListener(dialog -> {
+                preferences.edit().putStringSet(PREF_BOOKMARKS, stringSet).commit();
+                loadUserBookmarks();
+            });
+            alertDialog.show();
+        }
     }
 
     private void promptAndLoadPath() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        // Set up the input
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
+        bookmarkDialogBuilder
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
+                .setView(R.layout.layout_path_prompt)
+                .setTitle(R.string.nav_path);
 
-        builder.setTitle(getString(R.string.nav_path))
-                .setView(input)
-                .setPositiveButton(getString(R.string.okay), (dialog, which) -> {
-                    String inputPath = input.getText().toString();
-                    if (inputPath.matches("([/]\\w*[/]\\w*)")) {
-                        loadDirectory(inputPath);
-                        dialog.dismiss();
-                    } else {
-                        Toast.makeText(FileActivity.this, R.string.invalid_path, Toast.LENGTH_LONG).show();
-                        Log.w(TAG, "Invalid path!");
-                    }
-                })
-                .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.cancel())
-                .show();
+        AlertDialog alertDialog = bookmarkDialogBuilder.create();
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> loadDirectory(((EditText) alertDialog.findViewById(R.id.bookmarkPath)).getText().toString()));
+        alertDialog.show();
+    }
+
+    public void launchSettings(MenuItem item) {
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivity(i);
     }
 
     public static boolean verifyStoragePermissions(Activity context) {

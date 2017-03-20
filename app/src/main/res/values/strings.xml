@@ -29,4 +29,9 @@
     <string name="pref_bookmarks_desc">Edit your bookmarks.</string>
     <string name="no_app_to_handle_file">No App found to handle this file!</string>
     <string name="empty_directory">Directory is empty!</string>
+    <string name="bookmark_this_folder">Use current folder</string>
+    <string name="bookmark_set_path">Input bookmark path</string>
+    <string name="pref_bookmark_corrent_folder">Bookmark current folder</string>
+    <string name="pref_bookmark_corrent_folder_desc">Don\'t prompt bookmark path when adding a bookmark.</string>
+    <string name="path_input_hint">Absolute valid paths only!</string>
 </resources>
