@@ -42,8 +42,11 @@ public class FileLoader {
         if (parent != null) {
             location = parent;
         }
-        if(location.isEmpty()) {
+        if(location == null || location.isEmpty()) {
             location = "/";
+        }
+        if(!location.startsWith("/")) {
+            throw new NoAccessException("Invalid path: " + location);
         }
         File locationFile = new File(location);
         if (locationFile.isDirectory()) {
