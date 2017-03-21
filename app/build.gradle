@@ -8,7 +8,7 @@ android {
         minSdkVersion 25
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName '0.2b1'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         jackOptions {
@@ -32,6 +32,8 @@ android {
     lintOptions {
         abortOnError false // fuck lint
     }
+    productFlavors {
+    }
 }
 
 dependencies {
@@ -39,7 +41,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.android.support:customtabs:25.3.0'

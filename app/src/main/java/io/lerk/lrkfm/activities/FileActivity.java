@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,6 +48,7 @@ import java.util.function.Consumer;
 
 import io.lerk.lrkfm.entities.Bookmark;
 import io.lerk.lrkfm.entities.FMFile;
+import io.lerk.lrkfm.util.DiskUtil;
 import io.lerk.lrkfm.util.FileArrayAdapter;
 import io.lerk.lrkfm.util.FileLoader;
 import io.lerk.lrkfm.R;
@@ -91,6 +93,9 @@ public class FileActivity extends AppCompatActivity
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         fileListView = (ListView) findViewById(R.id.fileView);
+        registerForContextMenu(fileListView);
+        fileListView.setLongClickable(true); //FIXME doesn't work ._.
+        fileListView.setOnItemLongClickListener((parent, view, position, id) -> fileListView.showContextMenuForChild(view));
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -110,6 +115,17 @@ public class FileActivity extends AppCompatActivity
         currentDirectoryTextView = (TextView) headerView.findViewById(R.id.currentDirectoryTextView);
         loadUserBookmarks();
 
+        TextView diskUsageTextView = (TextView) headerView.findViewById(R.id.diskUsage);
+        {
+            String defaultValue = getString(R.string.pref_header_unit_default_value);
+            String s = null;
+            if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m))) {
+                s = DiskUtil.freeSpaceMebi(true) + " MiB free";
+            } else if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m))) {
+                s = DiskUtil.freeSpaceMebi(true) + " GiB free";
+            }
+            diskUsageTextView.setText(s);
+        }
         fab.setOnClickListener((v) -> FileActivity.this.loadDirectory(new File(currentDirectory).getParent()));
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

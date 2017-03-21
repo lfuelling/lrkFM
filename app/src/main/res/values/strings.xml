@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">lrkFM</string>
+    <string name="app_name" translatable="false">lrkFM</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -34,4 +34,13 @@
     <string name="pref_bookmark_corrent_folder">Bookmark current folder</string>
     <string name="pref_bookmark_corrent_folder_desc">Don\'t prompt bookmark path when adding a bookmark.</string>
     <string name="path_input_hint">Absolute valid paths only!</string>
+    <string name="pref_header_unit">Unit to use in header</string>
+    <string name="pref_header_unit_desc">MiB or GiB</string>
+    <string name="pref_header_unit_default_value" translatable="false">@string/pref_header_unit_m</string>
+    <string name="pref_header_unit_m" translatable="false">m</string>
+    <string name="pref_header_unit_g" translatable="false">g</string>
+    <string name="pref_header_unit_g_value">Gibibyte</string>
+    <string name="pref_header_unit_m_value">Mebibyte</string>
+    <string name="pref_cat_ui">UI</string>
+    <string name="pref_cat_app">Application</string>
 </resources>

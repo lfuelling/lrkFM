@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_cat_app">
     <SwitchPreference
         android:key="show_toast_on_cd"
         android:title="@string/pref_show_toast_cd"
@@ -14,4 +15,14 @@
         android:title="@string/pref_bookmark_corrent_folder"
         android:summary="@string/pref_bookmark_corrent_folder_desc"
         android:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_cat_ui">
+        <ListPreference
+            android:key="nav_header_unit"
+            android:title="@string/pref_header_unit"
+            android:summary="@string/pref_header_unit_desc"
+            android:entries="@array/header_units"
+            android:entryValues="@array/header_units_values"
+            android:defaultValue="@string/pref_header_unit_default_value" />
+    </PreferenceCategory>
 </PreferenceScreen>

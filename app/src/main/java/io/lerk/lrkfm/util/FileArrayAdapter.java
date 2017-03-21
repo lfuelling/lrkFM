@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,22 +22,26 @@ import io.lerk.lrkfm.entities.FMFile;
 
 public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
+    private static final int ID_COPY = 0;
+    private static final int ID_MOVE = 1;
+    private static final int ID_RENAME = 2;
+    private static final int ID_DELETE = 3;
+
     public FileArrayAdapter(Context context, int resource, List<FMFile> items) {
         super(context, resource, items);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        return initUI(getItem(position));
+    }
 
-        View v = convertView;
+    private View initUI(FMFile f) {
 
-        if (v == null) {
-            LayoutInflater vi;
-            vi = LayoutInflater.from(getContext());
-            v = vi.inflate(R.layout.layout_file, null);
-        }
+        Context context = getContext();
 
-        FMFile f = getItem(position);
+        View v = LayoutInflater.from(context).inflate(R.layout.layout_file, null);
 
         if (f != null) {
             TextView fileNameView = (TextView) v.findViewById(R.id.fileTitle);
@@ -60,7 +65,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             }
             if (f.getDirectory()) {
                 v.setOnClickListener(v1 -> {
-                    Context context = FileArrayAdapter.this.getContext();
+
                     if (context instanceof FileActivity) {
                         FileActivity fa = (FileActivity) context;
                         fa.loadDirectory(f.getFile().getAbsolutePath());
@@ -77,9 +82,15 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                         Toast.makeText(getContext(), R.string.no_app_to_handle_file, Toast.LENGTH_SHORT).show();
                     }
                 });
+                v.setOnCreateContextMenuListener((menu, view, info) -> {
+                    menu.add(0, ID_COPY, 0, "Copy").setOnMenuItemClickListener(item -> FileUtil.copy(f, context));
+                    menu.add(0, ID_MOVE, 0, "Move").setOnMenuItemClickListener(item -> FileUtil.move(f, context));
+                    menu.add(0, ID_RENAME, 0, "Rename").setOnMenuItemClickListener(item -> FileUtil.rename(f, context));
+                    menu.add(0, ID_DELETE, 0, "Delete").setOnMenuItemClickListener(item -> FileUtil.delete(f, context));
+                });
             }
-        }
 
+        }
         return v;
     }
 }
