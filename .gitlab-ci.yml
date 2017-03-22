@@ -8,9 +8,6 @@ build_with_tests:
   stage: build
   script:
     - ./gradlew build
-  only:
-    - master
-    - tags
 
 build_with_artifacts:
   stage: artifacts
