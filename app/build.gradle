@@ -46,3 +46,5 @@ dependencies {
     compile 'com.android.support:customtabs:25.3.0'
     testCompile 'junit:junit:4.12'
 }
+
+apply plugin: 'com.google.gms.google-services'
