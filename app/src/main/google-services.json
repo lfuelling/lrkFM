@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "925500356816",
+    "firebase_url": "https://lrkfm-7ceb5.firebaseio.com",
+    "project_id": "lrkfm-7ceb5",
+    "storage_bucket": "lrkfm-7ceb5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925500356816:android:622f385b605e8556",
+        "android_client_info": {
+          "package_name": "io.lerk.lerkfm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "925500356816-k5uvf4lrk19d8a5d6a8o1b84kr22tmkm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.lerk.lerkfm",
+            "certificate_hash": "879359bfabaa20a110a17768f2f0649f3deca4b8"
+          }
+        },
+        {
+          "client_id": "925500356816-f8qn5bsiqi0khqgv3d00bmhfd4jid7t1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDv1ZKtuAsd_l_paNhlzQmQgc-dYKQQeDA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "925500356816-f8qn5bsiqi0khqgv3d00bmhfd4jid7t1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
