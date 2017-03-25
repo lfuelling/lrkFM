@@ -53,6 +53,19 @@ public class DiskUtil {
     }
 
     /**
+     * Calculates total space on disk
+     * @param external  If true will query external disk, otherwise will query internal disk.
+     * @return Number of mega bytes on disk.
+     */
+    public static int totalSpaceGibi(boolean external)
+    {
+        StatFs statFs = getStats(external);
+        long total = (statFs.getBlockCountLong() * statFs.getBlockSizeLong()) / GIBIBYTE;
+        Log.d(TAG, "Total disk space: " + String.valueOf(total));
+        return (int) total;
+    }
+
+    /**
      * Calculates free space on disk
      * @param external  If true will query external disk, otherwise will query internal disk.
      * @return Number of free mega bytes on disk.
@@ -68,6 +81,21 @@ public class DiskUtil {
     }
 
     /**
+     * Calculates free space on disk
+     * @param external  If true will query external disk, otherwise will query internal disk.
+     * @return Number of free mega bytes on disk.
+     */
+    public static int freeSpaceGibi(boolean external)
+    {
+        StatFs statFs = getStats(external);
+        long availableBlocks = statFs.getAvailableBlocksLong();
+        long blockSize = statFs.getBlockSizeLong();
+        long freeBytes = availableBlocks * blockSize;
+        Log.d(TAG, "Free disk space: " + String.valueOf(freeBytes/ GIBIBYTE));
+        return (int) (freeBytes / GIBIBYTE);
+    }
+
+    /**
      * Calculates occupied space on disk
      * @param external  If true will query external disk, otherwise will query internal disk.
      * @return Number of occupied mega bytes on disk.
@@ -79,6 +107,21 @@ public class DiskUtil {
         long free  = (statFs.getAvailableBlocksLong() * statFs.getBlockSizeLong());
         long used = (total - free) / MEBIBYTE;
         Log.d(TAG, "used disk space: " + String.valueOf(used/ MEBIBYTE));
+        return (int) used;
+    }
+
+    /**
+     * Calculates occupied space on disk
+     * @param external  If true will query external disk, otherwise will query internal disk.
+     * @return Number of occupied mega bytes on disk.
+     */
+    public static int busySpaceGibi(boolean external)
+    {
+        StatFs statFs = getStats(external);
+        long total = (statFs.getBlockCountLong() * statFs.getBlockSizeLong());
+        long free  = (statFs.getAvailableBlocksLong() * statFs.getBlockSizeLong());
+        long used = (total - free) / GIBIBYTE;
+        Log.d(TAG, "used disk space: " + String.valueOf(used/ GIBIBYTE));
         return (int) used;
     }
 

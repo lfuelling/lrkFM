@@ -33,7 +33,7 @@
     <string name="bookmark_set_path">Input bookmark path</string>
     <string name="pref_bookmark_corrent_folder">Bookmark current folder</string>
     <string name="pref_bookmark_corrent_folder_desc">Don\'t prompt bookmark path when adding a bookmark.</string>
-    <string name="path_input_hint">Absolute valid paths only!</string>
+    <string name="path_input_hint">Absolute paths only!</string>
     <string name="pref_header_unit">Unit to use in header</string>
     <string name="pref_header_unit_desc">MiB or GiB</string>
     <string name="pref_header_unit_default_value" translatable="false">@string/pref_header_unit_m</string>
@@ -43,4 +43,24 @@
     <string name="pref_header_unit_m_value">Mebibyte</string>
     <string name="pref_cat_ui">UI</string>
     <string name="pref_cat_app">Application</string>
+    <string name="op_copy_positive">Copy</string>
+    <string name="op_destination">Destination</string>
+    <string name="err_activity_null">Unable to register context menu</string>
+    <string name="warn_file_exists_title">File exists</string>
+    <string name="warn_file_exists_msg">The existing file will be overwritten. Are you sure that you want to continue?</string>
+    <string name="yes">Yes</string>
+    <string name="warn_delete_title">Delete</string>
+    <string name="warn_delete_msg">Are you sure that you want to delete:</string>
+    <string name="op_move_title">Move</string>
+    <string name="op_rename_title">Rename</string>
+    <string name="name_input_hint">Enter new file name</string>
+    <string name="op_new_dir_title">New Directory</string>
+    <string name="err_file_exists">The specified file already exists!</string>
+    <string name="err_unable_to_mkdir">Unable to create directory!</string>
+    <string name="action_new_directory">New Directory</string>
+    <string name="file_icon_desc">Icon that shows if the element is a file or a directory.</string>
+    <string name="context_btn_desc">Opens the file operations context menu.</string>
+    <string name="action_reload_view">Reload</string>
+    <string name="err_deleting_element">Unable to delete!</string>
+    <string name="err_empty_input">Input may not be empty!</string>
 </resources>

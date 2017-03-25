@@ -5,7 +5,6 @@ import android.view.MenuItem;
 /**
  * @author Lukas Fülling (lukas@k40s.net)
  */
-
 public class Bookmark {
     private String path, label;
     private MenuItem menuItem;

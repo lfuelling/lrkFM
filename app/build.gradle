@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 'android-O'
-    buildToolsVersion '26.0.0-rc1'
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "io.lerk.lrkfm"
         minSdkVersion 25
@@ -16,18 +16,19 @@ android {
             jackInProcess false
         }
         dexOptions {
+            preDexLibraries = false
             javaMaxHeapSize "4g"
         }
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
         abortOnError false // fuck lint
@@ -44,5 +45,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.android.support:customtabs:25.3.0'
+    compile 'commons-io:commons-io:2.5'
     testCompile 'junit:junit:4.12'
 }
