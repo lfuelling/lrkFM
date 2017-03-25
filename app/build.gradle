@@ -7,8 +7,8 @@ android {
         applicationId "io.lerk.lrkFM"
         minSdkVersion 24
         targetSdkVersion 25
-        versionCode 4
-        versionName '0.2b3f1'
+        versionCode 5
+        versionName '0.2b4'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         jackOptions {
@@ -22,7 +22,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
