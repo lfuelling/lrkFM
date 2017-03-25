@@ -3,7 +3,6 @@ package io.lerk.lrkfm.util;
 import android.app.AlertDialog;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import io.lerk.lrkfm.R;
 import io.lerk.lrkfm.activities.FileActivity;
