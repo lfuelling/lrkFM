@@ -182,14 +182,8 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 .setTitle(title)
                 .setIcon(icon)
                 .setCancelable(true)
-                .setNegativeButton(R.string.cancel, (d, i) -> {
-                    d.cancel();
-                    Log.d(TAG, "Cancel pressed!");
-                })
-                .setPositiveButton(positiveBtnText, (d, i) -> {
-                    d.dismiss();
-                    Log.d(TAG, "Dismiss pressed!");
-                });
+                .setNegativeButton(R.string.cancel, (d, i) -> Log.d(TAG, "Cancel pressed!"))
+                .setPositiveButton(positiveBtnText, (d, i) -> Log.d(TAG, "Dismiss pressed!"));
         AlertDialog dialog = builder.create();
         EditText inputField = null;
         if (view == R.layout.layout_name_prompt) {

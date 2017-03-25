@@ -269,8 +269,8 @@ public class FileActivity extends AppCompatActivity
 
     private void launchNewDirDialog() {
         AlertDialog newDirDialog = new AlertDialog.Builder(this)
-                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
-                .setPositiveButton(R.string.okay, (dialogInterface, i) -> dialogInterface.dismiss())
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> Log.d(TAG, "Cancel pressed"))
+                .setPositiveButton(R.string.okay, (dialogInterface, i) -> Log.d(TAG, "Dismiss pressed"))
                 .setTitle(R.string.op_new_dir_title)
                 .setView(R.layout.layout_name_prompt)
                 .create();
@@ -337,17 +337,14 @@ public class FileActivity extends AppCompatActivity
         } else {
             AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
             bookmarkDialogBuilder
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Cancel pressed!"))
                     .setNeutralButton(R.string.bookmark_this_folder, (dialog, which) -> {
                         stringSet.add(currentDirectory);
                         dialog.cancel();
                     }).setView(R.layout.layout_path_prompt)
                     .setTitle(R.string.bookmark_set_path);
             AlertDialog alertDialog = bookmarkDialogBuilder.create();
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
-                stringSet.add(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString());
-                dialog.dismiss();
-            });
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> stringSet.add(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
             alertDialog.setOnDismissListener(dialog -> {
                 preferences.edit().putStringSet(PREF_BOOKMARKS, stringSet).commit();
                 loadUserBookmarks();
@@ -359,7 +356,7 @@ public class FileActivity extends AppCompatActivity
     private void promptAndLoadPath() {
         AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
         bookmarkDialogBuilder
-                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
+                .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Cancel pressed!"))
                 .setView(R.layout.layout_path_prompt)
                 .setTitle(R.string.nav_path);
 
