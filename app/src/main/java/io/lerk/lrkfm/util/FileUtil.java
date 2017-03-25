@@ -1,7 +1,24 @@
 package io.lerk.lrkfm.util;
 
-import android.content.Context;
+import android.app.AlertDialog;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.util.Log;
+import android.widget.Toast;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.lerk.lrkfm.R;
+import io.lerk.lrkfm.activities.FileActivity;
 import io.lerk.lrkfm.entities.FMFile;
 
 /**
@@ -10,20 +27,144 @@ import io.lerk.lrkfm.entities.FMFile;
 
 public class FileUtil {
 
-    //TODO
-    public static boolean copy(FMFile f, Context context) {
-        return false;
+    private static final String TAG = FileUtil.class.getCanonicalName();
+
+    public static boolean copy(FMFile f, FileActivity context, File destination) {
+        final boolean[] success = {false};
+        if (destination.isDirectory() && !f.getDirectory()) {
+            destination = new File(destination.getAbsolutePath() + File.separator + f.getName());
+        }
+        if (destination.exists()) {
+            AlertDialog.Builder builder = getFileExistsDialogBuilder(context);
+            final File tdest = destination; //for lambda
+            builder.setOnDismissListener(dialogInterface -> success[0] = doCopyNoValidation(f, tdest))
+                    .setOnCancelListener(dialogInterface -> success[0] = false).show();
+        } else {
+            success[0] = doCopyNoValidation(f, destination);
+        }
+        return success[0];
     }
 
-    public static boolean move(FMFile f, Context context) {
-        return false;
+    public static boolean move(FMFile f, FileActivity context, File destination) {
+        final boolean[] success = {false};
+        if (destination.isDirectory() && !f.getDirectory()) {
+            destination = new File(destination.getAbsolutePath() + File.separator + f.getName());
+        }
+        if (destination.exists()) {
+            AlertDialog.Builder builder = getFileExistsDialogBuilder(context);
+            final File tdest = destination; //for lambda
+            builder.setOnDismissListener(dialogInterface -> success[0] = doMoveNoValidation(f, tdest))
+                    .setOnCancelListener(dialogInterface -> success[0] = false).show();
+        } else {
+            success[0] = doMoveNoValidation(f, destination);
+        }
+        return success[0];
     }
 
-    public static boolean rename(FMFile f, Context context) {
-        return false;
+
+    public static boolean rename(FMFile f, FileActivity context, String newName) {
+        final boolean[] success = {false};
+        File destination = new File(getFullPathForRename(f, newName));
+        if (destination.exists()) {
+            AlertDialog.Builder builder = getFileExistsDialogBuilder(context);
+            final File tdest = destination; //for lambda
+            builder.setOnDismissListener(dialogInterface -> success[0] = doMoveNoValidation(f, tdest))
+                    .setOnCancelListener(dialogInterface -> success[0] = false).show();
+        } else {
+            success[0] = doMoveNoValidation(f, destination);
+        }
+        return success[0];
     }
 
-    public static boolean delete(FMFile f, Context context) {
-        return false;
+
+    public static boolean delete(FMFile f, FileActivity context) {
+        final boolean[] res = {false};
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.warn_delete_title)
+                .setMessage(context.getString(R.string.warn_delete_msg) + f.getName() + "?")
+                .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                    if (!f.getFile().exists()) {
+                        res[0] = false;
+                    } else {
+                        res[0] = f.getFile().delete();
+                    }
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
+                .show();
+        return res[0];
+    }
+
+
+    private static boolean doCopyNoValidation(FMFile f, File d) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                if (f.getFile().isDirectory()) {
+                    FileUtils.copyDirectory(f.getFile(), d);
+                } else {
+                    FileUtils.copyFile(f.getFile(), d);
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to copy file!", e);
+            return false;
+        }
+    }
+
+    private static boolean doMoveNoValidation(FMFile f, File d) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.move(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                if (f.getFile().isDirectory()) {
+                    FileUtils.moveDirectory(f.getFile(), d);
+                } else {
+                    FileUtils.moveFile(f.getFile(), d);
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to move file!", e);
+            return false;
+        }
+    }
+
+    private static AlertDialog.Builder getFileExistsDialogBuilder(FileActivity context) {
+        return new AlertDialog.Builder(context)
+                .setCancelable(true)
+                .setTitle(R.string.warn_file_exists_title)
+                .setMessage(R.string.warn_file_exists_msg)
+                .setPositiveButton(R.string.yes, (dialogInterface, i) -> dialogInterface.dismiss())
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel());
+    }
+
+    @NonNull
+    private static String getFullPathForRename(FMFile f, String newName) {
+        final String[] path = {""};
+        ArrayList<String> pathSplit = new ArrayList<>(Arrays.asList(f.getFile().getAbsolutePath().split(File.separator)));
+        pathSplit.remove(pathSplit.size() - 1);
+        pathSplit.forEach(s -> path[0] += s + File.separator);
+        return path[0] + newName;
+    }
+
+    public static void newDir(File d, FileActivity context) {
+        if (!d.exists()) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Files.createDirectory(d.toPath());
+                } else {
+                    if (!d.mkdirs()) {
+                        Toast.makeText(context, R.string.err_unable_to_mkdir, Toast.LENGTH_LONG).show();
+                    }
+                }
+            } catch (IOException e) {
+                Log.e(TAG, context.getString(R.string.err_unable_to_mkdir), e);
+            }
+        } else {
+            Toast.makeText(context, R.string.err_file_exists, Toast.LENGTH_LONG).show();
+        }
     }
 }

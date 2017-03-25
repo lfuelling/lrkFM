@@ -4,14 +4,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import io.lerk.lrkfm.activities.FileActivity;
 import io.lerk.lrkfm.entities.FMFile;
 
 /**
@@ -95,13 +93,15 @@ public class FileLoader {
         return new ArrayList<>();
     }
 
-    public class NoAccessException extends Exception {
+    public class NoAccessException extends Exception implements Serializable {
+        static final long serialVersionUID = 10L;
         public NoAccessException(String message) {
             super(message);
         }
     }
 
-    public class EmptyDirectoryException extends Exception {
+    public class EmptyDirectoryException extends Exception implements Serializable {
+        static final long serialVersionUID = 10L;
         public EmptyDirectoryException(String message) {
             super(message);
         }

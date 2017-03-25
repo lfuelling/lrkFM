@@ -26,12 +26,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,12 +37,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import io.lerk.lrkfm.entities.Bookmark;
 import io.lerk.lrkfm.entities.FMFile;
@@ -52,6 +47,7 @@ import io.lerk.lrkfm.util.DiskUtil;
 import io.lerk.lrkfm.util.FileArrayAdapter;
 import io.lerk.lrkfm.util.FileLoader;
 import io.lerk.lrkfm.R;
+import io.lerk.lrkfm.util.FileUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -78,6 +74,10 @@ public class FileActivity extends AppCompatActivity
     private NavigationView navigationView;
     private TextView currentDirectoryTextView;
 
+    public ListView getFileListView() {
+        return fileListView;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,8 +94,6 @@ public class FileActivity extends AppCompatActivity
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         fileListView = (ListView) findViewById(R.id.fileView);
         registerForContextMenu(fileListView);
-        fileListView.setLongClickable(true); //FIXME doesn't work ._.
-        fileListView.setOnItemLongClickListener((parent, view, position, id) -> fileListView.showContextMenuForChild(view));
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -122,7 +120,7 @@ public class FileActivity extends AppCompatActivity
             if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m))) {
                 s = DiskUtil.freeSpaceMebi(true) + " MiB free";
             } else if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m))) {
-                s = DiskUtil.freeSpaceMebi(true) + " GiB free";
+                s = DiskUtil.freeSpaceGibi(true) + " GiB free";
             }
             diskUsageTextView.setText(s);
         }
@@ -130,6 +128,7 @@ public class FileActivity extends AppCompatActivity
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
         //noinspection deprecation
         drawer.setDrawerListener(toggle); // I ned dis
         toggle.syncState();
@@ -170,6 +169,10 @@ public class FileActivity extends AppCompatActivity
             startDir = absolutePath;
         }
         loadDirectory(startDir);
+    }
+
+    public void reloadCurrentDirectory() {
+        loadDirectory(currentDirectory);
     }
 
     public void loadDirectory(String startDir) {
@@ -246,7 +249,37 @@ public class FileActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return item.getItemId() == R.id.action_settings || super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_settings) {
+            launchSettings();
+            return true;
+        } else if (item.getItemId() == R.id.action_new_directory) {
+            launchNewDirDialog();
+            return true;
+        } else if(item.getItemId() == R.id.action_reload_view) {
+            reloadCurrentDirectory();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public String getCurrentDirectory() {
+        return currentDirectory;
+    }
+
+    private void launchNewDirDialog() {
+        AlertDialog newDirDialog = new AlertDialog.Builder(this)
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> Log.d(TAG, "Cancel pressed"))
+                .setPositiveButton(R.string.okay, (dialogInterface, i) -> Log.d(TAG, "Dismiss pressed"))
+                .setTitle(R.string.op_new_dir_title)
+                .setView(R.layout.layout_name_prompt)
+                .create();
+        newDirDialog.setOnDismissListener(dialogInterface -> {
+            String newDirName = currentDirectory + File.separator + ((EditText) newDirDialog.findViewById(R.id.destinationName)).getText().toString();
+            FileUtil.newDir(new File(newDirName), FileActivity.this);
+            reloadCurrentDirectory();
+        });
+        newDirDialog.show();
     }
 
     @Override
@@ -258,7 +291,7 @@ public class FileActivity extends AppCompatActivity
         } else if (id == R.id.nav_path) {
             promptAndLoadPath();
         } else if (id == R.id.nav_settings) {
-            launchSettings(item);
+            launchSettings();
         } else if (id == R.id.nav_share) {
             shareApplication();
         } else if (id == R.id.nav_add_bookmark) {
@@ -304,17 +337,14 @@ public class FileActivity extends AppCompatActivity
         } else {
             AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
             bookmarkDialogBuilder
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Cancel pressed!"))
                     .setNeutralButton(R.string.bookmark_this_folder, (dialog, which) -> {
                         stringSet.add(currentDirectory);
                         dialog.cancel();
                     }).setView(R.layout.layout_path_prompt)
                     .setTitle(R.string.bookmark_set_path);
             AlertDialog alertDialog = bookmarkDialogBuilder.create();
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
-                stringSet.add(((EditText) alertDialog.findViewById(R.id.bookmarkPath)).getText().toString());
-                dialog.dismiss();
-            });
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> stringSet.add(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
             alertDialog.setOnDismissListener(dialog -> {
                 preferences.edit().putStringSet(PREF_BOOKMARKS, stringSet).commit();
                 loadUserBookmarks();
@@ -326,16 +356,16 @@ public class FileActivity extends AppCompatActivity
     private void promptAndLoadPath() {
         AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
         bookmarkDialogBuilder
-                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
+                .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Cancel pressed!"))
                 .setView(R.layout.layout_path_prompt)
                 .setTitle(R.string.nav_path);
 
         AlertDialog alertDialog = bookmarkDialogBuilder.create();
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> loadDirectory(((EditText) alertDialog.findViewById(R.id.bookmarkPath)).getText().toString()));
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> loadDirectory(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
         alertDialog.show();
     }
 
-    public void launchSettings(MenuItem item) {
+    public void launchSettings() {
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
