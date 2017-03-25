@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
@@ -102,17 +103,18 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                             R.string.op_copy_positive,
                             R.string.op_destination,
                             R.drawable.ic_content_copy_black_24dp,
-                            R.layout.layout_path_prompt);
-                    alertDialog.setOnDismissListener(di -> {
-                        Log.d(TAG, "Dismiss called!");
-                        EditText editText = (EditText) alertDialog.findViewById(R.id.destinationPath);
-                        String pathname = editText.getText().toString();
-                        if (pathname.isEmpty()) {
-                            Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
-                        } else {
-                            FileUtil.copy(f, activity, new File(pathname));
-                        }
-                    });
+                            R.layout.layout_path_prompt,
+                            (d) -> {
+                                Log.d(TAG, "Dismiss called!");
+                                EditText editText = (EditText) d.findViewById(R.id.destinationPath);
+                                String pathname = editText.getText().toString();
+                                if (pathname.isEmpty()) {
+                                    Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
+                                } else {
+                                    FileUtil.copy(f, activity, new File(pathname));
+                                }
+                            },
+                            (d) -> Log.d(TAG, "Cancelled."));
                     alertDialog.show();
                     activity.reloadCurrentDirectory();
                     return true;
@@ -122,17 +124,18 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                             R.string.op_move_title,
                             R.string.op_destination,
                             R.drawable.ic_content_cut_black_24dp,
-                            R.layout.layout_path_prompt);
-                    alertDialog.setOnDismissListener(di -> {
-                        Log.d(TAG, "Dismiss called!");
-                        EditText editText = (EditText) alertDialog.findViewById(R.id.destinationPath);
-                        String pathname = editText.getText().toString();
-                        if (pathname.isEmpty()) {
-                            Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
-                        } else {
-                            FileUtil.move(f, activity, new File(pathname));
-                        }
-                    });
+                            R.layout.layout_path_prompt,
+                            (d) -> {
+                                Log.d(TAG, "Dismiss called!");
+                                EditText editText = (EditText) d.findViewById(R.id.destinationPath);
+                                String pathname = editText.getText().toString();
+                                if (pathname.isEmpty()) {
+                                    Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
+                                } else {
+                                    FileUtil.move(f, activity, new File(pathname));
+                                }
+                            },
+                            (d) -> Log.d(TAG, "Cancelled."));
                     alertDialog.show();
                     activity.reloadCurrentDirectory();
                     return true;
@@ -142,17 +145,18 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                             R.string.op_rename_title,
                             R.string.op_rename_title,
                             R.drawable.ic_mode_edit_black_24dp,
-                            R.layout.layout_name_prompt);
-                    alertDialog.setOnDismissListener(di -> {
-                        Log.d(TAG, "Dismiss called!");
-                        EditText editText = (EditText) alertDialog.findViewById(R.id.destinationName);
-                        String newName = editText.getText().toString();
-                        if (newName.isEmpty()) {
-                            Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
-                        } else {
-                            FileUtil.rename(f, activity, newName);
-                        }
-                    });
+                            R.layout.layout_name_prompt,
+                            (d) -> {
+                                Log.d(TAG, "Dismiss called!");
+                                EditText editText = (EditText) d.findViewById(R.id.destinationName);
+                                String newName = editText.getText().toString();
+                                if (newName.isEmpty()) {
+                                    Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
+                                } else {
+                                    FileUtil.rename(f, activity, newName);
+                                }
+                            },
+                            (d) -> Log.d(TAG, "Cancelled."));
                     alertDialog.show();
                     activity.reloadCurrentDirectory();
                     return true;
@@ -176,15 +180,21 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         return v;
     }
 
-    private AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText, @StringRes int title, @DrawableRes int icon, @LayoutRes int view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+    private AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,
+                                               @StringRes int title,
+                                               @DrawableRes int icon,
+                                               @LayoutRes int view,
+                                               ButtonCallBackInterface positiveCallBack,
+                                               ButtonCallBackInterface negativeCallBack) {
+        AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(title)
                 .setIcon(icon)
-                .setCancelable(true)
-                .setNegativeButton(R.string.cancel, (d, i) -> Log.d(TAG, "Cancel pressed!"))
-                .setPositiveButton(positiveBtnText, (d, i) -> Log.d(TAG, "Dismiss pressed!"));
-        AlertDialog dialog = builder.create();
+                .setCancelable(true).create();
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(positiveBtnText), (d, i) -> positiveCallBack.handle(dialog));
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (d, i) -> negativeCallBack.handle(dialog));
+
         EditText inputField = null;
         if (view == R.layout.layout_name_prompt) {
             inputField = (EditText) dialog.findViewById(R.id.destinationName);
@@ -198,7 +208,6 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         } else {
             Log.w(TAG, "Unable to preset current path, text field is null!");
         }
-        dialog.setOnCancelListener(dialogInterface -> Log.d(TAG, "Operation canceled!"));
         return dialog;
     }
 }
