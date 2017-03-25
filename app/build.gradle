@@ -4,11 +4,11 @@ android {
     compileSdkVersion 25 //TODO: change to 'android-O' once backwards compatibility is possible
     buildToolsVersion '25.0.2'
     defaultConfig {
-        applicationId "io.lerk.lrkfm"
+        applicationId "io.lerk.lrkFM"
         minSdkVersion 24
         targetSdkVersion 25
-        versionCode 3
-        versionName '0.2b3'
+        versionCode 4
+        versionName '0.2b3f1'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         jackOptions {

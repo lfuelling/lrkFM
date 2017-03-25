@@ -1,4 +1,4 @@
-package io.lerk.lrkfm.entities;
+package io.lerk.lrkFM.entities;
 
 import android.view.MenuItem;
 

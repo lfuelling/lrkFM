@@ -1,4 +1,4 @@
-package io.lerk.lrkfm;
+package io.lerk.lrkFM;
 
 import org.junit.Test;
 

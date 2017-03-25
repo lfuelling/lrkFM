@@ -1,9 +1,9 @@
-package io.lerk.lrkfm.activities;
+package io.lerk.lrkFM.activities;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-import io.lerk.lrkfm.R;
+import io.lerk.lrkFM.R;
 
 public class SettingsActivity extends PreferenceActivity {
     @Override

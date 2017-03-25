@@ -1,4 +1,4 @@
-package io.lerk.lrkfm.util;
+package io.lerk.lrkFM.util;
 
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import io.lerk.lrkfm.entities.FMFile;
+import io.lerk.lrkFM.entities.FMFile;
 
 /**
  * This class handles file loading.

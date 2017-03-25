@@ -1,7 +1,6 @@
-package io.lerk.lrkfm.util;
+package io.lerk.lrkFM.util;
 
 import android.app.AlertDialog;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,9 +12,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import io.lerk.lrkfm.R;
-import io.lerk.lrkfm.activities.FileActivity;
-import io.lerk.lrkfm.entities.FMFile;
+import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.entities.FMFile;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)

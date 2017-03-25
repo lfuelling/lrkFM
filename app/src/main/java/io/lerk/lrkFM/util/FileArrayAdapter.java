@@ -1,4 +1,4 @@
-package io.lerk.lrkfm.util;
+package io.lerk.lrkFM.util;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -26,9 +26,9 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.List;
 
-import io.lerk.lrkfm.R;
-import io.lerk.lrkfm.activities.FileActivity;
-import io.lerk.lrkfm.entities.FMFile;
+import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.entities.FMFile;
 
 import static android.widget.Toast.LENGTH_SHORT;
 

@@ -1,4 +1,4 @@
-package io.lerk.lrkfm.util;
+package io.lerk.lrkFM.util;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;

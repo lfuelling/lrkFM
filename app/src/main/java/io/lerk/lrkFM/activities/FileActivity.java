@@ -1,4 +1,4 @@
-package io.lerk.lrkfm.activities;
+package io.lerk.lrkFM.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -40,13 +40,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import io.lerk.lrkfm.entities.Bookmark;
-import io.lerk.lrkfm.entities.FMFile;
-import io.lerk.lrkfm.util.DiskUtil;
-import io.lerk.lrkfm.util.FileArrayAdapter;
-import io.lerk.lrkfm.util.FileLoader;
-import io.lerk.lrkfm.R;
-import io.lerk.lrkfm.util.FileUtil;
+import io.lerk.lrkFM.entities.Bookmark;
+import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.util.DiskUtil;
+import io.lerk.lrkFM.util.FileArrayAdapter;
+import io.lerk.lrkFM.util.FileLoader;
+import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.util.FileUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

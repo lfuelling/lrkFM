@@ -1,4 +1,4 @@
-package io.lerk.lrkfm.util;
+package io.lerk.lrkFM.util;
 
 import android.app.AlertDialog;
 

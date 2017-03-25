@@ -1,4 +1,4 @@
-package io.lerk.lrkfm;
+package io.lerk.lrkFM;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
