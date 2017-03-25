@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/side_nav_bar"
+    android:background="@color/primary_dark"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingLeft="@dimen/nav_header_padding"
     android:paddingRight="@dimen/nav_header_padding"
-    android:paddingTop="@dimen/nav_header_padding_top"
+    android:paddingTop="@*android:dimen/status_bar_height"
     android:paddingBottom="@dimen/nav_header_margin_bottom"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
@@ -16,8 +16,8 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_launcher"
-        android:layout_alignParentTop="true"
+        app:srcCompat="@drawable/ic_perm_media_black_24dp"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"/>
 
     <TextView
