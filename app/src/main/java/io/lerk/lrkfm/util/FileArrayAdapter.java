@@ -63,10 +63,10 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         @SuppressLint("InflateParams") View v = LayoutInflater.from(activity).inflate(R.layout.layout_file, null); // works.
 
         if (f != null) {
-            TextView fileNameView = v.findViewById(R.id.fileTitle);
-            TextView filePermissions = v.findViewById(R.id.filePermissions);
-            TextView fileDate = v.findViewById(R.id.fileDate);
-            ImageView fileImage = v.findViewById(R.id.fileIcon);
+            TextView fileNameView = (TextView) v.findViewById(R.id.fileTitle);
+            TextView filePermissions = (TextView) v.findViewById(R.id.filePermissions);
+            TextView fileDate = (TextView) v.findViewById(R.id.fileDate);
+            ImageView fileImage = (ImageView) v.findViewById(R.id.fileIcon);
 
             if (fileNameView != null) {
                 fileNameView.setText(f.getName());
@@ -170,7 +170,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 });
             });
 
-            ImageButton contextButton = v.findViewById(R.id.contextMenuButton);
+            ImageButton contextButton = (ImageButton) v.findViewById(R.id.contextMenuButton);
             contextButton.setOnClickListener(v1 -> {
                 activity.getFileListView().showContextMenuForChild(v);
                 Log.d(TAG, "Opening context menu!");

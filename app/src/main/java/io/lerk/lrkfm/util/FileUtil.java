@@ -10,8 +10,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -96,15 +94,16 @@ public class FileUtil {
 
     private static boolean doCopyNoValidation(FMFile f, File d) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } else {
+            // TODO: use when O is backwards compatible
+           // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           //     Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
+           //} else {
                 if (f.getFile().isDirectory()) {
                     FileUtils.copyDirectory(f.getFile(), d);
                 } else {
                     FileUtils.copyFile(f.getFile(), d);
                 }
-            }
+           // }
             return true;
         } catch (IOException e) {
             Log.e(TAG, "Unable to copy file!", e);
@@ -114,15 +113,16 @@ public class FileUtil {
 
     private static boolean doMoveNoValidation(FMFile f, File d) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Files.move(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } else {
+            // TODO: use when O is backwards compatible
+           // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           //     Files.move(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
+           // } else {
                 if (f.getFile().isDirectory()) {
                     FileUtils.moveDirectory(f.getFile(), d);
                 } else {
                     FileUtils.moveFile(f.getFile(), d);
                 }
-            }
+           // }
             return true;
         } catch (IOException e) {
             Log.e(TAG, "Unable to move file!", e);
@@ -150,17 +150,18 @@ public class FileUtil {
 
     public static void newDir(File d, FileActivity context) {
         if (!d.exists()) {
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Files.createDirectory(d.toPath());
-                } else {
+            //try {
+                // TODO: use when O is backwards compatible
+               // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+               //     Files.createDirectory(d.toPath());
+               // } else {
                     if (!d.mkdirs()) {
                         Toast.makeText(context, R.string.err_unable_to_mkdir, Toast.LENGTH_LONG).show();
                     }
-                }
-            } catch (IOException e) {
-                Log.e(TAG, context.getString(R.string.err_unable_to_mkdir), e);
-            }
+                //}
+            //} catch (IOException e) {
+            //    Log.e(TAG, context.getString(R.string.err_unable_to_mkdir), e);
+            //}
         } else {
             Toast.makeText(context, R.string.err_file_exists, Toast.LENGTH_LONG).show();
         }
