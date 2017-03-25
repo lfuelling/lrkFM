@@ -23,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.util.List;
 
@@ -66,6 +68,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             TextView fileNameView = (TextView) v.findViewById(R.id.fileTitle);
             TextView filePermissions = (TextView) v.findViewById(R.id.filePermissions);
             TextView fileDate = (TextView) v.findViewById(R.id.fileDate);
+            TextView fileSize = (TextView) v.findViewById(R.id.fileSize);
             ImageView fileImage = (ImageView) v.findViewById(R.id.fileIcon);
 
             if (fileNameView != null) {
@@ -76,6 +79,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             }
             if (fileDate != null) {
                 fileDate.setText(f.getLastModified().toString());
+            }
+            if(fileSize != null) {
+                fileSize.setText(getSizeFormatted(f));
             }
             if (fileImage != null) {
                 if (!f.getDirectory()) {
@@ -178,6 +184,12 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
         }
         return v;
+    }
+
+    private String getSizeFormatted(FMFile f) {
+        String[] units = new String[]{"B", "KiB", "MiB", "GiB", "TiB", "PiB"};
+        double floor = Math.floor(Math.log(f.getFile().length()) / Math.log(1024));
+        return String.valueOf(f.getFile().length() / Math.pow(1024, Math.floor(floor))) + ' ' + units[((int) floor)];
     }
 
     private AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,

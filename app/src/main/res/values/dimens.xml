@@ -12,4 +12,5 @@
     <dimen name="nav_header_padding">8dp</dimen>
     <dimen name="nav_header_margin_bottom">4dp</dimen>
     <dimen name="nav_header_padding_top">40dp</dimen>
+    <dimen name="file_size_margin">12dp</dimen>
 </resources>
