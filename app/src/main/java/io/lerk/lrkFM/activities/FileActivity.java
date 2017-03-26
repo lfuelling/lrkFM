@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -76,6 +77,7 @@ public class FileActivity extends AppCompatActivity
     private Toolbar toolbar;
     private NavigationView navigationView;
     private TextView currentDirectoryTextView;
+    private View headerView;
 
     public ListView getFileListView() {
         return fileListView;
@@ -114,21 +116,11 @@ public class FileActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
-        View headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
         currentDirectoryTextView = (TextView) headerView.findViewById(R.id.currentDirectoryTextView);
         loadUserBookmarks();
 
-        TextView diskUsageTextView = (TextView) headerView.findViewById(R.id.diskUsage);
-        {
-            String defaultValue = getString(R.string.pref_header_unit_default_value);
-            String s = null;
-            if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m))) {
-                s = DiskUtil.freeSpaceMebi(true) + " MiB free";
-            } else if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m))) {
-                s = DiskUtil.freeSpaceGibi(true) + " GiB free";
-            }
-            diskUsageTextView.setText(s);
-        }
+        setFreeSpaceText();
         fab.setOnClickListener((v) -> FileActivity.this.loadDirectory(new File(currentDirectory).getParent()));
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -137,6 +129,25 @@ public class FileActivity extends AppCompatActivity
         //noinspection deprecation
         drawer.setDrawerListener(toggle); // I ned dis
         toggle.syncState();
+    }
+
+    private void setFreeSpaceText() {
+        TextView diskUsageTextView = (TextView) headerView.findViewById(R.id.diskUsage);
+
+        String defaultValue = getString(R.string.pref_header_unit_default_value);
+        String s = null;
+        if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m_value))) {
+            s = DiskUtil.freeSpaceMebi(true) + " MiB free";
+        } else if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_g_value))) {
+            s = DiskUtil.freeSpaceGibi(true) + " GiB free";
+        }
+        diskUsageTextView.setText(s);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        setFreeSpaceText();
     }
 
     @Override
@@ -173,7 +184,7 @@ public class FileActivity extends AppCompatActivity
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
         item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
         Bookmark bookmark = new Bookmark(s, title, item);
-        if(preferences.getBoolean(PREF_BOOKMARK_EDIT_MODE, false)) {
+        if (preferences.getBoolean(PREF_BOOKMARK_EDIT_MODE, false)) {
             item.setActionView(R.layout.editable_menu_item);
             View v = item.getActionView();
             ImageButton deleteButton = (ImageButton) v.findViewById(R.id.menu_item_action_delete);
@@ -204,9 +215,7 @@ public class FileActivity extends AppCompatActivity
 
     public void loadDirectory(String startDir) {
         ArrayList<FMFile> files;
-        if(FileActivity.verifyStoragePermissions(FileActivity.this)){
-            reloadCurrentDirectory();
-        }
+        FileActivity.verifyStoragePermissions(FileActivity.this);
         FileLoader fileLoader = new FileLoader(startDir);
         View errorText = findViewById(R.id.unableToLoadText);
         View emptyText = findViewById(R.id.emptyDirText);
@@ -427,4 +436,5 @@ public class FileActivity extends AppCompatActivity
             return false;
         }
     }
+
 }

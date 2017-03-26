@@ -37,10 +37,10 @@
     <string name="pref_header_unit">Unit to use in header</string>
     <string name="pref_header_unit_desc">MiB or GiB</string>
     <string name="pref_header_unit_default_value" translatable="false">@string/pref_header_unit_m</string>
-    <string name="pref_header_unit_m" translatable="false">m</string>
-    <string name="pref_header_unit_g" translatable="false">g</string>
-    <string name="pref_header_unit_g_value">Gibibyte</string>
-    <string name="pref_header_unit_m_value">Mebibyte</string>
+    <string name="pref_header_unit_m_value" translatable="false">m</string>
+    <string name="pref_header_unit_g_value" translatable="false">g</string>
+    <string name="pref_header_unit_g">Gibibyte</string>
+    <string name="pref_header_unit_m">Mebibyte</string>
     <string name="pref_cat_ui">UI</string>
     <string name="pref_cat_app">Application</string>
     <string name="op_copy_positive">Copy</string>

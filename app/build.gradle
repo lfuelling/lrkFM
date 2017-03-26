@@ -45,6 +45,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.android.support:customtabs:25.3.0'
+    compile 'com.android.support:multidex:1.0.1'
     compile 'commons-io:commons-io:2.5'
     testCompile 'junit:junit:4.12'
 }
