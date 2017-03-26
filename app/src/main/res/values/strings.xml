@@ -36,7 +36,7 @@
     <string name="path_input_hint">Absolute paths only!</string>
     <string name="pref_header_unit">Unit to use in header</string>
     <string name="pref_header_unit_desc">MiB or GiB</string>
-    <string name="pref_header_unit_default_value" translatable="false">@string/pref_header_unit_m</string>
+    <string name="pref_header_unit_default_value" translatable="false">@string/pref_header_unit_m_value</string>
     <string name="pref_header_unit_m_value" translatable="false">m</string>
     <string name="pref_header_unit_g_value" translatable="false">g</string>
     <string name="pref_header_unit_g">Gibibyte</string>
@@ -65,4 +65,6 @@
     <string name="err_empty_input">Input may not be empty!</string>
     <string name="pref_bookmark_deletion">Show bookmark delete button</string>
     <string name="pref_bookmark_corrent_deletion_desc">When activated, a delete button is shown next to each bookmark.</string>
+    <string name="pref_filename_length">Maximum filename length</string>
+    <string name="pref_filename_length_desc">File names will be concatenated at this length and above.</string>
 </resources>

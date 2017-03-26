@@ -63,6 +63,7 @@ public class FileActivity extends AppCompatActivity
     private static final String PREF_BOOKMARK_CURRENT_FOLDER = "bookmark_current_folder";
     private static final String PREF_BOOKMARK_EDIT_MODE = "bookmark_deletion_on";
     private static final String PREF_SHOW_TOAST = "show_toast_on_cd";
+    public static final String PREF_FILENAME_LENGTH = "filename_length";
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String ROOT_DIR = "/";
@@ -136,10 +137,14 @@ public class FileActivity extends AppCompatActivity
 
         String defaultValue = getString(R.string.pref_header_unit_default_value);
         String s = null;
-        if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_m_value))) {
+        String nav_header_unit = preferences.getString("nav_header_unit", defaultValue);
+        if (nav_header_unit.equals(getString(R.string.pref_header_unit_m_value))) {
             s = DiskUtil.freeSpaceMebi(true) + " MiB free";
-        } else if (preferences.getString("nav_header_unit", defaultValue).equals(getString(R.string.pref_header_unit_g_value))) {
+        } else if (nav_header_unit.equals(getString(R.string.pref_header_unit_g_value))) {
             s = DiskUtil.freeSpaceGibi(true) + " GiB free";
+        }
+        if (s == null) {
+            Log.e(TAG, "Unable to get free space! requested: " + nav_header_unit);
         }
         diskUsageTextView.setText(s);
     }
@@ -239,6 +244,7 @@ public class FileActivity extends AppCompatActivity
         }
         currentDirectory = startDir;
         setToolbarText();
+        setFreeSpaceText();
     }
 
     private void setToolbarText() {
@@ -437,4 +443,7 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    public SharedPreferences getDefaultPreferences() {
+        return preferences;
+    }
 }

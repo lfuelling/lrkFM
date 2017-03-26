@@ -32,7 +32,9 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.widget.Toast.LENGTH_SHORT;
+import static io.lerk.lrkFM.activities.FileActivity.PREF_FILENAME_LENGTH;
 
 public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
@@ -59,6 +61,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         return initUI(getItem(position));
     }
 
+
     private View initUI(FMFile f) {
         assert activity != null;
 
@@ -71,8 +74,15 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             TextView fileSize = (TextView) v.findViewById(R.id.fileSize);
             ImageView fileImage = (ImageView) v.findViewById(R.id.fileIcon);
 
+            final String fileName = f.getName();
             if (fileNameView != null) {
-                fileNameView.setText(f.getName());
+                int maxLength = Integer.parseInt(activity.getDefaultPreferences().getString(PREF_FILENAME_LENGTH, "27"));
+                if (fileName.length() >= maxLength) {
+                    @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength-3) + "...";
+                    fileNameView.setText(output); //concat long names
+                } else {
+                    fileNameView.setText(fileName);
+                }
             }
             if (filePermissions != null) {
                 filePermissions.setText(f.getPermissions());
@@ -80,8 +90,12 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             if (fileDate != null) {
                 fileDate.setText(f.getLastModified().toString());
             }
-            if(fileSize != null) {
-                fileSize.setText(getSizeFormatted(f));
+            if (fileSize != null) {
+                if (f.getDirectory()) {
+                    fileSize.setVisibility(View.GONE);
+                } else {
+                    fileSize.setText(getSizeFormatted(f));
+                }
             }
             if (fileImage != null) {
                 if (!f.getDirectory()) {
@@ -103,7 +117,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 });
             }
             v.setOnCreateContextMenuListener((menu, view, info) -> {
-                menu.setHeaderTitle(f.getName());
+                menu.setHeaderTitle(fileName);
                 menu.add(0, ID_COPY, 0, "Copy").setOnMenuItemClickListener(item -> {
                     AlertDialog alertDialog = getGenericFileOpDialog(
                             R.string.op_copy_positive,
@@ -188,8 +202,12 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     private String getSizeFormatted(FMFile f) {
         String[] units = new String[]{"B", "KiB", "MiB", "GiB", "TiB", "PiB"};
-        double floor = Math.floor(Math.log(f.getFile().length()) / Math.log(1024));
-        return String.valueOf(f.getFile().length() / Math.pow(1024, Math.floor(floor))) + ' ' + units[((int) floor)];
+        Long length = f.getFile().length();
+        Double number = Math.floor(Math.log(length) / Math.log(1024));
+        Double pow = Math.pow(1024, Math.floor(number));
+        Double d = length / pow;
+        String formattedString = d.toString().substring(0, d.toString().indexOf(".") + 2);
+        return formattedString + ' ' + units[number.intValue()];
     }
 
     private AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,

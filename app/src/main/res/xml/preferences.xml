@@ -29,5 +29,11 @@
             android:title="@string/pref_bookmark_deletion"
             android:summary="@string/pref_bookmark_corrent_deletion_desc"
             android:defaultValue="false"/>
+        <EditTextPreference
+            android:key="filename_length"
+            android:defaultValue="27"
+            android:title="@string/pref_filename_length"
+            android:summary="@string/pref_filename_length_desc"
+            android:inputType="number"/>
     </PreferenceCategory>
 </PreferenceScreen>
