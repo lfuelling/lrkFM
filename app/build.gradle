@@ -7,8 +7,8 @@ android {
         applicationId "io.lerk.lrkFM"
         minSdkVersion 22
         targetSdkVersion 25
-        versionCode 6
-        versionName '1.0b1'
+        versionCode 7
+        versionName '1.0b2'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         jackOptions {
