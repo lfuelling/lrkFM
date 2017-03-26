@@ -1,5 +1,6 @@
 package io.lerk.lrkFM.util;
 
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -54,15 +55,23 @@ public class FileLoader {
                 if (fileList != null) {
                     List<File> asList = Arrays.asList(fileList);
                     if (!asList.isEmpty()) {
-                        //noinspection Convert2Lambda,SimplifyStreamApiCallChains
-                        asList.stream().forEach(new Consumer<File>() {  // This operation fails if List.forEach or a Lambda is used. Get your shit together Android!
-                            @Override
-                            public void accept(File f) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            //noinspection Convert2Lambda,SimplifyStreamApiCallChains
+                            asList.stream().forEach(new Consumer<File>() {  // This operation fails if List.forEach or a Lambda is used. Get your shit together Android!
+                                @Override
+                                public void accept(File f) {
+                                    Log.d(TAG, "Loading file: " + f.getName());
+                                    FMFile file = new FMFile(f);
+                                    result.add(file);
+                                }
+                            });
+                        } else { // puny Marshmallow and Lollipop users!
+                            for (File f : asList) {
                                 Log.d(TAG, "Loading file: " + f.getName());
                                 FMFile file = new FMFile(f);
                                 result.add(file);
                             }
-                        });
+                        }
                         Log.d(TAG, "Loaded " + String.valueOf(result.size()) + " files");
                     } else {
                         Log.d(TAG, "Directory content is null!");
@@ -95,14 +104,14 @@ public class FileLoader {
 
     public class NoAccessException extends Exception implements Serializable {
         static final long serialVersionUID = 10L;
-        public NoAccessException(String message) {
+        NoAccessException(String message) {
             super(message);
         }
     }
 
     public class EmptyDirectoryException extends Exception implements Serializable {
         static final long serialVersionUID = 10L;
-        public EmptyDirectoryException(String message) {
+        EmptyDirectoryException(String message) {
             super(message);
         }
     }

@@ -24,5 +24,10 @@
             android:entries="@array/header_units"
             android:entryValues="@array/header_units_values"
             android:defaultValue="@string/pref_header_unit_default_value" />
+        <SwitchPreference
+            android:key="bookmark_deletion_on"
+            android:title="@string/pref_bookmark_deletion"
+            android:summary="@string/pref_bookmark_corrent_deletion_desc"
+            android:defaultValue="false"/>
     </PreferenceCategory>
 </PreferenceScreen>

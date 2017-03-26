@@ -10,8 +10,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -30,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +60,7 @@ public class FileActivity extends AppCompatActivity
     private static final String PREF_HOMEDIR = "home_dir";
     private static final String PREF_BOOKMARKS = "bookmarks";
     private static final String PREF_BOOKMARK_CURRENT_FOLDER = "bookmark_current_folder";
+    private static final String PREF_BOOKMARK_EDIT_MODE = "bookmark_deletion_on";
     private static final String PREF_SHOW_TOAST = "show_toast_on_cd";
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -84,10 +88,12 @@ public class FileActivity extends AppCompatActivity
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder()
                 .detectActivityLeaks()
-                .detectCleartextNetwork()
                 .detectLeakedClosableObjects()
                 .detectLeakedRegistrationObjects()
                 .detectLeakedSqlLiteObjects();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            builder.detectCleartextNetwork();
+        }
         StrictMode.setVmPolicy(builder.build());
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -145,18 +151,40 @@ public class FileActivity extends AppCompatActivity
         if (bookmarks != null) {
             bookmarkItems = new HashSet<>();
             menu.removeGroup(R.id.bookmarksMenuGroup);
-            bookmarks.forEach((s) -> {
-                String[] split = s.split("/");
-                int i = split.length - 1;
-                if (i < 0) {
-                    i = 0;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                bookmarks.forEach((s) -> addBookmarkToMenu(menu, s, bookmarks));
+            } else { // fuck all of those vendors that don't update. You are making development ugly!
+                for (String s : bookmarks) {
+                    addBookmarkToMenu(menu, s, bookmarks);
                 }
-                String title = split[i];
-                bookmarkItems.add(new Bookmark(s, title, menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title)));
-            });
+            }
         } else {
             Log.d(TAG, "User has no bookmarks");
         }
+    }
+
+    private void addBookmarkToMenu(Menu menu, String s, Set<String> bookmarks) {
+        String[] split = s.split("/");
+        int i = split.length - 1;
+        if (i < 0) {
+            i = 0;
+        }
+        String title = split[i];
+        MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
+        item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
+        Bookmark bookmark = new Bookmark(s, title, item);
+        if(preferences.getBoolean(PREF_BOOKMARK_EDIT_MODE, false)) {
+            item.setActionView(R.layout.editable_menu_item);
+            View v = item.getActionView();
+            ImageButton deleteButton = (ImageButton) v.findViewById(R.id.menu_item_action_delete);
+            deleteButton.setOnClickListener(v0 -> {
+                menu.removeItem(item.getItemId());
+                bookmarkItems.remove(bookmark);
+                bookmarks.remove(s);
+                preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).apply();
+            });
+        }
+        bookmarkItems.add(bookmark);
     }
 
     private void loadHomeDir() {
@@ -176,7 +204,9 @@ public class FileActivity extends AppCompatActivity
 
     public void loadDirectory(String startDir) {
         ArrayList<FMFile> files;
-        FileActivity.verifyStoragePermissions(FileActivity.this);
+        if(FileActivity.verifyStoragePermissions(FileActivity.this)){
+            reloadCurrentDirectory();
+        }
         FileLoader fileLoader = new FileLoader(startDir);
         View errorText = findViewById(R.id.unableToLoadText);
         View emptyText = findViewById(R.id.emptyDirText);
@@ -254,7 +284,7 @@ public class FileActivity extends AppCompatActivity
         } else if (item.getItemId() == R.id.action_new_directory) {
             launchNewDirDialog();
             return true;
-        } else if(item.getItemId() == R.id.action_reload_view) {
+        } else if (item.getItemId() == R.id.action_reload_view) {
             reloadCurrentDirectory();
             return true;
         } else {
@@ -298,11 +328,19 @@ public class FileActivity extends AppCompatActivity
         } else if (id == R.id.nav_bug_report) {
             launchBugReportTab();
         } else {
-            bookmarkItems.forEach(bookmark -> {
-                if (bookmark.getMenuItem().getItemId() == id) {
-                    loadDirectory(bookmark.getPath());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                bookmarkItems.forEach(bookmark -> {
+                    if (bookmark.getMenuItem().getItemId() == id) {
+                        loadDirectory(bookmark.getPath());
+                    }
+                });
+            } else {
+                for (Bookmark bookmark : bookmarkItems) {
+                    if (bookmark.getMenuItem().getItemId() == id) {
+                        loadDirectory(bookmark.getPath());
+                    }
                 }
-            });
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -323,7 +361,11 @@ public class FileActivity extends AppCompatActivity
 
     private void launchBugReportTab() {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setToolbarColor(getColor(R.color.primary));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            builder.setToolbarColor(getColor(R.color.primary));
+        } else {
+            builder.setToolbarColor(getResources().getColor(R.color.primary));
+        }
         CustomTabsIntent build = builder.build();
         build.launchUrl(this, Uri.parse("https://fahlbtharz.k40s.net/FileManagerCompetition/lrkFM/issues/new"));
     }

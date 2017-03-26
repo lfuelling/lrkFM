@@ -63,4 +63,6 @@
     <string name="action_reload_view">Reload</string>
     <string name="err_deleting_element">Unable to delete!</string>
     <string name="err_empty_input">Input may not be empty!</string>
+    <string name="pref_bookmark_deletion">Show bookmark delete button</string>
+    <string name="pref_bookmark_corrent_deletion_desc">When activated, a delete button is shown next to each bookmark.</string>
 </resources>

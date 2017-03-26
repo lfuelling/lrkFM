@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "io.lerk.lrkFM"
-        minSdkVersion 24
+        minSdkVersion 22
         targetSdkVersion 25
         versionCode 6
         versionName '1.0b1'
