@@ -40,6 +40,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -80,6 +81,8 @@ public class FileActivity extends AppCompatActivity
     private NavigationView navigationView;
     private TextView currentDirectoryTextView;
     private View headerView;
+    private HashMap<Integer, String> historyMap;
+    private Integer historyCounter;
 
     public ListView getFileListView() {
         return fileListView;
@@ -205,9 +208,9 @@ public class FileActivity extends AppCompatActivity
                         .create();
                 dia.setOnShowListener(dialog -> ((EditText) dia.findViewById(R.id.destinationPath)).setText(s));
                 dia.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
-                            removeBookmarkFromMenu(menu, s, bookmarks, item, bookmark);
-                            addBookmarkToMenu(menu, ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString(), bookmarks);
-                        });
+                    removeBookmarkFromMenu(menu, s, bookmarks, item, bookmark);
+                    addBookmarkToMenu(menu, ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString(), bookmarks);
+                });
                 dia.show();
             });
         }
@@ -231,7 +234,10 @@ public class FileActivity extends AppCompatActivity
         preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).commit();
     }
 
+    @SuppressLint("UseSparseArrays")
     private void loadHomeDir() {
+        historyMap = new HashMap<>();
+        historyCounter = 0;
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String startDir = preferences.getString(PREF_HOMEDIR, null);
@@ -271,8 +277,19 @@ public class FileActivity extends AppCompatActivity
             emptyText.setVisibility(VISIBLE);
         }
         currentDirectory = startDir;
+        historyMap.put(historyCounter++, currentDirectory);
         setToolbarText();
         setFreeSpaceText();
+    }
+
+    private void removeFromHistoryAndGoBack() {
+        int key = historyCounter - 2;
+        String s = historyMap.get(key);
+        historyMap.remove(key);
+        if (s != null && !s.isEmpty()) {
+            loadDirectory(s);
+        }
+        historyCounter = key + 1;
     }
 
     private void setToolbarText() {
@@ -301,6 +318,8 @@ public class FileActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (historyCounter > 0 && !historyMap.isEmpty()) {
+            removeFromHistoryAndGoBack();
         } else {
             super.onBackPressed();
         }
