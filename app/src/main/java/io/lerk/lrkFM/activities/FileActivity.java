@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.IBinder;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -32,7 +31,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -41,9 +39,11 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.entities.FMFile;
@@ -164,13 +164,20 @@ public class FileActivity extends AppCompatActivity
 
     private void loadUserBookmarks() {
         Menu menu = navigationView.getMenu();
-        Set<String> bookmarks = preferences.getStringSet(PREF_BOOKMARKS, null);
-        if (bookmarks != null) {
+        TreeSet<String> bookmarks;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            bookmarks = new TreeSet<>(Comparator.comparing(this::getTitleFromPath));
+        } else { // FUCK THEM PUNY OLD VERSION USERS!
+            //noinspection ComparatorCombinators
+            bookmarks = new TreeSet<>((o1, o2) -> getTitleFromPath(o1).compareTo(getTitleFromPath(o2)));
+        }
+        bookmarks.addAll(preferences.getStringSet(PREF_BOOKMARKS, null));
+        if (!bookmarks.isEmpty()) {
             bookmarkItems = new HashSet<>();
             menu.removeGroup(R.id.bookmarksMenuGroup);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 bookmarks.forEach((s) -> addBookmarkToMenu(menu, s, bookmarks));
-            } else { // fuck all of those vendors that don't update. You are making development ugly!
+            } else { // also fuck all of those vendors that don't update. You are making development ugly!
                 for (String s : bookmarks) {
                     addBookmarkToMenu(menu, s, bookmarks);
                 }
@@ -181,12 +188,7 @@ public class FileActivity extends AppCompatActivity
     }
 
     private void addBookmarkToMenu(Menu menu, String s, Set<String> bookmarks) {
-        String[] split = s.split("/");
-        int i = split.length - 1;
-        if (i < 0) {
-            i = 0;
-        }
-        String title = split[i];
+        String title = getTitleFromPath(s);
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
         item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
         Bookmark bookmark = new Bookmark(s, title, item);
@@ -212,11 +214,21 @@ public class FileActivity extends AppCompatActivity
         bookmarkItems.add(bookmark);
     }
 
+    private String getTitleFromPath(String s) {
+        String[] split = s.split("/");
+        int i = split.length - 1;
+        if (i < 0) {
+            i = 0;
+        }
+        return split[i];
+    }
+
+    @SuppressLint("ApplySharedPref")
     private void removeBookmarkFromMenu(Menu menu, String s, Set<String> bookmarks, MenuItem item, Bookmark bookmark) {
         menu.removeItem(item.getItemId());
         bookmarkItems.remove(bookmark);
         bookmarks.remove(s);
-        preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).apply();
+        preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).commit();
     }
 
     private void loadHomeDir() {
@@ -266,13 +278,7 @@ public class FileActivity extends AppCompatActivity
     private void setToolbarText() {
         if (toolbar != null) {
             if (!Objects.equals(currentDirectory, ROOT_DIR)) {
-                String[] splitPath = currentDirectory.split("/");
-                int i = splitPath.length - 1;
-                if (i < 0) {
-                    i = 0;
-                }
-                String title = splitPath[i];
-                toolbar.setTitle(title);
+                toolbar.setTitle(getTitleFromPath(currentDirectory));
             } else {
                 toolbar.setTitle(currentDirectory);
             }
@@ -394,7 +400,8 @@ public class FileActivity extends AppCompatActivity
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             builder.setToolbarColor(getColor(R.color.primary));
-        } else {
+        } else { // hate 'em -_-
+            //noinspection deprecation
             builder.setToolbarColor(getResources().getColor(R.color.primary));
         }
         CustomTabsIntent build = builder.build();
@@ -442,7 +449,7 @@ public class FileActivity extends AppCompatActivity
         startActivity(i);
     }
 
-    public static boolean verifyStoragePermissions(Activity context) {
+    public static void verifyStoragePermissions(Activity context) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -453,9 +460,6 @@ public class FileActivity extends AppCompatActivity
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
-            return true;
-        } else {
-            return false;
         }
     }
 
