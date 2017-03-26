@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -193,14 +194,29 @@ public class FileActivity extends AppCompatActivity
             item.setActionView(R.layout.editable_menu_item);
             View v = item.getActionView();
             ImageButton deleteButton = (ImageButton) v.findViewById(R.id.menu_item_action_delete);
-            deleteButton.setOnClickListener(v0 -> {
-                menu.removeItem(item.getItemId());
-                bookmarkItems.remove(bookmark);
-                bookmarks.remove(s);
-                preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).apply();
+            deleteButton.setOnClickListener(v0 -> removeBookmarkFromMenu(menu, s, bookmarks, item, bookmark));
+            ImageButton editButton = (ImageButton) v.findViewById(R.id.menu_item_action_edit);
+            editButton.setOnClickListener((v1) -> {
+                AlertDialog dia = new AlertDialog.Builder(this)
+                        .setView(R.layout.layout_path_prompt)
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Operation canceled."))
+                        .create();
+                dia.setOnShowListener(dialog -> ((EditText) dia.findViewById(R.id.destinationPath)).setText(s));
+                dia.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
+                            removeBookmarkFromMenu(menu, s, bookmarks, item, bookmark);
+                            addBookmarkToMenu(menu, ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString(), bookmarks);
+                        });
+                dia.show();
             });
         }
         bookmarkItems.add(bookmark);
+    }
+
+    private void removeBookmarkFromMenu(Menu menu, String s, Set<String> bookmarks, MenuItem item, Bookmark bookmark) {
+        menu.removeItem(item.getItemId());
+        bookmarkItems.remove(bookmark);
+        bookmarks.remove(s);
+        preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).apply();
     }
 
     private void loadHomeDir() {
