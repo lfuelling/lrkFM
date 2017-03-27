@@ -174,7 +174,7 @@ public class FileActivity extends AppCompatActivity
             //noinspection ComparatorCombinators
             bookmarks = new TreeSet<>((o1, o2) -> getTitleFromPath(o1).compareTo(getTitleFromPath(o2)));
         }
-        bookmarks.addAll(preferences.getStringSet(PREF_BOOKMARKS, null));
+        bookmarks.addAll(preferences.getStringSet(PREF_BOOKMARKS, new HashSet<>()));
         if (!bookmarks.isEmpty()) {
             bookmarkItems = new HashSet<>();
             menu.removeGroup(R.id.bookmarksMenuGroup);
