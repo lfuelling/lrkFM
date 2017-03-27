@@ -16,6 +16,6 @@
 #   public *;
 #}
 
--keep public class android.support.v7.** {
+-keep public class android.support.** {
   public protected *;
 }
