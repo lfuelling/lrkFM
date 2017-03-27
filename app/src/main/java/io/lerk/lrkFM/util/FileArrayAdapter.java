@@ -224,20 +224,28 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(positiveBtnText), (d, i) -> positiveCallBack.handle(dialog));
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (d, i) -> negativeCallBack.handle(dialog));
-
-        EditText inputField = null;
-        if (view == R.layout.layout_name_prompt) {
-            inputField = (EditText) dialog.findViewById(R.id.destinationName);
-        } else if (view == R.layout.layout_path_prompt) {
-            inputField = (EditText) dialog.findViewById(R.id.destinationPath);
-        }
-        if (inputField != null) {
-            String directory = activity.getCurrentDirectory();
-            inputField.setText(directory);
-            Log.d(TAG, "Destination set to: " + directory);
-        } else {
-            Log.w(TAG, "Unable to preset current path, text field is null!");
-        }
+        dialog.setOnShowListener(dialog1 -> {
+            EditText inputField = null;
+            if (view == R.layout.layout_name_prompt) {
+                inputField = (EditText) dialog.findViewById(R.id.destinationName);
+                if (inputField != null) {
+                    String name = activity.getTitleFromPath(activity.getCurrentDirectory());
+                    inputField.setText(name);
+                    Log.d(TAG, "Destination set to: " + name);
+                } else {
+                    Log.w(TAG, "Unable to preset current name, text field is null!");
+                }
+            } else if (view == R.layout.layout_path_prompt) {
+                inputField = (EditText) dialog.findViewById(R.id.destinationPath);
+                if (inputField != null) {
+                    String directory = activity.getCurrentDirectory();
+                    inputField.setText(directory);
+                    Log.d(TAG, "Destination set to: " + directory);
+                } else {
+                    Log.w(TAG, "Unable to preset current path, text field is null!");
+                }
+            }
+        });
         return dialog;
     }
 }

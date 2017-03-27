@@ -217,7 +217,7 @@ public class FileActivity extends AppCompatActivity
         bookmarkItems.add(bookmark);
     }
 
-    private String getTitleFromPath(String s) {
+    public String getTitleFromPath(String s) {
         String[] split = s.split("/");
         int i = split.length - 1;
         if (i < 0) {
