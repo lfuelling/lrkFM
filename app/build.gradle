@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.firebase.firebase-crash'
 
 android {
     compileSdkVersion 25 //TODO: change to 'android-O' once backwards compatibility is possible
