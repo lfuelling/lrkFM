@@ -41,7 +41,6 @@
             <task name="cleanBuildCache" type="com.android.build.gradle.tasks.CleanBuildCache">Deletes the build cache directory.&lt;p&gt;&lt;i&gt;Task group: build&lt;i&gt;</task>
             <task name="compileDebugAndroidTestShaders" type="com.android.build.gradle.tasks.ShaderCompile">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="transformClassesWithPreJackRuntimeLibrariesForDebug" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
-            <task name="firebaseUploadArchivedProguardMapping" type="com.google.firebase.crash.plugin.UploadProguardMappingTask">Uploads the Proguard mapping file for archived applications by specifying properties FirebaseCrashMappingFilePath, FirebaseCrashVersionCode, FirebaseCrashPackageName, and optionally both FirebaseCrashAppId and FirebaseCrashApiKey&lt;p&gt;&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="mergeDebugShaders" type="com.android.build.gradle.tasks.MergeSourceSetFolders">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="transformClassesWithPreJackPackagedLibrariesForDebug" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="components" type="org.gradle.api.reporting.components.ComponentReport">Displays the components produced by root project 'lrkFM'. [incubating]&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
@@ -87,7 +86,6 @@
             <task name="mergeDebugAssets" type="com.android.build.gradle.tasks.MergeSourceSetFolders">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="javaPreCompileReleaseUnitTest" type="com.android.build.gradle.tasks.JavaPreCompileTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="resolveReleaseUnitTestDependencies" type="com.android.build.gradle.internal.tasks.ResolveDependenciesTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
-            <task name="firebaseUploadReleaseProguardMapping" type="com.google.firebase.crash.plugin.UploadProguardMappingTask">Uploads the Proguard mapping file for the Release build to the Firebase Crash Service&lt;p&gt;&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="javaPreCompileRelease" type="com.android.build.gradle.tasks.JavaPreCompileTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="transformJackAndJavaSourcesWithJackCompileForDebugAndroidTest" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="connectedCheck">Runs all device checks on currently connected devices.&lt;p&gt;&lt;i&gt;Task group: verification&lt;i&gt;</task>
@@ -220,7 +218,6 @@
             <task name="cleanBuildCache" type="com.android.build.gradle.tasks.CleanBuildCache">Deletes the build cache directory.&lt;p&gt;&lt;i&gt;Task group: build&lt;i&gt;</task>
             <task name="compileDebugAndroidTestShaders" type="com.android.build.gradle.tasks.ShaderCompile">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="transformClassesWithPreJackRuntimeLibrariesForDebug" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
-            <task name="firebaseUploadArchivedProguardMapping" type="com.google.firebase.crash.plugin.UploadProguardMappingTask">Uploads the Proguard mapping file for archived applications by specifying properties FirebaseCrashMappingFilePath, FirebaseCrashVersionCode, FirebaseCrashPackageName, and optionally both FirebaseCrashAppId and FirebaseCrashApiKey&lt;p&gt;&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="mergeDebugShaders" type="com.android.build.gradle.tasks.MergeSourceSetFolders">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="transformClassesWithPreJackPackagedLibrariesForDebug" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="components" type="org.gradle.api.reporting.components.ComponentReport">Displays the components produced by project ':app'. [incubating]&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
@@ -265,7 +262,6 @@
             <task name="mergeDebugAssets" type="com.android.build.gradle.tasks.MergeSourceSetFolders">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="javaPreCompileReleaseUnitTest" type="com.android.build.gradle.tasks.JavaPreCompileTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="resolveReleaseUnitTestDependencies" type="com.android.build.gradle.internal.tasks.ResolveDependenciesTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
-            <task name="firebaseUploadReleaseProguardMapping" type="com.google.firebase.crash.plugin.UploadProguardMappingTask">Uploads the Proguard mapping file for the Release build to the Firebase Crash Service&lt;p&gt;&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="javaPreCompileRelease" type="com.android.build.gradle.tasks.JavaPreCompileTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="transformJackAndJavaSourcesWithJackCompileForDebugAndroidTest" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="connectedCheck">Runs all device checks on currently connected devices.&lt;p&gt;&lt;i&gt;Task group: verification&lt;i&gt;</task>

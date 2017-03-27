@@ -63,8 +63,8 @@
     <string name="action_reload_view">Reload</string>
     <string name="err_deleting_element">Unable to delete!</string>
     <string name="err_empty_input">Input may not be empty!</string>
-    <string name="pref_bookmark_deletion">Show bookmark delete button</string>
-    <string name="pref_bookmark_corrent_deletion_desc">When activated, a delete button is shown next to each bookmark.</string>
+    <string name="pref_bookmark_deletion">Bookmark edit mode</string>
+    <string name="pref_bookmark_corrent_deletion_desc">When activated, delete and edit buttons are shown next to each bookmark.</string>
     <string name="pref_filename_length">Maximum filename length</string>
     <string name="pref_filename_length_desc">File names will be concatenated at this length and above.</string>
 </resources>
