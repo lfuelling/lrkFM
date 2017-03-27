@@ -8,16 +8,16 @@
     <string name="nav_app">App</string>
     <string name="nav_settings">Settings</string>
     <string name="share">Share</string>
-    <string name="todo">TODO</string>
+    <string name="todo" translatable="false">TODO</string>
     <string name="nav_bookmarks">Bookmarks</string>
-    <string name="home">Home</string>
+    <string name="home" translatable="false">Home</string>
     <string name="unable_to_load_files">Unable to load files <node>&#x1f612;</node></string>
     <string name="nav_path">Open Path</string>
-    <string name="okay">OK</string>
+    <string name="okay" translatable="false">OK</string>
     <string name="cancel">Cancel</string>
     <string name="invalid_path">Invalid path! Only absolute paths pointing to a directory please.</string>
     <string name="add_bookmark">Add Bookmark</string>
-    <string name="nav_bug_report">Report Bug</string>
+    <string name="nav_bug_report" translatable="false">Report Bug</string>
     <string name="share_app">Share App</string>
     <string name="pref_show_toast_cd">Show Toast on directory change</string>
     <string name="pref_show_toast_cd_desc">When loading a new directory, a toast will be shown.</string>
@@ -39,9 +39,9 @@
     <string name="pref_header_unit_default_value" translatable="false">@string/pref_header_unit_m_value</string>
     <string name="pref_header_unit_m_value" translatable="false">m</string>
     <string name="pref_header_unit_g_value" translatable="false">g</string>
-    <string name="pref_header_unit_g">Gibibyte</string>
-    <string name="pref_header_unit_m">Mebibyte</string>
-    <string name="pref_cat_ui">UI</string>
+    <string name="pref_header_unit_g" translatable="false">Gibibyte</string>
+    <string name="pref_header_unit_m" translatable="false">Mebibyte</string>
+    <string name="pref_cat_ui" translatable="false">UI</string>
     <string name="pref_cat_app">Application</string>
     <string name="op_copy_positive">Copy</string>
     <string name="op_destination">Destination</string>
