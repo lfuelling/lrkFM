@@ -220,12 +220,16 @@ public class FileActivity extends AppCompatActivity
     }
 
     public String getTitleFromPath(String s) {
-        String[] split = s.split("/");
-        int i = split.length - 1;
-        if (i < 0) {
-            i = 0;
+        if(!s.equals(ROOT_DIR)) {
+            String[] split = s.split("/");
+            int i = split.length - 1;
+            if (i < 0) {
+                i = 0;
+            }
+            return split[i];
+        } else {
+            return s;
         }
-        return split[i];
     }
 
     @SuppressLint("ApplySharedPref")
