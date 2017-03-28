@@ -21,12 +21,12 @@
     <string name="pref_home_dir_desc">Das Homeverzeichnis</string>
     <string name="pref_bookmarks">Lesezeichen</string>
     <string name="pref_bookmarks_desc">Lesezeichen bearbeiten</string>
-    <string name="no_app_to_handle_file">Keine App gefunden, um Dateityp zu öffnen.</string>
+    <string name="no_app_to_handle_file">Keine App gefunden um Dateityp zu öffnen.</string>
     <string name="empty_directory">Ordner ist leer!</string>
     <string name="bookmark_this_folder">Aktuellen Ordner nutzen</string>
     <string name="bookmark_set_path">Lesezeichenpfad</string>
-    <string name="pref_bookmark_corrent_folder">MomentanenOrdner nutzen</string>
-    <string name="pref_bookmark_corrent_folder_desc">Beim anlegen von Lesezeichen nicht fragen</string>
+    <string name="pref_bookmark_corrent_folder">Immer momentanen Ordner als Lesezeichen setzen</string>
+    <string name="pref_bookmark_corrent_folder_desc">Beim Anlegen von Lesezeichen nicht fragen.</string>
     <string name="path_input_hint">Nur Absolute Pfade!</string>
     <string name="pref_header_unit">Maßeinheit im Header</string>
     <string name="pref_header_unit_desc">MiB oder GiB</string>
@@ -46,7 +46,7 @@
     <string name="err_file_exists">Diese Datei existiert bereits!</string>
     <string name="err_unable_to_mkdir">Kann Ordner nicht anlegen!</string>
     <string name="action_new_directory">Neuer Ordner</string>
-    <string name="file_icon_desc">Symbol, welches zeigt, ob es sich um eine Datei oder einen Ordner handelt.</string>
+    <string name="file_icon_desc">Symbol, welches zeigt ob es sich um eine Datei oder einen Ordner handelt.</string>
     <string name="context_btn_desc">Öffnet das Kontextmenü.</string>
     <string name="action_reload_view">Aktualisieren</string>
     <string name="err_deleting_element">Kann Element nicht löschen!</string>
