@@ -41,6 +41,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     private static final int ID_RENAME = 2;
     private static final int ID_DELETE = 3;
     private static final String TAG = FileArrayAdapter.class.getCanonicalName();
+    private static final int ID_SHARE = 4;
 
     private FileActivity activity;
 
@@ -130,9 +131,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     private void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {
         menu.setHeaderTitle(fileName);
-        menu.add(0, ID_COPY, 0, "Copy").setOnMenuItemClickListener(item -> {
+        menu.add(0, ID_COPY, 0, activity.getString(R.string.copy)).setOnMenuItemClickListener(item -> {
             AlertDialog alertDialog = getGenericFileOpDialog(
-                    R.string.op_copy_positive,
+                    R.string.copy,
                     R.string.op_destination,
                     R.drawable.ic_content_copy_black_24dp,
                     R.layout.layout_path_prompt,
@@ -159,9 +160,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             activity.reloadCurrentDirectory();
             return true;
         });
-        menu.add(0, ID_MOVE, 0, "Move").setOnMenuItemClickListener(item -> {
+        menu.add(0, ID_MOVE, 0, activity.getString(R.string.move)).setOnMenuItemClickListener(item -> {
             AlertDialog alertDialog = getGenericFileOpDialog(
-                    R.string.op_move_title,
+                    R.string.move,
                     R.string.op_destination,
                     R.drawable.ic_content_cut_black_24dp,
                     R.layout.layout_path_prompt,
@@ -188,10 +189,10 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             activity.reloadCurrentDirectory();
             return true;
         });
-        menu.add(0, ID_RENAME, 0, "Rename").setOnMenuItemClickListener(item -> {
+        menu.add(0, ID_RENAME, 0, activity.getString(R.string.rename)).setOnMenuItemClickListener(item -> {
             AlertDialog alertDialog = getGenericFileOpDialog(
-                    R.string.op_rename_title,
-                    R.string.op_rename_title,
+                    R.string.rename,
+                    R.string.rename,
                     R.drawable.ic_mode_edit_black_24dp,
                     R.layout.layout_name_prompt,
                     (d) -> {
@@ -217,10 +218,18 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             activity.reloadCurrentDirectory();
             return true;
         });
-        menu.add(0, ID_DELETE, 0, "Delete").setOnMenuItemClickListener(item -> {
-
+        menu.add(0, ID_SHARE, 0, activity.getString(R.string.share)).setOnMenuItemClickListener(i->{
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            // MIME of .apk is "application/vnd.android.package-archive".
+            // but Bluetooth does not accept this. Let's use "*/*" instead.
+            intent.setType("*/*");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f.getFile()));
+            activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.share_app)));
+            return true;
+        });
+        menu.add(0, ID_DELETE, 0, activity.getString(R.string.delete)).setOnMenuItemClickListener(item -> {
             new AlertDialog.Builder(activity)
-                    .setTitle(R.string.warn_delete_title)
+                    .setTitle(R.string.delete)
                     .setMessage(activity.getString(R.string.warn_delete_msg) + f.getName() + "?")
                     .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                     .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
