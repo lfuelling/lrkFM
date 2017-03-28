@@ -180,9 +180,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 });
                 menu.add(0, ID_DELETE, 0, "Delete").setOnMenuItemClickListener(item -> {
 
-                    new AlertDialog.Builder(context)
+                    new AlertDialog.Builder(activity)
                             .setTitle(R.string.warn_delete_title)
-                            .setMessage(context.getString(R.string.warn_delete_msg) + f.getName() + "?")
+                            .setMessage(activity.getString(R.string.warn_delete_msg) + f.getName() + "?")
                             .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                             .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
                                 if (!FileUtil.deleteNoValidation(f)) {
