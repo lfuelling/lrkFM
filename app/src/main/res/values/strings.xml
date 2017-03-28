@@ -67,4 +67,7 @@
     <string name="pref_bookmark_corrent_deletion_desc">When activated, delete and edit buttons are shown next to each bookmark.</string>
     <string name="pref_filename_length">Maximum filename length</string>
     <string name="pref_filename_length_desc">File names will be concatenated at this length and above.</string>
+    <string name="pref_header_path_length">Max length of header path</string>
+    <string name="pref_header_path_length_desc">The path will bew concatenated from the front from this length.</string>
+    <string name="pref_header_path_length_default">27</string>
 </resources>

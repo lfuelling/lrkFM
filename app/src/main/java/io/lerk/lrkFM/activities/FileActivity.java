@@ -39,9 +39,11 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -66,6 +68,7 @@ public class FileActivity extends AppCompatActivity
     private static final String PREF_BOOKMARK_EDIT_MODE = "bookmark_deletion_on";
     private static final String PREF_SHOW_TOAST = "show_toast_on_cd";
     public static final String PREF_FILENAME_LENGTH = "filename_length";
+    private static final String PREF_HEADER_PATH_LENGTH="header_path_length";
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String ROOT_DIR = "/";
@@ -301,11 +304,50 @@ public class FileActivity extends AppCompatActivity
             }
         }
         if (currentDirectoryTextView != null) {
-            currentDirectoryTextView.setText(currentDirectory);
+            int maxLength = Integer.parseInt(preferences.getString(PREF_HEADER_PATH_LENGTH, getString(R.string.pref_header_path_length_default)));
+
+            if(currentDirectory.length() > maxLength) {
+                currentDirectoryTextView.setText(shortenDirectoryPath(maxLength));
+            } else {
+                currentDirectoryTextView.setText(currentDirectory);
+            }
         }
         if (preferences.getBoolean(PREF_SHOW_TOAST, false)) {
             Toast.makeText(this, getText(R.string.toast_cd_new_dir) + " " + currentDirectory, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @NonNull
+    private String shortenDirectoryPath(int maxLength) {
+        final String[] res = {currentDirectory};
+        ArrayList<String> dirs = new ArrayList<>(Arrays.asList(res[0].split("/")));
+
+        for (int i = 0; dirs.size() >= i; i++) {
+            if(dirs.get(0).isEmpty()) {
+                dirs.remove(0);
+                Log.d(TAG, "Element was empty and removed.");
+            }
+            res[0] = "";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                dirs.forEach( (s) -> res[0] += File.separator + s);
+            } else { // I could save two lines of code without old versions!
+                for(String s:dirs) {
+                    res[0] += File.separator + s;
+                }
+            }
+            if(res[0].length() > maxLength) {
+                try {
+                    dirs.set(i, dirs.get(i).substring(0, 1));
+                } catch (IndexOutOfBoundsException e) {
+                    Log.d(TAG, "This can happen.", e);
+                }
+            }
+        }
+
+        if(res.length > maxLength) {
+            Log.w(TAG, "Could not shorten the string any further :c");
+        }
+        return res[0];
     }
 
     @Override

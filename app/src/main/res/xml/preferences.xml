@@ -35,5 +35,11 @@
             android:title="@string/pref_filename_length"
             android:summary="@string/pref_filename_length_desc"
             android:inputType="number"/>
+        <EditTextPreference
+            android:key="header_path_length"
+            android:defaultValue="@string/pref_header_path_length_default"
+            android:title="@string/pref_header_path_length"
+            android:summary="@string/pref_header_path_length_desc"
+            android:inputType="number"/>
     </PreferenceCategory>
 </PreferenceScreen>
