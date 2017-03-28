@@ -12,6 +12,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +77,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 int maxLength = Integer.parseInt(activity.getDefaultPreferences().getString(PREF_FILENAME_LENGTH, "27"));
                 if (fileName.length() >= maxLength) {
                     @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength - 3) + "...";
-                    fileNameView.setText(output); //concat long names
+                    fileNameView.setText(output); //shorten long names
                 } else {
                     fileNameView.setText(fileName);
                 }
@@ -114,94 +115,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 });
             }
             v.setOnCreateContextMenuListener((menu, view, info) -> {
-                menu.setHeaderTitle(fileName);
-                menu.add(0, ID_COPY, 0, "Copy").setOnMenuItemClickListener(item -> {
-                    AlertDialog alertDialog = getGenericFileOpDialog(
-                            R.string.op_copy_positive,
-                            R.string.op_destination,
-                            R.drawable.ic_content_copy_black_24dp,
-                            R.layout.layout_path_prompt,
-                            (d) -> {
-                                Log.d(TAG, "Dismiss called!");
-                                EditText editText = (EditText) d.findViewById(R.id.destinationPath);
-                                String pathname = editText.getText().toString();
-                                if (pathname.isEmpty()) {
-                                    Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
-                                } else {
-                                    FileUtil.copy(f, activity, new File(pathname));
-                                }
-                            },
-                            (d) -> Log.d(TAG, "Cancelled."));
-                    alertDialog.show();
-                    activity.reloadCurrentDirectory();
-                    return true;
-                });
-                menu.add(0, ID_MOVE, 0, "Move").setOnMenuItemClickListener(item -> {
-                    AlertDialog alertDialog = getGenericFileOpDialog(
-                            R.string.op_move_title,
-                            R.string.op_destination,
-                            R.drawable.ic_content_cut_black_24dp,
-                            R.layout.layout_path_prompt,
-                            (d) -> {
-                                Log.d(TAG, "Dismiss called!");
-                                EditText editText = (EditText) d.findViewById(R.id.destinationPath);
-                                String pathname = editText.getText().toString();
-                                if (pathname.isEmpty()) {
-                                    Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
-                                } else {
-                                    FileUtil.move(f, activity, new File(pathname));
-                                }
-                            },
-                            (d) -> Log.d(TAG, "Cancelled."));
-                    alertDialog.show();
-                    activity.reloadCurrentDirectory();
-                    return true;
-                });
-                menu.add(0, ID_RENAME, 0, "Rename").setOnMenuItemClickListener(item -> {
-                    AlertDialog alertDialog = getGenericFileOpDialog(
-                            R.string.op_rename_title,
-                            R.string.op_rename_title,
-                            R.drawable.ic_mode_edit_black_24dp,
-                            R.layout.layout_name_prompt,
-                            (d) -> {
-                                Log.d(TAG, "Dismiss called!");
-                                EditText editText = (EditText) d.findViewById(R.id.destinationName);
-                                String newName = editText.getText().toString();
-                                if (newName.isEmpty()) {
-                                    Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
-                                } else {
-                                    FileUtil.rename(f, activity, newName);
-                                }
-                            },
-                            (d) -> Log.d(TAG, "Cancelled."));
-                    alertDialog.setOnShowListener(d -> {
-                        EditText editText = (EditText) alertDialog.findViewById(R.id.destinationName);
-                        if (editText != null) {
-                            editText.setText(f.getName());
-                        } else {
-                            Log.w(TAG, "Unable to find view, can not set file title.");
-                        }
-                    });
-                    alertDialog.show();
-                    activity.reloadCurrentDirectory();
-                    return true;
-                });
-                menu.add(0, ID_DELETE, 0, "Delete").setOnMenuItemClickListener(item -> {
-
-                    new AlertDialog.Builder(activity)
-                            .setTitle(R.string.warn_delete_title)
-                            .setMessage(activity.getString(R.string.warn_delete_msg) + f.getName() + "?")
-                            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
-                            .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
-                                if (!FileUtil.deleteNoValidation(f)) {
-                                    Toast.makeText(activity, R.string.err_deleting_element, LENGTH_SHORT).show();
-                                }
-                                activity.reloadCurrentDirectory();
-                                dialogInterface.dismiss();
-                            })
-                            .show();
-                    return true;
-                });
+                initializeContextMenu(f, fileName, menu);
             });
 
             ImageButton contextButton = (ImageButton) v.findViewById(R.id.contextMenuButton);
@@ -212,6 +126,113 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
         }
         return v;
+    }
+
+    private void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {
+        menu.setHeaderTitle(fileName);
+        menu.add(0, ID_COPY, 0, "Copy").setOnMenuItemClickListener(item -> {
+            AlertDialog alertDialog = getGenericFileOpDialog(
+                    R.string.op_copy_positive,
+                    R.string.op_destination,
+                    R.drawable.ic_content_copy_black_24dp,
+                    R.layout.layout_path_prompt,
+                    (d) -> {
+                        Log.d(TAG, "Dismiss called!");
+                        EditText editText = (EditText) d.findViewById(R.id.destinationPath);
+                        String pathname = editText.getText().toString();
+                        if (pathname.isEmpty()) {
+                            Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
+                        } else {
+                            FileUtil.copy(f, activity, new File(pathname));
+                        }
+                    },
+                    (d) -> Log.d(TAG, "Cancelled."));
+            alertDialog.setOnShowListener(d -> {
+                EditText editText = (EditText) alertDialog.findViewById(R.id.destinationPath);
+                if (editText != null) {
+                    editText.setText(f.getFile().getAbsolutePath());
+                } else {
+                    Log.w(TAG, "Unable to find view, can not set file title.");
+                }
+            });
+            alertDialog.show();
+            activity.reloadCurrentDirectory();
+            return true;
+        });
+        menu.add(0, ID_MOVE, 0, "Move").setOnMenuItemClickListener(item -> {
+            AlertDialog alertDialog = getGenericFileOpDialog(
+                    R.string.op_move_title,
+                    R.string.op_destination,
+                    R.drawable.ic_content_cut_black_24dp,
+                    R.layout.layout_path_prompt,
+                    (d) -> {
+                        Log.d(TAG, "Dismiss called!");
+                        EditText editText = (EditText) d.findViewById(R.id.destinationPath);
+                        String pathname = editText.getText().toString();
+                        if (pathname.isEmpty()) {
+                            Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
+                        } else {
+                            FileUtil.move(f, activity, new File(pathname));
+                        }
+                    },
+                    (d) -> Log.d(TAG, "Cancelled."));
+            alertDialog.setOnShowListener(d -> {
+                EditText editText = (EditText) alertDialog.findViewById(R.id.destinationPath);
+                if (editText != null) {
+                    editText.setText(f.getFile().getAbsolutePath());
+                } else {
+                    Log.w(TAG, "Unable to find view, can not set file title.");
+                }
+            });
+            alertDialog.show();
+            activity.reloadCurrentDirectory();
+            return true;
+        });
+        menu.add(0, ID_RENAME, 0, "Rename").setOnMenuItemClickListener(item -> {
+            AlertDialog alertDialog = getGenericFileOpDialog(
+                    R.string.op_rename_title,
+                    R.string.op_rename_title,
+                    R.drawable.ic_mode_edit_black_24dp,
+                    R.layout.layout_name_prompt,
+                    (d) -> {
+                        Log.d(TAG, "Dismiss called!");
+                        EditText editText = (EditText) d.findViewById(R.id.destinationName);
+                        String newName = editText.getText().toString();
+                        if (newName.isEmpty()) {
+                            Toast.makeText(activity, R.string.err_empty_input, LENGTH_SHORT).show();
+                        } else {
+                            FileUtil.rename(f, activity, newName);
+                        }
+                    },
+                    (d) -> Log.d(TAG, "Cancelled."));
+            alertDialog.setOnShowListener(d -> {
+                EditText editText = (EditText) alertDialog.findViewById(R.id.destinationName);
+                if (editText != null) {
+                    editText.setText(f.getName());
+                } else {
+                    Log.w(TAG, "Unable to find view, can not set file title.");
+                }
+            });
+            alertDialog.show();
+            activity.reloadCurrentDirectory();
+            return true;
+        });
+        menu.add(0, ID_DELETE, 0, "Delete").setOnMenuItemClickListener(item -> {
+
+            new AlertDialog.Builder(activity)
+                    .setTitle(R.string.warn_delete_title)
+                    .setMessage(activity.getString(R.string.warn_delete_msg) + f.getName() + "?")
+                    .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
+                    .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                        if (!FileUtil.deleteNoValidation(f)) {
+                            Toast.makeText(activity, R.string.err_deleting_element, LENGTH_SHORT).show();
+                        }
+                        activity.reloadCurrentDirectory();
+                        dialogInterface.dismiss();
+                    })
+                    .show();
+            return true;
+        });
     }
 
     private String getSizeFormatted(FMFile f) {
