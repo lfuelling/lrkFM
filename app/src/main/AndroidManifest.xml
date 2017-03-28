@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name="io.lerk.lrkFM.activities.SettingsActivity"
-            android:label="@string/nav_settings"
+            android:label="@string/settings"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />

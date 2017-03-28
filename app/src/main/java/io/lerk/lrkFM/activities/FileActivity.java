@@ -43,7 +43,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -376,10 +375,10 @@ public class FileActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
+        if (item.getItemId() == R.id.settings) {
             launchSettings();
             return true;
-        } else if (item.getItemId() == R.id.action_new_directory) {
+        } else if (item.getItemId() == R.id.new_directory) {
             launchNewDirDialog();
             return true;
         } else if (item.getItemId() == R.id.action_reload_view) {
@@ -397,7 +396,7 @@ public class FileActivity extends AppCompatActivity
     private void launchNewDirDialog() {
         AlertDialog newDirDialog = new AlertDialog.Builder(this)
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> Log.d(TAG, "Cancel pressed"))
-                .setTitle(R.string.op_new_dir_title)
+                .setTitle(R.string.new_directory)
                 .setView(R.layout.layout_name_prompt)
                 .create();
         newDirDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (d, i) -> {

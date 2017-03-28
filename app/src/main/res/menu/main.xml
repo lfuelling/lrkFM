@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:menuCategory="container">
-        <item android:id="@+id/action_new_directory"
-            android:title="@string/action_new_directory"
+        <item android:id="@+id/new_directory"
+            android:title="@string/new_directory"
             app:showAsAction="never"/>
         <item android:id="@+id/action_reload_view"
             android:title="@string/action_reload_view"
             app:showAsAction="never"/>
     </group>
     <group android:menuCategory="system">
-        <item android:id="@+id/action_settings"
+        <item android:id="@+id/settings"
             android:orderInCategory="100"
-            android:title="@string/action_settings"
+            android:title="@string/settings"
             app:showAsAction="never" />
     </group>
 </menu>

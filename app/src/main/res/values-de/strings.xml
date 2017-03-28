@@ -2,14 +2,12 @@
 <resources>
     <string name="navigation_drawer_open">Navigation öffnen</string>
     <string name="navigation_drawer_close">Navigation schließen</string>
-    <string name="action_settings">Einstellungen</string>
+    <string name="settings">Einstellungen</string>
     <string name="nav_app">App</string>
-    <string name="nav_settings">Einstellungen</string>
     <string name="share">Teilen</string>
     <string name="nav_bookmarks">Lesezeichen</string>
     <string name="unable_to_load_files">Lesen der Dateien nicht möglich <node>&#x1f612;</node></string>
     <string name="nav_path">Pfad Öffnen</string>
-    <string name="cancel">Abbrechen</string>
     <string name="invalid_path">Ungültiger Pfad. Nur Ordner sind erlaubt!</string>
     <string name="add_bookmark">Lesezeichen hinzufügen</string>
     <string name="share_app">App Teilen</string>
@@ -36,16 +34,14 @@
     <string name="err_activity_null">Kann Kontextmenu nicht anlegen</string>
     <string name="warn_file_exists_title">Datei existiert</string>
     <string name="warn_file_exists_msg">Die Datei wird überschrieben. Willst du wirklich fortfahren?</string>
-    <string name="yes">Ja</string>
     <string name="warn_delete_title">Löschen</string>
     <string name="warn_delete_msg">Bist du sicher, dass folgender Ordner gelöscht werden soll:</string>
     <string name="op_move_title">Verschieben</string>
     <string name="op_rename_title">Umbenennen</string>
     <string name="name_input_hint">Dateiname</string>
-    <string name="op_new_dir_title">Neuer Ordner</string>
     <string name="err_file_exists">Diese Datei existiert bereits!</string>
     <string name="err_unable_to_mkdir">Kann Ordner nicht anlegen!</string>
-    <string name="action_new_directory">Neuer Ordner</string>
+    <string name="new_directory">Neuer Ordner</string>
     <string name="file_icon_desc">Symbol, welches zeigt ob es sich um eine Datei oder einen Ordner handelt.</string>
     <string name="context_btn_desc">Öffnet das Kontextmenü.</string>
     <string name="action_reload_view">Aktualisieren</string>
