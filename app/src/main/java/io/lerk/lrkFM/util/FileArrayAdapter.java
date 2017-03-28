@@ -75,7 +75,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             if (fileNameView != null) {
                 int maxLength = Integer.parseInt(activity.getDefaultPreferences().getString(PREF_FILENAME_LENGTH, "27"));
                 if (fileName.length() >= maxLength) {
-                    @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength-3) + "...";
+                    @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength - 3) + "...";
                     fileNameView.setText(output); //concat long names
                 } else {
                     fileNameView.setText(fileName);
@@ -174,6 +174,14 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                                 }
                             },
                             (d) -> Log.d(TAG, "Cancelled."));
+                    alertDialog.setOnShowListener(d -> {
+                        EditText editText = (EditText) alertDialog.findViewById(R.id.destinationName);
+                        if (editText != null) {
+                            editText.setText(f.getName());
+                        } else {
+                            Log.w(TAG, "Unable to find view, can not set file title.");
+                        }
+                    });
                     alertDialog.show();
                     activity.reloadCurrentDirectory();
                     return true;
