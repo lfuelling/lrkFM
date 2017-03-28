@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import io.lerk.lrkFM.R;
@@ -87,7 +88,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 filePermissions.setText(f.getPermissions());
             }
             if (fileDate != null) {
-                fileDate.setText(f.getLastModified().toString());
+                fileDate.setText(SimpleDateFormat.getDateTimeInstance().format(f.getLastModified()));
             }
             if (fileSize != null) {
                 if (f.getDirectory()) {
