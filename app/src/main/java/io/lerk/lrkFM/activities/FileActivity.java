@@ -71,6 +71,7 @@ public class FileActivity extends AppCompatActivity
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String ROOT_DIR = "/";
+    private static final String CURRENT_DIR_CACHE = "current_dir_cached";
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -457,6 +458,26 @@ public class FileActivity extends AppCompatActivity
         intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
         startActivity(Intent.createChooser(intent, getResources().getString(R.string.share_app)));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        preferences.edit().putString(CURRENT_DIR_CACHE, currentDirectory).apply();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        preferences.edit().putString(CURRENT_DIR_CACHE, "").apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!preferences.getString(CURRENT_DIR_CACHE, "").equals("")) {
+            currentDirectory = preferences.getString(CURRENT_DIR_CACHE, "");
+        }
     }
 
     private void launchBugReportTab() {
