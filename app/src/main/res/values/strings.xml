@@ -69,4 +69,5 @@
     <string name="pref_header_path_length">Max length of header path</string>
     <string name="pref_header_path_length_desc">The path will bew concatenated from the front from this length.</string>
     <string name="pref_header_path_length_default" translatable="false">27</string>
+    <string name="pref_version">App Version</string>
 </resources>

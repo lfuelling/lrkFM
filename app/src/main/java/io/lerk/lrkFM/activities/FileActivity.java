@@ -422,8 +422,6 @@ public class FileActivity extends AppCompatActivity
             promptAndLoadPath();
         } else if (id == R.id.nav_settings) {
             launchSettings();
-        } else if (id == R.id.nav_share) {
-            shareApplication();
         } else if (id == R.id.nav_add_bookmark) {
             promptAndAddBookmark();
         } else if (id == R.id.nav_bug_report) {
