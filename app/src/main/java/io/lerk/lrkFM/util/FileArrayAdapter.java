@@ -23,8 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.util.List;
 
@@ -32,7 +30,6 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 
-import static android.content.Context.MODE_PRIVATE;
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.activities.FileActivity.PREF_FILENAME_LENGTH;
 
@@ -182,10 +179,19 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                     return true;
                 });
                 menu.add(0, ID_DELETE, 0, "Delete").setOnMenuItemClickListener(item -> {
-                    if (!FileUtil.delete(f, activity)) {
-                        Toast.makeText(activity, R.string.err_deleting_element, LENGTH_SHORT).show();
-                    }
-                    activity.reloadCurrentDirectory();
+
+                    new AlertDialog.Builder(context)
+                            .setTitle(R.string.warn_delete_title)
+                            .setMessage(context.getString(R.string.warn_delete_msg) + f.getName() + "?")
+                            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
+                            .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                                if (!FileUtil.deleteNoValidation(f)) {
+                                    Toast.makeText(activity, R.string.err_deleting_element, LENGTH_SHORT).show();
+                                }
+                                activity.reloadCurrentDirectory();
+                                dialogInterface.dismiss();
+                            })
+                            .show();
                     return true;
                 });
             });

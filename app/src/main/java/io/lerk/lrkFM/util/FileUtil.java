@@ -72,22 +72,14 @@ public class FileUtil {
     }
 
 
-    public static boolean delete(FMFile f, FileActivity context) {
-        final boolean[] res = {false};
-        new AlertDialog.Builder(context)
-                .setTitle(R.string.warn_delete_title)
-                .setMessage(context.getString(R.string.warn_delete_msg) + f.getName() + "?")
-                .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
-                    if (!f.getFile().exists()) {
-                        res[0] = false;
-                    } else {
-                        res[0] = f.getFile().delete();
-                    }
-                    dialogInterface.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
-                .show();
-        return res[0];
+    public static boolean deleteNoValidation(FMFile f) {
+        final boolean res;
+        if (!f.getFile().exists()) {
+            res = false;
+        } else {
+            res = f.getFile().delete();
+        }
+        return res;
     }
 
 
