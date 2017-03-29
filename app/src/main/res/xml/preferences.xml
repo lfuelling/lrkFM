@@ -27,6 +27,16 @@
             android:title="@string/pref_header_path_length" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_cat_app">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="context_for_ops"
+            android:summary="@string/pref_context_for_ops_desc"
+            android:title="@string/pref_context_for_ops" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="context_for_ops_toast"
+            android:summary="@string/pref_context_for_ops_toast_desc"
+            android:title="@string/pref_context_for_ops_toast" />
         <ListPreference
             android:defaultValue="@string/pref_sortby_value_default"
             android:entries="@array/sort_by_texts"

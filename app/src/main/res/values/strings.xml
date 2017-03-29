@@ -77,4 +77,12 @@
     <string name="pref_sortby_desc">The files in the file view will be sorted by this property.</string>
     <string name="pref_sortby_text_date">Date</string>
     <string name="pref_sortby_value_date" translatable="false">date</string>
+    <string name="pref_context_for_ops_desc">When activated you need to navigate to the destination path.</string>
+    <string name="pref_context_for_ops">Don\'t prompt for destination path.</string>
+    <string name="pref_context_for_ops_toast_desc">Show toast when adding a file to the operations context.</string>
+    <string name="pref_context_for_ops_toast">Show toast on file operation</string>
+    <string name="file_added_to_context">Added file to operation context:&#160;</string>
+    <string name="action_paste">Paste</string>
+    <string name="switching_op_mode">Switching operation mode. Queue reset.</string>
+    <string name="action_clear_op_context">Clear operation</string>
 </resources>

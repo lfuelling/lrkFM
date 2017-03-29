@@ -5,6 +5,14 @@
         <item android:id="@+id/new_directory"
             android:title="@string/new_directory"
             app:showAsAction="never"/>
+        <item android:id="@+id/action_paste"
+            android:title="@string/action_paste"
+            app:showAsAction="never"
+            android:visible="false"/>
+        <item android:id="@+id/action_clear_op_context"
+            android:title="@string/action_clear_op_context"
+            app:showAsAction="never"
+            android:visible="false"/>
         <item android:id="@+id/action_reload_view"
             android:title="@string/action_reload_view"
             app:showAsAction="never"/>
