@@ -70,4 +70,11 @@
     <string name="pref_header_path_length_desc">The path will bew concatenated from the front from this length.</string>
     <string name="pref_header_path_length_default" translatable="false">27</string>
     <string name="pref_version">App Version</string>
+    <string name="pref_sortby_value_name" translatable="false">name</string>
+    <string name="pref_sortby_value_default" translatable="false">@string/pref_sortby_value_name</string>
+    <string name="pref_sortby_text_name">Name</string>
+    <string name="pref_sortby_title">File sort param</string>
+    <string name="pref_sortby_desc">The files in the file view will be sorted by this property.</string>
+    <string name="pref_sortby_text_date">Date</string>
+    <string name="pref_sortby_value_date" translatable="false">date</string>
 </resources>

@@ -27,6 +27,13 @@
             android:title="@string/pref_header_path_length" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_cat_app">
+        <ListPreference
+            android:defaultValue="@string/pref_sortby_value_default"
+            android:entries="@array/sort_by_texts"
+            android:entryValues="@array/sort_by_values"
+            android:key="sort_files_by"
+            android:summary="@string/pref_sortby_desc"
+            android:title="@string/pref_sortby_title" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="show_toast_on_cd"

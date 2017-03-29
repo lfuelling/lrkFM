@@ -8,4 +8,13 @@
         <item>@string/pref_header_unit_g_value</item>
         <item>@string/pref_header_unit_m_value</item>
     </string-array>
+
+    <string-array name="sort_by_texts">
+        <item>@string/pref_sortby_text_name</item>
+        <item>@string/pref_sortby_text_date</item>
+    </string-array>
+    <string-array name="sort_by_values">
+        <item>@string/pref_sortby_value_name</item>
+        <item>@string/pref_sortby_value_date</item>
+    </string-array>
 </resources>

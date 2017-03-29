@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -72,6 +73,7 @@ public class FileActivity extends AppCompatActivity
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String ROOT_DIR = "/";
     private static final String CURRENT_DIR_CACHE = "current_dir_cached";
+    private static final String PREF_SORT_FILES_BY = "sort_files_by";
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -221,7 +223,7 @@ public class FileActivity extends AppCompatActivity
     }
 
     public String getTitleFromPath(String s) {
-        if(!s.equals(ROOT_DIR)) {
+        if (!s.equals(ROOT_DIR)) {
             String[] split = s.split("/");
             int i = split.length - 1;
             if (i < 0) {
@@ -270,7 +272,9 @@ public class FileActivity extends AppCompatActivity
             fileListView.setVisibility(VISIBLE);
             errorText.setVisibility(GONE);
             emptyText.setVisibility(GONE);
-            FileArrayAdapter adapter = new FileArrayAdapter(this, R.layout.layout_file, files);
+
+
+            FileArrayAdapter adapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, preferences.getString(PREF_SORT_FILES_BY, getString(R.string.pref_sortby_value_default))));
             fileListView.setAdapter(adapter);
         } catch (FileLoader.NoAccessException e) {
             Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
@@ -287,6 +291,27 @@ public class FileActivity extends AppCompatActivity
         historyMap.put(historyCounter++, currentDirectory);
         setToolbarText();
         setFreeSpaceText();
+    }
+
+    private ArrayList<FMFile> sortFilesByPreference(ArrayList<FMFile> files, String pref) {
+        if (pref.equals(getString(R.string.pref_sortby_value_name))) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                files.sort(Comparator.comparing(FMFile::getName));
+            } else { // FUCKING OUT OF DATE USERS >.<
+                //noinspection ComparatorCombinators,RedundantCast
+                Arrays.sort((FMFile[]) files.toArray(), (o1, o2) -> o1.getName().compareTo(o2.getName()));
+            }
+        } else if (pref.equals(getString(R.string.pref_sortby_value_date))) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                files.sort(Comparator.comparing(FMFile::getLastModified));
+            } else { // you see how beautiful the code above is?
+                //noinspection ComparatorCombinators,RedundantCast
+                Arrays.sort((FMFile[]) files.toArray(), (o1, o2) -> o1.getLastModified().compareTo(o2.getLastModified()));
+            }
+        } else {
+            Log.d(TAG, "This sort method is not implemented, skipping file sort!");
+        }
+        return files;
     }
 
     private void removeFromHistoryAndGoBack() {
@@ -447,6 +472,7 @@ public class FileActivity extends AppCompatActivity
         return true;
     }
 
+    @Deprecated
     private void shareApplication() {
         ApplicationInfo app = getApplicationContext().getApplicationInfo();
         String filePath = app.sourceDir;
@@ -473,7 +499,7 @@ public class FileActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if(!preferences.getString(CURRENT_DIR_CACHE, "").equals("")) {
+        if (!preferences.getString(CURRENT_DIR_CACHE, "").equals("")) {
             currentDirectory = preferences.getString(CURRENT_DIR_CACHE, "");
         }
     }
