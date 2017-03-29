@@ -51,4 +51,10 @@
     <string name="pref_bookmark_corrent_deletion_desc">Zeigt Bearbeiten und Löschen Knöpfe neben den Lesezeichen an.</string>
     <string name="pref_filename_length">Maximale länge von Dateinamen</string>
     <string name="pref_filename_length_desc">Jeder Name, der länger ist, wird gekürzt.</string>
+    <string name="okay">@android:string/ok</string>
+    <string name="cancel">@android:string/cancel</string>
+    <string name="yes">@android:string/yes</string>
+    <string name="pref_header_path_length">Maximale Länge des Pfads im Header</string>
+    <string name="pref_header_path_length_desc">Ab dieser Länge wird der Pfad von vorne an gekürzt.</string>
+    <string name="pref_version">App Version</string>
 </resources>
