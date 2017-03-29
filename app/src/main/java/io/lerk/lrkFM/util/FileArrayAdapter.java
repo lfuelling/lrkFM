@@ -105,29 +105,29 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             if (f.getDirectory()) {
                 v.setOnClickListener(v1 -> activity.loadDirectory(f.getFile().getAbsolutePath()));
             } else {
-                v.setOnClickListener(v1 -> {
-                    Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT, Uri.fromFile(f.getFile()));
-                    i.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    i.setType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(f.getFile().getAbsolutePath())));
-                    try {
-                        getContext().startActivity(i);
-                    } catch (ActivityNotFoundException e) {
-                        Toast.makeText(getContext(), R.string.no_app_to_handle_file, LENGTH_SHORT).show();
-                    }
-                });
+                v.setOnClickListener(v1 -> openFile(f));
             }
-            v.setOnCreateContextMenuListener((menu, view, info) -> {
-                initializeContextMenu(f, fileName, menu);
-            });
+
+            v.setOnCreateContextMenuListener((menu, view, info) -> initializeContextMenu(f, fileName, menu));
 
             ImageButton contextButton = (ImageButton) v.findViewById(R.id.contextMenuButton);
-            contextButton.setOnClickListener(v1 -> {
-                activity.getFileListView().showContextMenuForChild(v);
-                Log.d(TAG, "Opening context menu!");
-            });
+
+            contextButton.setOnClickListener(v1 -> activity.getFileListView().showContextMenuForChild(v));
 
         }
         return v;
+    }
+
+    private void openFile(FMFile f) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(f.getExtension());
+        i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            getContext().startActivity(i);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getContext(), R.string.no_app_to_handle_file, LENGTH_SHORT).show();
+        }
     }
 
     private void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {
@@ -219,7 +219,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             activity.reloadCurrentDirectory();
             return true;
         });
-        menu.add(0, ID_SHARE, 0, activity.getString(R.string.share)).setOnMenuItemClickListener(i->{
+        menu.add(0, ID_SHARE, 0, activity.getString(R.string.share)).setOnMenuItemClickListener(i -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
             // MIME of .apk is "application/vnd.android.package-archive".
             // but Bluetooth does not accept this. Let's use "*/*" instead.
