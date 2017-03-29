@@ -150,7 +150,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      */
     private void addMoveToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_MOVE, 0, activity.getString(R.string.move)).setOnMenuItemClickListener(item -> {
-                    if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS, false)) {
+                    if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS, true)) {
                         activity.addFileToOpContext(MOVE, f);
                         if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)){
                             Toast.makeText(activity, activity.getString(R.string.file_added_to_context)  + f.getName(), LENGTH_SHORT).show();
@@ -178,7 +178,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      */
     private void addCopyToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_COPY, 0, activity.getString(R.string.copy)).setOnMenuItemClickListener(item -> {
-            if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS, false)) {
+            if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS, true)) {
                 activity.addFileToOpContext(COPY, f);
                 if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)){
                     Toast.makeText(activity, activity.getString(R.string.file_added_to_context)  + f.getName(), LENGTH_SHORT).show();

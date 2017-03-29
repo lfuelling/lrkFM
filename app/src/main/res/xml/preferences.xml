@@ -28,7 +28,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_cat_app">
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="context_for_ops"
             android:summary="@string/pref_context_for_ops_desc"
             android:title="@string/pref_context_for_ops" />
