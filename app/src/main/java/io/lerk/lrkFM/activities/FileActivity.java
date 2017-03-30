@@ -405,15 +405,21 @@ public class FileActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-
-        boolean visible = fileOpContext.getFirst().equals(NONE) || fileOpContext.getSecond().isEmpty();
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        boolean visible = !(fileOpContext.getFirst().equals(NONE) || fileOpContext.getSecond().isEmpty());
         menu.findItem(R.id.action_paste).setVisible(visible);
         menu.findItem(R.id.action_clear_op_context).setVisible(visible);
         return true;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -429,10 +435,10 @@ public class FileActivity extends AppCompatActivity
         } else if (item.getItemId() == R.id.action_paste) {
             finishFileOperation();
             return true;
-        } else if(item.getItemId() == R.id.action_clear_op_context) {
+        } else if (item.getItemId() == R.id.action_clear_op_context) {
             clearFileOpCache();
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -521,17 +527,17 @@ public class FileActivity extends AppCompatActivity
         return true;
     }
 
+    /*
     @Deprecated
     private void shareApplication() {
         ApplicationInfo app = getApplicationContext().getApplicationInfo();
         String filePath = app.sourceDir;
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        // MIME of .apk is "application/vnd.android.package-archive".
-        // but Bluetooth does not accept this. Let's use "*/*" instead.
-        intent.setType("*/*");
+        Intent intent = new Intent(Intent.ACTION_SEND); */
+        // intent.setType("*/*");
+        /*
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
         startActivity(Intent.createChooser(intent, getResources().getString(R.string.share_app)));
-    }
+    }*/
 
     @Override
     protected void onStop() {
@@ -625,7 +631,7 @@ public class FileActivity extends AppCompatActivity
     }
 
     public void addFileToOpContext(FileUtil.Operation op, FMFile f) {
-        if(!fileOpContext.getFirst().equals(op)) {
+        if (!fileOpContext.getFirst().equals(op)) {
             Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
             fileOpContext.setFirst(op);
             fileOpContext.setSecond(new ArrayList<>());
