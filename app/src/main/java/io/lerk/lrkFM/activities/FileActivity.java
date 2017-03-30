@@ -413,7 +413,11 @@ public class FileActivity extends AppCompatActivity
         boolean visible = !(fileOpContext.getFirst().equals(NONE) || fileOpContext.getSecond().isEmpty());
         MenuItem paste = menu.findItem(R.id.action_paste).setVisible(visible);
         if (visible) {
-            paste.setTitle(paste.getTitle() + " (" + fileOpContext.getSecond().size() + ")");
+            String title = paste.getTitle().toString();
+            if (title.contains("(")) {
+                title = title.substring(paste.getTitle().toString().indexOf("("));
+            }
+            paste.setTitle(title + " (" + fileOpContext.getSecond().size() + ")");
         }
         menu.findItem(R.id.action_clear_op_context).setVisible(visible);
         return true;
@@ -638,7 +642,7 @@ public class FileActivity extends AppCompatActivity
 
     public void addFileToOpContext(FileUtil.Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
-            if(preferences.getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
+            if (preferences.getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
                 Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
             }
             fileOpContext.setFirst(op);
