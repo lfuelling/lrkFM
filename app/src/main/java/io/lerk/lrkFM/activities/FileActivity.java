@@ -408,7 +408,10 @@ public class FileActivity extends AppCompatActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         boolean visible = !(fileOpContext.getFirst().equals(NONE) || fileOpContext.getSecond().isEmpty());
-        menu.findItem(R.id.action_paste).setVisible(visible);
+        MenuItem paste = menu.findItem(R.id.action_paste).setVisible(visible);
+        if (visible) {
+            paste.setTitle(paste.getTitle() + " (" + fileOpContext.getSecond().size() + ")");
+        }
         menu.findItem(R.id.action_clear_op_context).setVisible(visible);
         return true;
     }
@@ -533,7 +536,7 @@ public class FileActivity extends AppCompatActivity
         ApplicationInfo app = getApplicationContext().getApplicationInfo();
         String filePath = app.sourceDir;
         Intent intent = new Intent(Intent.ACTION_SEND); */
-        // intent.setType("*/*");
+    // intent.setType("*/*");
         /*
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
         startActivity(Intent.createChooser(intent, getResources().getString(R.string.share_app)));
