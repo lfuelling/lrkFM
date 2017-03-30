@@ -415,7 +415,7 @@ public class FileActivity extends AppCompatActivity
         if (visible) {
             String title = paste.getTitle().toString();
             if (title.contains("(")) {
-                title = title.substring(paste.getTitle().toString().indexOf("("));
+                title = title.substring(paste.getTitle().toString().indexOf("("), title.length());
             }
             paste.setTitle(title + " (" + fileOpContext.getSecond().size() + ")");
         }
