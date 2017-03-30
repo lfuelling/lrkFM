@@ -100,6 +100,18 @@ public class FileActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        setFreeSpaceText();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        loadHomeDir();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -119,7 +131,10 @@ public class FileActivity extends AppCompatActivity
         registerForContextMenu(fileListView);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener((v) -> FileActivity.this.loadDirectory(new File(currentDirectory).getParent()));
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
@@ -128,16 +143,8 @@ public class FileActivity extends AppCompatActivity
                 super.onDrawerStateChanged(newState);
             }
         });
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        setSupportActionBar(toolbar);
-        navigationView.setNavigationItemSelectedListener(this);
-        headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        currentDirectoryTextView = (TextView) headerView.findViewById(R.id.currentDirectoryTextView);
-        loadUserBookmarks();
-
-        setFreeSpaceText();
-        fab.setOnClickListener((v) -> FileActivity.this.loadDirectory(new File(currentDirectory).getParent()));
+        initNavAndHeader();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -145,6 +152,16 @@ public class FileActivity extends AppCompatActivity
         //noinspection deprecation
         drawer.setDrawerListener(toggle); // I ned dis
         toggle.syncState();
+    }
+
+    private void initNavAndHeader() {
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        setSupportActionBar(toolbar);
+        navigationView.setNavigationItemSelectedListener(this);
+        headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        currentDirectoryTextView = (TextView) headerView.findViewById(R.id.currentDirectoryTextView);
+        loadUserBookmarks();
+        setFreeSpaceText();
     }
 
     private void setFreeSpaceText() {
@@ -162,18 +179,6 @@ public class FileActivity extends AppCompatActivity
             Log.e(TAG, "Unable to get free space! requested: " + nav_header_unit);
         }
         diskUsageTextView.setText(s);
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        setFreeSpaceText();
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        loadHomeDir();
     }
 
     private void loadUserBookmarks() {
@@ -644,5 +649,9 @@ public class FileActivity extends AppCompatActivity
 
     public EditablePair<FileUtil.Operation, ArrayList<FMFile>> getFileOpContext() {
         return fileOpContext;
+    }
+
+    public NavigationView getNavDrawer() {
+        return navigationView;
     }
 }

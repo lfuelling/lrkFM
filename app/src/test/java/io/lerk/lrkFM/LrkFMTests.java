@@ -1,6 +1,8 @@
 package io.lerk.lrkFM;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
@@ -9,9 +11,11 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
+@RunWith(MockitoJUnitRunner.class)
+public class LrkFMTests {
+
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void test() throws Exception {
+
     }
 }

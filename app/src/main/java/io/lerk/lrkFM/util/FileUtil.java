@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
