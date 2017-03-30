@@ -28,7 +28,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +43,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -635,7 +633,9 @@ public class FileActivity extends AppCompatActivity
 
     public void addFileToOpContext(FileUtil.Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
-            Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
+            if(preferences.getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
+                Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
+            }
             fileOpContext.setFirst(op);
             fileOpContext.setSecond(new ArrayList<>());
         }
