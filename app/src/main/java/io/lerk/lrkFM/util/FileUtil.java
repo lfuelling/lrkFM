@@ -83,7 +83,7 @@ public class FileUtil {
         if (destination.isDirectory() && !f.getDirectory()) {
             destination = new File(destination.getAbsolutePath() + File.separator + f.getName());
         }
-        if (destination.exists()) {
+        if (!destination.isDirectory() && destination.exists()) {
             AlertDialog.Builder builder = getFileExistsDialogBuilder(context);
             final File tdest = destination; //for lambda
             builder.setOnDismissListener(dialogInterface -> success[0] = doMoveNoValidation(f, tdest))
