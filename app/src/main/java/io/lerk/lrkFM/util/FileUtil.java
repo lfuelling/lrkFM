@@ -212,6 +212,6 @@ public class FileUtil {
     }
 
     public enum Operation {
-        COPY, MOVE, NONE
+        COPY, MOVE, NONE, EXTRACT
     }
 }

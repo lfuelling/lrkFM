@@ -49,6 +49,7 @@ import java.util.TreeSet;
 
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.util.ArchiveUtil;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.util.EditablePair;
 import io.lerk.lrkFM.util.FileArrayAdapter;
@@ -59,6 +60,7 @@ import io.lerk.lrkFM.util.FileUtil;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static io.lerk.lrkFM.util.FileUtil.Operation.COPY;
+import static io.lerk.lrkFM.util.FileUtil.Operation.EXTRACT;
 import static io.lerk.lrkFM.util.FileUtil.Operation.MOVE;
 import static io.lerk.lrkFM.util.FileUtil.Operation.NONE;
 
@@ -475,6 +477,14 @@ public class FileActivity extends AppCompatActivity
                 } else { // -_-
                     for (FMFile f : fileOpContext.getSecond()) {
                         FileUtil.move(f, this, null);
+                    }
+                }
+            } else if(fileOpContext.getFirst().equals(EXTRACT)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    fileOpContext.getSecond().forEach((f) -> ArchiveUtil.unpackZip(currentDirectory, f));
+                } else { // -_-
+                    for (FMFile f : fileOpContext.getSecond()) {
+                        ArchiveUtil.unpackZip(currentDirectory, f);
                     }
                 }
             }

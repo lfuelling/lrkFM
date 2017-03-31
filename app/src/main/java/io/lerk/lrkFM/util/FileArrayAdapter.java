@@ -37,6 +37,7 @@ import static io.lerk.lrkFM.activities.FileActivity.PREF_FILENAME_LENGTH;
 import static io.lerk.lrkFM.activities.FileActivity.PREF_USE_CONTEXT_FOR_OPS;
 import static io.lerk.lrkFM.activities.FileActivity.PREF_USE_CONTEXT_FOR_OPS_TOAST;
 import static io.lerk.lrkFM.util.FileUtil.Operation.COPY;
+import static io.lerk.lrkFM.util.FileUtil.Operation.EXTRACT;
 import static io.lerk.lrkFM.util.FileUtil.Operation.MOVE;
 
 /**
@@ -50,7 +51,8 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     private static final int ID_RENAME = 2;
     private static final int ID_DELETE = 3;
     private static final String TAG = FileArrayAdapter.class.getCanonicalName();
-    private static final int ID_SHARE = 4;
+    private static final int ID_SHARE = 5;
+    private static final int ID_EXTRACT = 4;
 
     private FileActivity activity;
 
@@ -80,6 +82,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         addCopyToMenu(f, menu);
         addMoveToMenu(f, menu);
         addRenameToMenu(f, menu);
+        if(f.getExtension().equals("zip")) {
+            addExtractToMenu(f, menu);
+        }
         addShareToMenu(f, menu);
         addDeleteToMenu(f, menu);
     }
@@ -103,6 +108,34 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                         dialogInterface.dismiss();
                     })
                     .show();
+            return true;
+        });
+    }
+
+    /**
+     * Adds extract to menu.
+     * @param zip zip file
+     * @param menu menu
+     */
+    private void addExtractToMenu(FMFile zip, ContextMenu menu) {
+        menu.add(0, ID_EXTRACT, 0, activity.getString(R.string.extract)).setOnMenuItemClickListener(i -> {
+            if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS, true)) {
+                activity.addFileToOpContext(EXTRACT, zip);
+                if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)){
+                    Toast.makeText(activity, activity.getString(R.string.file_added_to_context)  + zip.getName(), LENGTH_SHORT).show();
+                }
+            } else {
+                AlertDialog alertDialog = getGenericFileOpDialog(
+                        R.string.extract,
+                        R.string.op_destination,
+                        R.drawable.ic_present_to_all_black_24dp,
+                        R.layout.layout_path_prompt,
+                        (d) -> ArchiveUtil.unpackZip(((EditText)d.findViewById(R.id.destinationPath)).getText().toString(), zip),
+                        (d) -> Log.d(TAG, "Cancelled."));
+                alertDialog.setOnShowListener(d -> presetPathForDialog(zip, alertDialog));
+                alertDialog.show();
+            }
+            activity.reloadCurrentDirectory();
             return true;
         });
     }
