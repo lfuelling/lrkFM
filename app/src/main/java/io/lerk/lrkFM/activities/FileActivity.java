@@ -7,7 +7,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -49,18 +48,20 @@ import java.util.TreeSet;
 
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.util.ArchiveUtil;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.util.EditablePair;
-import io.lerk.lrkFM.util.FileArrayAdapter;
-import io.lerk.lrkFM.util.FileLoader;
+import io.lerk.lrkFM.util.files.FileArrayAdapter;
+import io.lerk.lrkFM.util.files.FileLoader;
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.util.FileUtil;
+import io.lerk.lrkFM.util.files.OperationUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static io.lerk.lrkFM.util.FileUtil.Operation.COPY;
-import static io.lerk.lrkFM.util.FileUtil.Operation.MOVE;
-import static io.lerk.lrkFM.util.FileUtil.Operation.NONE;
+import static io.lerk.lrkFM.util.files.OperationUtil.Operation.COPY;
+import static io.lerk.lrkFM.util.files.OperationUtil.Operation.EXTRACT;
+import static io.lerk.lrkFM.util.files.OperationUtil.Operation.MOVE;
+import static io.lerk.lrkFM.util.files.OperationUtil.Operation.NONE;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -93,7 +94,7 @@ public class FileActivity extends AppCompatActivity
     private View headerView;
     private HashMap<Integer, String> historyMap;
     private Integer historyCounter;
-    private EditablePair<FileUtil.Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
+    private EditablePair<OperationUtil.Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
 
     public ListView getFileListView() {
         return fileListView;
@@ -411,11 +412,12 @@ public class FileActivity extends AppCompatActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         boolean visible = !(fileOpContext.getFirst().equals(NONE) || fileOpContext.getSecond().isEmpty());
-        MenuItem paste = menu.findItem(R.id.action_paste).setVisible(visible);
+        MenuItem paste = menu.findItem(R.id.action_paste).setVisible(visible)
+                .setTitle(fileOpContext.getFirst().getTitle());
         if (visible) {
             String title = paste.getTitle().toString();
             if (title.contains("(")) {
-                title = title.substring(paste.getTitle().toString().indexOf("("), title.length());
+                title = title.substring(0, paste.getTitle().toString().indexOf("("));
             }
             paste.setTitle(title + " (" + fileOpContext.getSecond().size() + ")");
         }
@@ -463,18 +465,26 @@ public class FileActivity extends AppCompatActivity
         if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
             if (fileOpContext.getFirst().equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> FileUtil.copy(f, this, null));
+                    fileOpContext.getSecond().forEach((f) -> OperationUtil.copy(f, this, null));
                 } else { // -_-
                     for (FMFile f : fileOpContext.getSecond()) {
-                        FileUtil.copy(f, this, null);
+                        OperationUtil.copy(f, this, null);
                     }
                 }
             } else if (fileOpContext.getFirst().equals(MOVE)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> FileUtil.move(f, this, null));
+                    fileOpContext.getSecond().forEach((f) -> OperationUtil.move(f, this, null));
                 } else { // -_-
                     for (FMFile f : fileOpContext.getSecond()) {
-                        FileUtil.move(f, this, null);
+                        OperationUtil.move(f, this, null);
+                    }
+                }
+            } else if(fileOpContext.getFirst().equals(EXTRACT)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    fileOpContext.getSecond().forEach((f) -> ArchiveUtil.extractArchive(currentDirectory, f));
+                } else { // -_-
+                    for (FMFile f : fileOpContext.getSecond()) {
+                        ArchiveUtil.extractArchive(currentDirectory, f);
                     }
                 }
             }
@@ -496,7 +506,7 @@ public class FileActivity extends AppCompatActivity
                 .create();
         newDirDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (d, i) -> {
             String newDirName = currentDirectory + File.separator + ((EditText) newDirDialog.findViewById(R.id.destinationName)).getText().toString();
-            FileUtil.newDir(new File(newDirName), FileActivity.this);
+            OperationUtil.newDir(new File(newDirName), FileActivity.this);
             reloadCurrentDirectory();
         });
         newDirDialog.show();
@@ -640,7 +650,7 @@ public class FileActivity extends AppCompatActivity
         return preferences;
     }
 
-    public void addFileToOpContext(FileUtil.Operation op, FMFile f) {
+    public void addFileToOpContext(OperationUtil.Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
             if (preferences.getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
                 Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
@@ -651,11 +661,7 @@ public class FileActivity extends AppCompatActivity
         fileOpContext.getSecond().add(f);
     }
 
-    public EditablePair<FileUtil.Operation, ArrayList<FMFile>> getFileOpContext() {
+    public EditablePair<OperationUtil.Operation, ArrayList<FMFile>> getFileOpContext() {
         return fileOpContext;
-    }
-
-    public NavigationView getNavDrawer() {
-        return navigationView;
     }
 }

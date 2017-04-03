@@ -85,4 +85,5 @@
     <string name="action_paste">Paste</string>
     <string name="switching_op_mode">Switching operation mode. Queue reset.</string>
     <string name="action_clear_op_context">Clear operation</string>
+    <string name="extract">Extract</string>
 </resources>

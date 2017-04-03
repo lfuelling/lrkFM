@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM.util.files;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -13,7 +13,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +33,6 @@ import io.lerk.lrkFM.entities.FMFile;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.activities.FileActivity.PREF_FILENAME_LENGTH;
-import static io.lerk.lrkFM.activities.FileActivity.PREF_USE_CONTEXT_FOR_OPS;
-import static io.lerk.lrkFM.activities.FileActivity.PREF_USE_CONTEXT_FOR_OPS_TOAST;
-import static io.lerk.lrkFM.util.FileUtil.Operation.COPY;
-import static io.lerk.lrkFM.util.FileUtil.Operation.MOVE;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
@@ -45,12 +40,7 @@ import static io.lerk.lrkFM.util.FileUtil.Operation.MOVE;
  */
 public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
-    private static final int ID_COPY = 0;
-    private static final int ID_MOVE = 1;
-    private static final int ID_RENAME = 2;
-    private static final int ID_DELETE = 3;
     private static final String TAG = FileArrayAdapter.class.getCanonicalName();
-    private static final int ID_SHARE = 4;
 
     private FileActivity activity;
 
@@ -69,135 +59,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         return initUI(getItem(position));
     }
 
-    /**
-     * Adds menu buttons to context menu.
-     * @param f the file
-     * @param fileName the file name for the title TODO: refactor, get name in this class
-     * @param menu the context menu to fill
-     */
-    private void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {
-        menu.setHeaderTitle(fileName);
-        addCopyToMenu(f, menu);
-        addMoveToMenu(f, menu);
-        addRenameToMenu(f, menu);
-        addShareToMenu(f, menu);
-        addDeleteToMenu(f, menu);
-    }
 
-    /**
-     * Adds delete button to menu.
-     * @param f the file
-     * @param menu the menu
-     */
-    private void addDeleteToMenu(FMFile f, ContextMenu menu) {
-        menu.add(0, ID_DELETE, 0, activity.getString(R.string.delete)).setOnMenuItemClickListener(item -> {
-            new AlertDialog.Builder(activity)
-                    .setTitle(R.string.delete)
-                    .setMessage(activity.getString(R.string.warn_delete_msg) + f.getName() + "?")
-                    .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
-                    .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
-                        if (!FileUtil.deleteNoValidation(f)) {
-                            Toast.makeText(activity, R.string.err_deleting_element, LENGTH_SHORT).show();
-                        }
-                        activity.reloadCurrentDirectory();
-                        dialogInterface.dismiss();
-                    })
-                    .show();
-            return true;
-        });
-    }
-
-    /**
-     * Adds share to menu.
-     * @param f the file
-     * @param menu the menu
-     */
-    private void addShareToMenu(FMFile f, ContextMenu menu) {
-        menu.add(0, ID_SHARE, 0, activity.getString(R.string.share)).setOnMenuItemClickListener(i -> {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("*/*");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f.getFile()));
-            activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.share_app)));
-            return true;
-        });
-    }
-
-    /**
-     * Adds rename to menu.
-     * @param f the file
-     * @param menu the menu
-     */
-    private void addRenameToMenu(FMFile f, ContextMenu menu) {
-        menu.add(0, ID_RENAME, 0, activity.getString(R.string.rename)).setOnMenuItemClickListener(item -> {
-            AlertDialog alertDialog = getGenericFileOpDialog(
-                    R.string.rename,
-                    R.string.rename,
-                    R.drawable.ic_mode_edit_black_24dp,
-                    R.layout.layout_name_prompt,
-                    (d) -> FileUtil.rename(f, activity,d),
-                    (d) -> Log.d(TAG, "Cancelled."));
-            alertDialog.setOnShowListener(d -> presetNameForDialog(alertDialog, R.id.destinationName, f.getName()));
-            alertDialog.show();
-            activity.reloadCurrentDirectory();
-            return true;
-        });
-    }
-
-    /**
-     * Adds move to menu.
-     * @param f the file
-     * @param menu the menu
-     */
-    private void addMoveToMenu(FMFile f, ContextMenu menu) {
-        menu.add(0, ID_MOVE, 0, activity.getString(R.string.move)).setOnMenuItemClickListener(item -> {
-                    if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS, true)) {
-                        activity.addFileToOpContext(MOVE, f);
-                        if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)){
-                            Toast.makeText(activity, activity.getString(R.string.file_added_to_context)  + f.getName(), LENGTH_SHORT).show();
-                        }
-                    } else {
-                        AlertDialog alertDialog = getGenericFileOpDialog(
-                                R.string.move,
-                                R.string.op_destination,
-                                R.drawable.ic_content_cut_black_24dp,
-                                R.layout.layout_path_prompt,
-                                (d) -> FileUtil.move(f, activity, d),
-                                (d) -> Log.d(TAG, "Cancelled."));
-                        alertDialog.setOnShowListener(d -> presetPathForDialog(f, alertDialog));
-                        alertDialog.show();
-                    }
-            activity.reloadCurrentDirectory();
-            return true;
-        });
-    }
-
-    /**
-     * Adds copy to menu.
-     * @param f the file
-     * @param menu the menu
-     */
-    private void addCopyToMenu(FMFile f, ContextMenu menu) {
-        menu.add(0, ID_COPY, 0, activity.getString(R.string.copy)).setOnMenuItemClickListener(item -> {
-            if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS, true)) {
-                activity.addFileToOpContext(COPY, f);
-                if(activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)){
-                    Toast.makeText(activity, activity.getString(R.string.file_added_to_context)  + f.getName(), LENGTH_SHORT).show();
-                }
-            } else {
-                AlertDialog alertDialog = getGenericFileOpDialog(
-                        R.string.copy,
-                        R.string.op_destination,
-                        R.drawable.ic_content_copy_black_24dp,
-                        R.layout.layout_path_prompt,
-                        (d) -> FileUtil.copy(f, activity, d),
-                        (d) -> Log.d(TAG, "Cancelled."));
-                alertDialog.setOnShowListener(d -> presetPathForDialog(f, alertDialog));
-                alertDialog.show();
-            }
-            activity.reloadCurrentDirectory();
-            return true;
-        });
-    }
 
     /**
      * Opens a file using the default app.
@@ -221,7 +83,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      * @param destinationName the id of the EditText
      * @param name the name
      */
-    private void presetNameForDialog(AlertDialog alertDialog, @IdRes int destinationName, String name) {
+    void presetNameForDialog(AlertDialog alertDialog, @IdRes int destinationName, String name) {
         EditText editText = (EditText) alertDialog.findViewById(destinationName);
         if (editText != null) {
             editText.setText(name);
@@ -236,7 +98,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      * @param alertDialog the dialog
      * @see #presetNameForDialog(AlertDialog, int, String)
      */
-    private void presetPathForDialog(FMFile f, AlertDialog alertDialog) {
+    void presetPathForDialog(FMFile f, AlertDialog alertDialog) {
         presetNameForDialog(alertDialog, R.id.destinationPath, f.getFile().getAbsolutePath());
     }
 
@@ -265,12 +127,12 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      * @param negativeCallBack the negative callback
      * @return the dialog
      */
-    private AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,
-                                               @StringRes int title,
-                                               @DrawableRes int icon,
-                                               @LayoutRes int view,
-                                               ButtonCallBackInterface positiveCallBack,
-                                               ButtonCallBackInterface negativeCallBack) {
+    AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,
+                                       @StringRes int title,
+                                       @DrawableRes int icon,
+                                       @LayoutRes int view,
+                                       ButtonCallBackInterface positiveCallBack,
+                                       ButtonCallBackInterface negativeCallBack) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(title)
@@ -354,7 +216,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             } else {
                 v.setOnClickListener(v1 -> openFile(f));
             }
-            v.setOnCreateContextMenuListener((menu, view, info) -> initializeContextMenu(f, fileName, menu));
+            v.setOnCreateContextMenuListener((menu, view, info) -> new ContextMenuUtil(activity, this).initializeContextMenu(f, fileName, menu));
             ImageButton contextButton = (ImageButton) v.findViewById(R.id.contextMenuButton);
             contextButton.setOnClickListener(v1 -> activity.getFileListView().showContextMenuForChild(v));
 
