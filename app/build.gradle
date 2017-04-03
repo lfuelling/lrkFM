@@ -7,8 +7,8 @@ android {
         applicationId "io.lerk.lrkFM"
         minSdkVersion 23
         targetSdkVersion 25
-        versionCode 17
-        versionName '1.1b1'
+        versionCode 18
+        versionName '1.1b2'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         jackOptions {
@@ -35,6 +35,10 @@ android {
     }
     productFlavors {
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
 }
 
 dependencies {
@@ -48,6 +52,9 @@ dependencies {
     compile 'com.android.support:customtabs:25.3.0'
     compile 'com.android.support:multidex:1.0.1'
     compile 'commons-io:commons-io:2.5'
+    compile('com.github.junrar:junrar:0.7') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.2.0'
 }

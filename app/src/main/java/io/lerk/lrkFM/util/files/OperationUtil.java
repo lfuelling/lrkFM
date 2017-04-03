@@ -1,14 +1,14 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM.util.files;
 
 import android.app.AlertDialog;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -26,9 +26,9 @@ import static android.widget.Toast.LENGTH_SHORT;
  * @author Lukas Fülling (lukas@k40s.net)
  */
 
-public class FileUtil {
+public class OperationUtil {
 
-    private static final String TAG = FileUtil.class.getCanonicalName();
+    private static final String TAG = OperationUtil.class.getCanonicalName();
 
     public static boolean copy(FMFile f, FileActivity context, @Nullable AlertDialog d) {
         Log.d(TAG, "Starting copy...");
@@ -212,6 +212,25 @@ public class FileUtil {
     }
 
     public enum Operation {
-        COPY, MOVE, NONE, EXTRACT
+        COPY(R.string.copy),
+        MOVE(R.string.move),
+        EXTRACT(R.string.extract),
+        NONE(R.string.todo);
+
+        private final int title;
+
+        /**
+         * File Operation.
+         *
+         * @param title May not contain <pre>(</pre>
+         * @see FileActivity#onPrepareOptionsMenu
+         */
+        Operation(@StringRes int title) {
+            this.title = title;
+        }
+
+        public int getTitle() {
+            return title;
+        }
     }
 }

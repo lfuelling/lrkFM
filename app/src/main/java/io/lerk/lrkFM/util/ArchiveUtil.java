@@ -1,5 +1,9 @@
 package io.lerk.lrkFM.util;
 
+import android.util.Log;
+
+import com.github.junrar.extract.ExtractArchive;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,67 +15,81 @@ import java.util.zip.ZipInputStream;
 
 import io.lerk.lrkFM.entities.FMFile;
 
-/**
- * Created by lfuelling on 31.03.17.
- */
-
 public class ArchiveUtil {
+
+    private static final String TAG = ArchiveUtil.class.getCanonicalName();
+    public static final String RAR_EXTENSION = "rar";
+    public static final String ZIP_EXTENSION = "zip";
+
+    /**
+     * Unpacks a rar file.
+     *
+     * @param destination destination path (directory)
+     * @param rar         rarfile
+     * @return if the destination is a directory after extracting
+     */
+    private static boolean unpackRar(String destination, FMFile rar) {
+        new ExtractArchive().extractArchive(rar.getFile(), new File(destination));
+        return new File(destination).isDirectory();
+    }
+
+    public static boolean extractArchive(String path, FMFile f) {
+        if (f.getExtension().equals(RAR_EXTENSION)) {
+            return unpackRar(path, f);
+        } else { //noinspection SimplifiableIfStatement
+            if (f.getExtension().equals(ZIP_EXTENSION)) {
+                return unpackZip(path, f);
+            } else {
+                return false;
+            }
+        } //TODO: cleanup when implementing next file type
+    }
 
     /**
      * Method to extract a zip archive.
      *
-     * Source: http://stackoverflow.com/a/10997886/1979736
-     *
      * @param path Path where the zip will be extracted
-     * @param zip Zip file
+     * @param zip  Zip file
      * @return result of extraction
      */
-    public static boolean unpackZip(String path, FMFile zip)
-    {
-        InputStream is;
-        ZipInputStream zis;
-        try
-        {
-            String filename;
-            is = new FileInputStream(path + zip.getFile().getAbsolutePath());
-            zis = new ZipInputStream(new BufferedInputStream(is));
-            ZipEntry ze;
-            byte[] buffer = new byte[1024];
-            int count;
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static boolean unpackZip(String path, FMFile zip) {
+        byte[] buffer = new byte[1024];
 
-            while ((ze = zis.getNextEntry()) != null)
-            {
-                // zapis do souboru
-                filename = ze.getName();
-
-                // Need to create directories if not exists, or
-                // it will generate an Exception...
-                if (ze.isDirectory()) {
-                    File fmd = new File(path + filename);
-                    fmd.mkdirs();
-                    continue;
-                }
-
-                FileOutputStream fout = new FileOutputStream(path + filename);
-
-                // cteni zipu a zapis
-                while ((count = zis.read(buffer)) != -1)
-                {
-                    fout.write(buffer, 0, count);
-                }
-
-                fout.close();
-                zis.closeEntry();
+        try{
+            //create output directory is not exists
+            File folder = new File(path);
+            if(!folder.exists()){
+                folder.mkdirs();
             }
+            //get the zip file content
+            ZipInputStream zis =
+                    new ZipInputStream(new FileInputStream(zip.getFile()));
+            //get the zipped file list entry
+            ZipEntry ze = zis.getNextEntry();
 
+            while(ze!=null){
+                String fileName = ze.getName();
+                File newFile = new File(path + File.separator + fileName);
+                System.out.println("file unzip : "+ newFile.getAbsoluteFile());
+
+                //create all non exists folders
+                //else you will hit FileNotFoundException for compressed folder
+                new File(newFile.getParent()).mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                ze = zis.getNextEntry();
+            }
+            zis.closeEntry();
             zis.close();
+        }catch(IOException ex){
+          Log.e(TAG,"Unable to extract zip!", ex);
+          return false;
         }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-            return false;
-        }
-
         return true;
     }
 }
