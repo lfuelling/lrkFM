@@ -4,7 +4,6 @@ stages:
   - build
   - test
   - artifacts
-  - beta
 
 build_no_tests:
   stage: build
@@ -25,7 +24,7 @@ build_debug_artifacts:
       - app/build/outputs/apk/app-debug.apk
 
 build_signed_artifacts:
-  stage: beta
+  stage: artifacts
   script:
     - ./gradlew assembleRelease
   artifacts:
