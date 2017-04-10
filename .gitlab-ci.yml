@@ -2,8 +2,9 @@ image: lerk/android-ci
 
 stages:
   - build
-  -  test
+  - test
   - artifacts
+  - beta
 
 build_no_tests:
   stage: build
@@ -15,12 +16,20 @@ build_with_tests:
   script:
     - ./gradlew build
 
-build_with_artifacts:
+build_debug_artifacts:
   stage: artifacts
   script:
     - ./gradlew assembleDebug
   artifacts:
     paths:
       - app/build/outputs/apk/app-debug.apk
+
+build_signed_artifacts:
+  stage: beta
+  script:
+    - ./gradlew assembleRelease
+  artifacts:
+    paths:
+      - app/app-release.apk
   only:
     - tags

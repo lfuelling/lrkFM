@@ -1,9 +1,5 @@
 apply plugin: 'com.android.application'
 
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
 android {
     compileSdkVersion 25 //TODO: change to 'android-O' once backwards compatibility is possible
     buildToolsVersion '25.0.2'
@@ -26,10 +22,10 @@ android {
     }
     signingConfigs {
         release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
+            keyAlias System.getenv("APK_KEY_ALIAS")
+            keyPassword System.getenv("APK_KEY_PASSWORD")
+            storeFile System.getenv("APK_STORE_FILE")
+            storePassword System.getenv("APK_STORE_PASSWORD")
         }
     }
     buildTypes {
