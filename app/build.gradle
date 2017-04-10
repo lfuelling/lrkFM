@@ -24,7 +24,10 @@ android {
         release {
             keyAlias System.getenv("APK_KEY_ALIAS")
             keyPassword System.getenv("APK_KEY_PASSWORD")
-            storeFile System.getenv("APK_STORE_FILE")
+            def filePath = System.getenv("APK_STORE_FILE")
+            if (filePath != null) {
+                storeFile file(filePath)
+            }
             storePassword System.getenv("APK_STORE_PASSWORD")
         }
     }
