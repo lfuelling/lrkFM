@@ -5,6 +5,9 @@ stages:
   - test
   - artifacts
 
+before_script:
+  - ./gradlew clean
+
 build_no_tests:
   stage: build
   script:
@@ -14,6 +17,7 @@ build_with_tests:
   stage: test
   script:
     - ./gradlew build
+    - ./gradlew jacocoTestReport
 
 build_debug_artifacts:
   stage: artifacts

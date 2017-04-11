@@ -6,6 +6,7 @@
         <project path="$PROJECT_DIR$">
           <extensions>
             <ext name="ext" type="org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension" />
+            <task name="jacocoTestReleaseUnitTestReport" type="org.gradle.testing.jacoco.tasks.JacocoReport">Generates Jacoco coverage reports for the release variant.&lt;p&gt;&lt;i&gt;Task group: Reporting&lt;i&gt;</task>
             <task name="projects" type="org.gradle.api.tasks.diagnostics.ProjectReportTask">Displays the sub-projects of root project 'lrkFM'.&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
             <task name="resolveDebugDependencies" type="com.android.build.gradle.internal.tasks.ResolveDependenciesTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="validateSigningDebugAndroidTest" type="com.android.build.gradle.internal.tasks.ValidateSigningTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
@@ -74,6 +75,7 @@
             <task name="dependencyInsight" type="org.gradle.api.tasks.diagnostics.DependencyInsightReportTask">Displays the insight into a specific dependency in root project 'lrkFM'.&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
             <task name="generateReleaseSources">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="incrementalReleaseUnitTestJavaCompilationSafeguard" type="com.android.build.gradle.tasks.factory.IncrementalSafeguard">&lt;i&gt;Task group: other&lt;i&gt;</task>
+            <task name="jacocoTestReport">&lt;i&gt;Task group: Reporting&lt;i&gt;</task>
             <task name="preReleaseBuild">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="assemble">Assembles all variants of all applications and secondary packages.&lt;p&gt;&lt;i&gt;Task group: build&lt;i&gt;</task>
             <task name="transformJackAndJavaSourcesWithJackCompileForRelease" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
@@ -83,6 +85,7 @@
             <task name="help" type="org.gradle.configuration.Help">Displays a help message.&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
             <task name="compileReleaseUnitTestSources">&lt;i&gt;Task group: build&lt;i&gt;</task>
             <task name="installDebugAndroidTest" type="com.android.build.gradle.internal.tasks.InstallVariantTask">Installs the android (on device) tests for the Debug build.&lt;p&gt;&lt;i&gt;Task group: Install&lt;i&gt;</task>
+            <task name="jacocoTestDebugUnitTestReport" type="org.gradle.testing.jacoco.tasks.JacocoReport">Generates Jacoco coverage reports for the debug variant.&lt;p&gt;&lt;i&gt;Task group: Reporting&lt;i&gt;</task>
             <task name="mergeDebugAssets" type="com.android.build.gradle.tasks.MergeSourceSetFolders">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="javaPreCompileReleaseUnitTest" type="com.android.build.gradle.tasks.JavaPreCompileTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="resolveReleaseUnitTestDependencies" type="com.android.build.gradle.internal.tasks.ResolveDependenciesTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
@@ -185,6 +188,9 @@
             <ext name="defaultArtifacts" type="org.gradle.api.internal.plugins.DefaultArtifactPublicationSet" />
             <ext name="reporting" type="org.gradle.api.reporting.ReportingExtension" />
             <ext name="android" type="com.android.build.gradle.AppExtension" />
+            <ext name="jacocoAndroidUnitTestReport" type="com.dicedmelon.gradle.jacoco.android.JacocoAndroidUnitTestReportExtension" />
+            <ext name="jacoco" type="org.gradle.testing.jacoco.plugins.JacocoPluginExtension" />
+            <task name="jacocoTestReleaseUnitTestReport" type="org.gradle.testing.jacoco.tasks.JacocoReport">Generates Jacoco coverage reports for the release variant.&lt;p&gt;&lt;i&gt;Task group: Reporting&lt;i&gt;</task>
             <task name="projects" type="org.gradle.api.tasks.diagnostics.ProjectReportTask">Displays the sub-projects of project ':app'.&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
             <task name="resolveDebugDependencies" type="com.android.build.gradle.internal.tasks.ResolveDependenciesTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="validateSigningDebugAndroidTest" type="com.android.build.gradle.internal.tasks.ValidateSigningTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
@@ -252,6 +258,7 @@
             <task name="dependencyInsight" type="org.gradle.api.tasks.diagnostics.DependencyInsightReportTask">Displays the insight into a specific dependency in project ':app'.&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
             <task name="generateReleaseSources">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="incrementalReleaseUnitTestJavaCompilationSafeguard" type="com.android.build.gradle.tasks.factory.IncrementalSafeguard">&lt;i&gt;Task group: other&lt;i&gt;</task>
+            <task name="jacocoTestReport">&lt;i&gt;Task group: Reporting&lt;i&gt;</task>
             <task name="preReleaseBuild">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="assemble">Assembles all variants of all applications and secondary packages.&lt;p&gt;&lt;i&gt;Task group: build&lt;i&gt;</task>
             <task name="transformJackAndJavaSourcesWithJackCompileForRelease" type="com.android.build.gradle.internal.pipeline.TransformTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
@@ -260,6 +267,7 @@
             <task name="help" type="org.gradle.configuration.Help">Displays a help message.&lt;p&gt;&lt;i&gt;Task group: help&lt;i&gt;</task>
             <task name="compileReleaseUnitTestSources">&lt;i&gt;Task group: build&lt;i&gt;</task>
             <task name="installDebugAndroidTest" type="com.android.build.gradle.internal.tasks.InstallVariantTask">Installs the android (on device) tests for the Debug build.&lt;p&gt;&lt;i&gt;Task group: Install&lt;i&gt;</task>
+            <task name="jacocoTestDebugUnitTestReport" type="org.gradle.testing.jacoco.tasks.JacocoReport">Generates Jacoco coverage reports for the debug variant.&lt;p&gt;&lt;i&gt;Task group: Reporting&lt;i&gt;</task>
             <task name="mergeDebugAssets" type="com.android.build.gradle.tasks.MergeSourceSetFolders">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="javaPreCompileReleaseUnitTest" type="com.android.build.gradle.tasks.JavaPreCompileTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
             <task name="resolveReleaseUnitTestDependencies" type="com.android.build.gradle.internal.tasks.ResolveDependenciesTask">&lt;i&gt;Task group: other&lt;i&gt;</task>
@@ -394,6 +402,8 @@
             <conf name="default-mapping">Configuration for default mapping artifacts.</conf>
             <conf name="default-metadata">Metadata for the produced APKs.</conf>
             <conf name="jackPlugin" visible="false">Classpath for the 'main' Jack plugins.</conf>
+            <conf name="jacocoAgent" visible="false">The Jacoco agent to use to get coverage data.</conf>
+            <conf name="jacocoAnt" visible="false">The Jacoco ant tasks to use to get execute Gradle tasks.</conf>
             <conf name="provided" visible="false">Classpath for only compiling the main sources.</conf>
             <conf name="releaseAnnotationProcessor" visible="false">Classpath for the annotation processor for 'release'.</conf>
             <conf name="releaseApk" visible="false">Classpath packaged with the compiled 'release' classes.</conf>
