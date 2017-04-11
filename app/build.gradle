@@ -1,6 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'jacoco-android'
 
+jacocoAndroidUnitTestReport {
+    csv.enabled false
+    html.enabled true
+    xml.enabled false
+}
+
 android {
     compileSdkVersion 25 //TODO: change to 'android-O' once backwards compatibility is possible
     buildToolsVersion '25.0.2'

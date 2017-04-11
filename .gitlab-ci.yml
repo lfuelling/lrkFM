@@ -13,11 +13,19 @@ build_no_tests:
   script:
     - ./gradlew assemble
 
-build_with_tests:
+build_with_tests_debug:
   stage: test
   script:
     - ./gradlew build
-    - ./gradlew jacocoTestReport
+    - ./gradlew jacocoTestDebugUnitTestReport
+    - cat app/build/reports/jacoco/jacocoTestDebugUnitTestReport/html/index.html
+
+build_with_tests_release:
+  stage: test
+  script:
+    - ./gradlew build
+    - ./gradlew jacocoTestReleaseUnitTestReport
+    - cat app/build/reports/jacoco/jacocoTestReleaseUnitTestReport/html/index.html
 
 build_debug_artifacts:
   stage: artifacts
