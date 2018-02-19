@@ -26,16 +26,34 @@
         android:id="@+id/fileView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/appBarLayout"/>
+        android:layout_below="@id/appBarLayout" />
 
-    <TextView
+    <RelativeLayout
         android:id="@+id/unableToLoadText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/unable_to_load_files"
-        android:textSize="@dimen/file_title_fs"
-        android:visibility="gone"/>
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/err_text_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="@string/unable_to_load_files0"
+            android:textSize="@dimen/file_title_fs" />
+
+        <TextView
+            android:id="@+id/err_text_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/err_text_0"
+            android:layout_centerVertical="true"
+            android:text="@string/unable_to_load_files1"
+            android:textSize="@dimen/file_title_fs" />
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/emptyDirText"
         android:layout_width="wrap_content"
@@ -43,7 +61,7 @@
         android:layout_centerInParent="true"
         android:text="@string/empty_directory"
         android:textSize="@dimen/file_title_fs"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

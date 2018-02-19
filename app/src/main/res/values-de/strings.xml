@@ -6,7 +6,8 @@
     <string name="nav_app">App</string>
     <string name="share">Teilen</string>
     <string name="nav_bookmarks">Lesezeichen</string>
-    <string name="unable_to_load_files">Lesen der Dateien nicht möglich <node>&#x1f612;</node></string>
+    <string name="unable_to_load_files0">Lesen der Dateien nicht möglich <node>&#x1f612;</node></string>
+    <string name="unable_to_load_files1">Falls gerade Berechtigungen erteilt wurden, bitte neu laden.</string>
     <string name="nav_path">Pfad Öffnen</string>
     <string name="invalid_path">Ungültiger Pfad. Nur Ordner sind erlaubt!</string>
     <string name="add_bookmark">Lesezeichen hinzufügen</string>
