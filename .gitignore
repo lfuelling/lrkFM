@@ -10,3 +10,4 @@
 .externalNativeBuild
 *.apk
 keystore.properties
+google-services.json
