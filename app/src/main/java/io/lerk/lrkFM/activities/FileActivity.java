@@ -589,7 +589,7 @@ public class FileActivity extends AppCompatActivity
             builder.setToolbarColor(getResources().getColor(R.color.primary));
         }
         CustomTabsIntent build = builder.build();
-        build.launchUrl(this, Uri.parse("https://git.k40s.net/FileManagerCompetition/lrkFM/issues/new"));
+        build.launchUrl(this, Uri.parse("https://github.com/lfuelling/lrkFM/issues/new"));
     }
 
     @SuppressLint("ApplySharedPref")
