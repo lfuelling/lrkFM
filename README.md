@@ -4,6 +4,8 @@ Java based file manager for Android.
 
 You can join the beta program through [the Google PlayStore](https://play.google.com/apps/testing/io.lerk.lrkfm)
 
+**Please note:** This project was moved from my personal GitLab instance to GitHub. Issue mentions in commits might be misleading!
+
 Logo generated with software by [Philipp Eichhorn](https://android-material-icon-generator.bitdroid.de)
 
 Google Play and the Google Play logo are trademarks of Google Inc.
