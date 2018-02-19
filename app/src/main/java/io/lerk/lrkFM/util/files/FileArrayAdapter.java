@@ -36,6 +36,7 @@ import static io.lerk.lrkFM.activities.FileActivity.PREF_FILENAME_LENGTH;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  */
 public class FileArrayAdapter extends ArrayAdapter<FMFile> {
@@ -59,10 +60,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         return initUI(getItem(position));
     }
 
-
-
     /**
      * Opens a file using the default app.
+     *
      * @param f the file
      */
     private void openFile(FMFile f) {
@@ -79,12 +79,13 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     /**
      * Sets file name in the text field of a dialog.
-     * @param alertDialog the dialog
+     *
+     * @param alertDialog     the dialog
      * @param destinationName the id of the EditText
-     * @param name the name
+     * @param name            the name
      */
     void presetNameForDialog(AlertDialog alertDialog, @IdRes int destinationName, String name) {
-        EditText editText = (EditText) alertDialog.findViewById(destinationName);
+        EditText editText = alertDialog.findViewById(destinationName);
         if (editText != null) {
             editText.setText(name);
         } else {
@@ -94,7 +95,8 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     /**
      * Adds the path of a file to a dialog.
-     * @param f the file
+     *
+     * @param f           the file
      * @param alertDialog the dialog
      * @see #presetNameForDialog(AlertDialog, int, String)
      */
@@ -104,6 +106,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     /**
      * Gets the size of a file as formatted string.
+     *
      * @param f the file
      * @return the size, formatted.
      */
@@ -119,10 +122,11 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     /**
      * Utility class to create an AlertDialog.
-     * @param positiveBtnText the text of the positive button
-     * @param title the title
-     * @param icon the icon
-     * @param view the content view
+     *
+     * @param positiveBtnText  the text of the positive button
+     * @param title            the title
+     * @param icon             the icon
+     * @param view             the content view
      * @param positiveCallBack the positive callback
      * @param negativeCallBack the negative callback
      * @return the dialog
@@ -142,9 +146,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(positiveBtnText), (d, i) -> positiveCallBack.handle(dialog));
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (d, i) -> negativeCallBack.handle(dialog));
         dialog.setOnShowListener(dialog1 -> {
-            EditText inputField = null;
+            EditText inputField;
             if (view == R.layout.layout_name_prompt) {
-                inputField = (EditText) dialog.findViewById(R.id.destinationName);
+                inputField = dialog.findViewById(R.id.destinationName);
                 if (inputField != null) {
                     String name = activity.getTitleFromPath(activity.getCurrentDirectory());
                     inputField.setText(name);
@@ -153,7 +157,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                     Log.w(TAG, "Unable to preset current name, text field is null!");
                 }
             } else if (view == R.layout.layout_path_prompt) {
-                inputField = (EditText) dialog.findViewById(R.id.destinationPath);
+                inputField = dialog.findViewById(R.id.destinationPath);
                 if (inputField != null) {
                     String directory = activity.getCurrentDirectory();
                     inputField.setText(directory);
@@ -168,6 +172,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     /**
      * Initializes the UI for each file.
+     *
      * @param f the file
      * @return the initialized UI
      */
@@ -177,11 +182,11 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         @SuppressLint("InflateParams") View v = LayoutInflater.from(activity).inflate(R.layout.layout_file, null); // works.
 
         if (f != null) {
-            TextView fileNameView = (TextView) v.findViewById(R.id.fileTitle);
-            TextView filePermissions = (TextView) v.findViewById(R.id.filePermissions);
-            TextView fileDate = (TextView) v.findViewById(R.id.fileDate);
-            TextView fileSize = (TextView) v.findViewById(R.id.fileSize);
-            ImageView fileImage = (ImageView) v.findViewById(R.id.fileIcon);
+            TextView fileNameView = v.findViewById(R.id.fileTitle);
+            TextView filePermissions = v.findViewById(R.id.filePermissions);
+            TextView fileDate = v.findViewById(R.id.fileDate);
+            TextView fileSize = v.findViewById(R.id.fileSize);
+            ImageView fileImage = v.findViewById(R.id.fileIcon);
 
             final String fileName = f.getName();
             if (fileNameView != null) {
@@ -200,28 +205,28 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 fileDate.setText(SimpleDateFormat.getDateTimeInstance().format(f.getLastModified()));
             }
             if (fileSize != null) {
-                if (f.getDirectory()) {
+                if (f.isDirectory()) {
                     fileSize.setVisibility(View.GONE);
                 } else {
                     fileSize.setText(getSizeFormatted(f));
                 }
             }
             if (fileImage != null) {
-                if (!f.getDirectory()) {
+                if (!f.isDirectory()) {
                     fileImage.setImageDrawable(getContext().getDrawable(R.drawable.ic_insert_drive_file_black_24dp));
                 }
             }
-            if (f.getDirectory()) {
+            if (f.isDirectory()) {
                 v.setOnClickListener(v1 -> activity.loadDirectory(f.getFile().getAbsolutePath()));
             } else {
                 v.setOnClickListener(v1 -> openFile(f));
             }
             v.setOnCreateContextMenuListener((menu, view, info) -> new ContextMenuUtil(activity, this).initializeContextMenu(f, fileName, menu));
-            ImageButton contextButton = (ImageButton) v.findViewById(R.id.contextMenuButton);
+            ImageButton contextButton = v.findViewById(R.id.contextMenuButton);
             contextButton.setOnClickListener(v1 -> activity.getFileListView().showContextMenuForChild(v));
 
-            for(FMFile contextFile: activity.getFileOpContext().getSecond()) {
-                if(contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
+            for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
+                if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
                     v.setBackgroundColor(activity.getColor(R.color.primary));
                 }
             }

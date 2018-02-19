@@ -127,16 +127,18 @@ public class FileActivity extends AppCompatActivity
         }
         StrictMode.setVmPolicy(builder.build());
 
+        FileActivity.verifyStoragePermissions(FileActivity.this);
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        fileListView = (ListView) findViewById(R.id.fileView);
+        fileListView = findViewById(R.id.fileView);
         registerForContextMenu(fileListView);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener((v) -> FileActivity.this.loadDirectory(new File(currentDirectory).getParent()));
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerStateChanged(int newState) {
@@ -147,8 +149,7 @@ public class FileActivity extends AppCompatActivity
 
         initNavAndHeader();
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         //noinspection deprecation
         drawer.setDrawerListener(toggle); // I ned dis
@@ -156,17 +157,17 @@ public class FileActivity extends AppCompatActivity
     }
 
     private void initNavAndHeader() {
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
         headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        currentDirectoryTextView = (TextView) headerView.findViewById(R.id.currentDirectoryTextView);
+        currentDirectoryTextView = headerView.findViewById(R.id.currentDirectoryTextView);
         loadUserBookmarks();
         setFreeSpaceText();
     }
 
     private void setFreeSpaceText() {
-        TextView diskUsageTextView = (TextView) headerView.findViewById(R.id.diskUsage);
+        TextView diskUsageTextView = headerView.findViewById(R.id.diskUsage);
 
         String defaultValue = getString(R.string.pref_header_unit_default_value);
         String s = null;
@@ -215,9 +216,9 @@ public class FileActivity extends AppCompatActivity
         if (preferences.getBoolean(PREF_BOOKMARK_EDIT_MODE, false)) {
             item.setActionView(R.layout.editable_menu_item);
             View v = item.getActionView();
-            ImageButton deleteButton = (ImageButton) v.findViewById(R.id.menu_item_action_delete);
+            ImageButton deleteButton = v.findViewById(R.id.menu_item_action_delete);
             deleteButton.setOnClickListener(v0 -> removeBookmarkFromMenu(menu, s, bookmarks, item, bookmark));
-            ImageButton editButton = (ImageButton) v.findViewById(R.id.menu_item_action_edit);
+            ImageButton editButton = v.findViewById(R.id.menu_item_action_edit);
             editButton.setOnClickListener((v1) -> {
                 AlertDialog dia = new AlertDialog.Builder(this)
                         .setView(R.layout.layout_path_prompt)
@@ -275,7 +276,6 @@ public class FileActivity extends AppCompatActivity
 
     public void loadDirectory(String startDir) {
         ArrayList<FMFile> files;
-        FileActivity.verifyStoragePermissions(FileActivity.this);
         FileLoader fileLoader = new FileLoader(startDir);
         View errorText = findViewById(R.id.unableToLoadText);
         View emptyText = findViewById(R.id.emptyDirText);
@@ -284,7 +284,6 @@ public class FileActivity extends AppCompatActivity
             fileListView.setVisibility(VISIBLE);
             errorText.setVisibility(GONE);
             emptyText.setVisibility(GONE);
-
 
             FileArrayAdapter adapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, preferences.getString(PREF_SORT_FILES_BY, getString(R.string.pref_sortby_value_default))));
             fileListView.setAdapter(adapter);
@@ -398,7 +397,7 @@ public class FileActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (historyCounter > 0 && !historyMap.isEmpty()) {
@@ -479,7 +478,7 @@ public class FileActivity extends AppCompatActivity
                         OperationUtil.move(f, this, null);
                     }
                 }
-            } else if(fileOpContext.getFirst().equals(EXTRACT)) {
+            } else if (fileOpContext.getFirst().equals(EXTRACT)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     fileOpContext.getSecond().forEach((f) -> ArchiveUtil.extractArchive(currentDirectory, f));
                 } else { // -_-
@@ -542,22 +541,24 @@ public class FileActivity extends AppCompatActivity
             }
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    /*
-    @Deprecated
-    private void shareApplication() {
-        ApplicationInfo app = getApplicationContext().getApplicationInfo();
-        String filePath = app.sourceDir;
-        Intent intent = new Intent(Intent.ACTION_SEND); */
-    // intent.setType("*/*");
-        /*
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(filePath)));
-        startActivity(Intent.createChooser(intent, getResources().getString(R.string.share_app)));
-    }*/
+    public static void verifyStoragePermissions(Activity context) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    context,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
 
     @Override
     protected void onStop() {
@@ -588,7 +589,7 @@ public class FileActivity extends AppCompatActivity
             builder.setToolbarColor(getResources().getColor(R.color.primary));
         }
         CustomTabsIntent build = builder.build();
-        build.launchUrl(this, Uri.parse("https://fahlbtharz.k40s.net/FileManagerCompetition/lrkFM/issues/new"));
+        build.launchUrl(this, Uri.parse("https://git.k40s.net/FileManagerCompetition/lrkFM/issues/new"));
     }
 
     @SuppressLint("ApplySharedPref")
@@ -632,19 +633,6 @@ public class FileActivity extends AppCompatActivity
         startActivity(i);
     }
 
-    public static void verifyStoragePermissions(Activity context) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    context,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-        }
-    }
 
     public SharedPreferences getDefaultPreferences() {
         return preferences;

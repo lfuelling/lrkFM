@@ -13,6 +13,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -23,9 +25,10 @@ import io.lerk.lrkFM.entities.FMFile;
 import static android.widget.Toast.LENGTH_SHORT;
 
 /**
+ * Utility class for file operations.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  */
-
 public class OperationUtil {
 
     private static final String TAG = OperationUtil.class.getCanonicalName();
@@ -36,7 +39,7 @@ public class OperationUtil {
         String pathname;
 
         if (d != null) {
-            EditText editText = (EditText) d.findViewById(R.id.destinationPath);
+            EditText editText = d.findViewById(R.id.destinationPath);
             pathname = editText.getText().toString();
             if (pathname.isEmpty()) {
                 Toast.makeText(context, R.string.err_empty_input, LENGTH_SHORT).show();
@@ -48,7 +51,7 @@ public class OperationUtil {
 
         File destination = new File(pathname);
         final boolean[] success = {false};
-        if (destination.isDirectory() && !f.getDirectory()) {
+        if (destination.isDirectory() && !f.isDirectory()) {
             destination = new File(destination.getAbsolutePath() + File.separator + f.getName());
         }
         if (destination.exists()) {
@@ -68,7 +71,7 @@ public class OperationUtil {
         String pathname;
 
         if (d != null) {
-            EditText editText = (EditText) d.findViewById(R.id.destinationPath);
+            EditText editText = d.findViewById(R.id.destinationPath);
             pathname = editText.getText().toString();
             if (pathname.isEmpty()) {
                 Toast.makeText(context, R.string.err_empty_input, LENGTH_SHORT).show();
@@ -80,7 +83,7 @@ public class OperationUtil {
 
         File destination = new File(pathname);
         final boolean[] success = {false};
-        if (destination.isDirectory() && !f.getDirectory()) {
+        if (destination.isDirectory() && !f.isDirectory()) {
             destination = new File(destination.getAbsolutePath() + File.separator + f.getName());
         }
         if (!destination.isDirectory() && destination.exists()) {
@@ -98,7 +101,7 @@ public class OperationUtil {
 
     public static boolean rename(FMFile f, FileActivity context, AlertDialog d) {
         Log.d(TAG, "Starting rename...");
-        EditText editText = (EditText) d.findViewById(R.id.destinationName);
+        EditText editText = d.findViewById(R.id.destinationName);
         String newName = editText.getText().toString();
         if (newName.isEmpty()) {
             Toast.makeText(context, R.string.err_empty_input, LENGTH_SHORT).show();
@@ -120,28 +123,22 @@ public class OperationUtil {
 
 
     public static boolean deleteNoValidation(FMFile f) {
-        final boolean res;
-        if (!f.getFile().exists()) {
-            res = false;
-        } else {
-            res = f.getFile().delete();
-        }
-        return res;
+        return f.getFile().exists() && f.getFile().delete();
     }
 
 
     private static boolean doCopyNoValidation(FMFile f, File d) {
         try {
-            // TODO: use when O is backwards compatible
-            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //     Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            //} else {
-            if (f.getFile().isDirectory()) {
-                FileUtils.copyDirectory(f.getFile(), d);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
-                FileUtils.copyFile(f.getFile(), d);
+                if (f.getFile().isDirectory()) {
+                    FileUtils.copyDirectory(f.getFile(), d);
+                } else {
+                    FileUtils.copyFile(f.getFile(), d);
+                }
             }
-            // }
             return true;
         } catch (IOException e) {
             Log.e(TAG, "Unable to copy file!", e);
@@ -151,16 +148,15 @@ public class OperationUtil {
 
     private static boolean doMoveNoValidation(FMFile f, File d) {
         try {
-            // TODO: use when O is backwards compatible
-            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //     Files.move(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            // } else {
-            if (f.getFile().isDirectory()) {
-                FileUtils.moveDirectory(f.getFile(), d);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.move(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
-                FileUtils.moveFile(f.getFile(), d);
+                if (f.getFile().isDirectory()) {
+                    FileUtils.moveDirectory(f.getFile(), d);
+                } else {
+                    FileUtils.moveFile(f.getFile(), d);
+                }
             }
-            // }
             return true;
         } catch (IOException e) {
             Log.e(TAG, "Unable to move file!", e);
@@ -194,18 +190,17 @@ public class OperationUtil {
 
     public static void newDir(File d, FileActivity context) {
         if (!d.exists()) {
-            //try {
-            // TODO: use when O is backwards compatible
-            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //     Files.createDirectory(d.toPath());
-            // } else {
-            if (!d.mkdirs()) {
-                Toast.makeText(context, R.string.err_unable_to_mkdir, Toast.LENGTH_LONG).show();
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Files.createDirectory(d.toPath());
+                } else {
+                    if (!d.mkdirs()) {
+                        Toast.makeText(context, R.string.err_unable_to_mkdir, Toast.LENGTH_LONG).show();
+                    }
+                }
+            } catch (IOException e) {
+                Log.e(TAG, context.getString(R.string.err_unable_to_mkdir), e);
             }
-            //}
-            //} catch (IOException e) {
-            //    Log.e(TAG, context.getString(R.string.err_unable_to_mkdir), e);
-            //}
         } else {
             Toast.makeText(context, R.string.err_file_exists, Toast.LENGTH_LONG).show();
         }

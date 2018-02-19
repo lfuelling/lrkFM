@@ -16,9 +16,12 @@
         android:orderInCategory="2"
         android:title="@string/nav_bookmarks">
 
+        <!--suppress AndroidElementNotAllowed -->
         <group
             android:id="@+id/bookmarksMenuGroup"
             android:orderInCategory="0" />
+
+        <!--suppress AndroidElementNotAllowed -->
         <item
             android:id="@+id/nav_add_bookmark"
             android:icon="@drawable/ic_add_black_24dp"

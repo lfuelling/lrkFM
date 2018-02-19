@@ -8,20 +8,16 @@ jacocoAndroidUnitTestReport {
 }
 
 android {
-    compileSdkVersion 25 //TODO: change to 'android-O' once backwards compatibility is possible
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "io.lerk.lrkFM"
         minSdkVersion 23
-        targetSdkVersion 25
-        versionCode 19
-        versionName '1.1'
+        targetSdkVersion 27
+        versionCode 20
+        versionName '1.2'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        jackOptions {
-            enabled true
-            jackInProcess false
-        }
         dexOptions {
             preDexLibraries = false
             javaMaxHeapSize "4g"
@@ -61,21 +57,21 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.google.firebase:firebase-crash:10.2.0'
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:design:25.3.0'
-    compile 'com.android.support:customtabs:25.3.0'
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'commons-io:commons-io:2.5'
-    compile('com.github.junrar:junrar:0.7') {
+    implementation 'com.google.firebase:firebase-crash:11.8.0'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    implementation 'com.android.support:design:27.0.2'
+    implementation 'com.android.support:customtabs:27.0.2'
+    implementation 'com.android.support:multidex:1.0.2'
+    implementation 'commons-io:commons-io:2.5'
+    implementation('com.github.junrar:junrar:0.7') {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.2.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

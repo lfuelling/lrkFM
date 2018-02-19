@@ -41,10 +41,10 @@ public class FileLoader {
         if (parent != null) {
             location = parent;
         }
-        if(location == null || location.isEmpty()) {
+        if (location == null || location.isEmpty()) {
             location = "/";
         }
-        if(!location.startsWith("/")) {
+        if (!location.startsWith("/")) {
             throw new NoAccessException("Invalid path: " + location);
         }
         File locationFile = new File(location);
@@ -104,6 +104,7 @@ public class FileLoader {
 
     public class NoAccessException extends Exception implements Serializable {
         static final long serialVersionUID = 10L;
+
         NoAccessException(String message) {
             super(message);
         }
@@ -111,6 +112,7 @@ public class FileLoader {
 
     public class EmptyDirectoryException extends Exception implements Serializable {
         static final long serialVersionUID = 10L;
+
         EmptyDirectoryException(String message) {
             super(message);
         }

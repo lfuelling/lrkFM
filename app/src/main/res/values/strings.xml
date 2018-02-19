@@ -86,4 +86,6 @@
     <string name="switching_op_mode">Switching operation mode. Queue reset.</string>
     <string name="action_clear_op_context">Clear operation</string>
     <string name="extract">Extract</string>
+    <string name="a11y_desc_edit">Edit Item</string>
+    <string name="a11y_desc_delete">Delete Item</string>
 </resources>

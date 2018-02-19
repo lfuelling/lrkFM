@@ -14,10 +14,10 @@ public class FMFile {
 
     private static final String TAG = FMFile.class.getCanonicalName();
 
-    String name, permissions;
-    Date lastModified;
-    File file;
-    Boolean directory;
+    private String name, permissions;
+    private Date lastModified;
+    private File file;
+    private Boolean directory;
 
     /**
      * Constructor.
@@ -43,29 +43,16 @@ public class FMFile {
         this.name = name;
     }
 
-    public Boolean getDirectory() {
+    public Boolean isDirectory() {
         return directory;
-    }
-
-    public void setDirectory(Boolean directory) {
-        this.directory = directory;
     }
 
     public String getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(String permissions) {
-        this.permissions = permissions;
-    }
-
-
     public Date getLastModified() {
         return lastModified;
-    }
-
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
     }
 
     public File getFile() {
