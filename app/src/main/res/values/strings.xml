@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">lrkFM</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="nav_app">App</string>
     <string name="settings">Settings</string>
     <string name="share">Share</string>
@@ -57,7 +55,6 @@
     <string name="new_directory">New Directory</string>
     <string name="err_file_exists">The specified file already exists!</string>
     <string name="err_unable_to_mkdir">Unable to create directory!</string>
-
     <string name="file_icon_desc">Icon that shows if the element is a file or a directory.</string>
     <string name="context_btn_desc">Opens the file operations context menu.</string>
     <string name="action_reload_view">Reload</string>
@@ -89,4 +86,6 @@
     <string name="extract">Extract</string>
     <string name="a11y_desc_edit">Edit Item</string>
     <string name="a11y_desc_delete">Delete Item</string>
+    <string name="copy_path">Copy Path</string>
+    <string name="file_location">File Location</string>
 </resources>

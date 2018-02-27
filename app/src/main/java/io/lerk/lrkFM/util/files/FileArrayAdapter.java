@@ -30,6 +30,7 @@ import java.util.List;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.util.ArchiveUtil;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.activities.FileActivity.PREF_FILENAME_LENGTH;
@@ -121,7 +122,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     }
 
     /**
-     * Utility class to create an AlertDialog.
+     * Utility method to create an AlertDialog.
      *
      * @param positiveBtnText  the text of the positive button
      * @param title            the title
@@ -213,6 +214,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             }
             if (fileImage != null) {
                 if (!f.isDirectory()) {
+                    if(f.getExtension().equals(ArchiveUtil.ZIP_EXTENSION) || f.getExtension().equals(ArchiveUtil.RAR_EXTENSION)) {
+                        fileImage.setImageDrawable(getContext().getDrawable(R.drawable.ic_perm_media_black_24dp));
+                    }
                     fileImage.setImageDrawable(getContext().getDrawable(R.drawable.ic_insert_drive_file_black_24dp));
                 }
             }

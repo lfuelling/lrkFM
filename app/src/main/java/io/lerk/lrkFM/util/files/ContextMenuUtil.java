@@ -1,12 +1,17 @@
 package io.lerk.lrkFM.util.files;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.Objects;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
@@ -23,7 +28,6 @@ import static io.lerk.lrkFM.util.files.OperationUtil.Operation.MOVE;
 /**
  * @author Lukas Fülling (lukas@k40s.net)
  */
-
 class ContextMenuUtil {
 
     private static final int ID_COPY = 0;
@@ -32,6 +36,7 @@ class ContextMenuUtil {
     private static final int ID_DELETE = 3;
     private static final int ID_EXTRACT = 4;
     private static final int ID_SHARE = 5;
+    private static final int ID_COPY_PATH = 6;
 
     private static final String TAG = ContextMenuUtil.class.getCanonicalName();
     private final FileActivity activity;
@@ -57,6 +62,7 @@ class ContextMenuUtil {
         addExtractToMenu(f, menu);
         addShareToMenu(f, menu);
         addDeleteToMenu(f, menu);
+        addCopyPathToMenu(f, menu);
     }
 
     /**
@@ -206,6 +212,19 @@ class ContextMenuUtil {
                 alertDialog.show();
             }
             activity.reloadCurrentDirectory();
+            return true;
+        });
+    }
+
+    /**
+     * Adds "copy path" to menu.
+     *
+     * @param f    the file
+     * @param menu the menu
+     */
+    private void addCopyPathToMenu(FMFile f, ContextMenu menu) {
+        menu.add(0, ID_COPY_PATH, 0, R.string.copy_path).setOnMenuItemClickListener(item -> {
+            ((ClipboardManager) Objects.requireNonNull(activity.getSystemService(Context.CLIPBOARD_SERVICE))).setPrimaryClip(ClipData.newPlainText(activity.getString(R.string.file_location), f.getFile().getAbsolutePath()));
             return true;
         });
     }

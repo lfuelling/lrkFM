@@ -70,4 +70,9 @@
     <string name="action_paste">Einfügen</string>
     <string name="switching_op_mode">Aktionsmodus geändert, Auswahl zurückgesetzt.</string>
     <string name="action_clear_op_context">Auswahl zurücksetzen</string>
+    <string name="extract">Entpacken</string>
+    <string name="a11y_desc_edit">Objekt Bearbeiten</string>
+    <string name="a11y_desc_delete">Objekt Löschen</string>
+    <string name="copy_path">Pfad kopieren</string>
+    <string name="file_location">Dateipfad</string>
 </resources>
