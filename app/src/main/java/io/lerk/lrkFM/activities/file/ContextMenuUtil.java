@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util.files;
+package io.lerk.lrkFM.activities.file;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
@@ -11,19 +11,20 @@ import android.view.ContextMenu;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.util.ArchiveUtil;
+import io.lerk.lrkFM.util.EditablePair;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.activities.FileActivity.PREF_USE_CONTEXT_FOR_OPS;
-import static io.lerk.lrkFM.activities.FileActivity.PREF_USE_CONTEXT_FOR_OPS_TOAST;
-import static io.lerk.lrkFM.util.files.OperationUtil.Operation.COPY;
-import static io.lerk.lrkFM.util.files.OperationUtil.Operation.EXTRACT;
-import static io.lerk.lrkFM.util.files.OperationUtil.Operation.MOVE;
+import static io.lerk.lrkFM.activities.file.FileActivity.PREF_USE_CONTEXT_FOR_OPS;
+import static io.lerk.lrkFM.activities.file.FileActivity.PREF_USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.COPY;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.CREATE_ZIP;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.EXTRACT;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.MOVE;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
@@ -37,6 +38,8 @@ class ContextMenuUtil {
     private static final int ID_EXTRACT = 4;
     private static final int ID_SHARE = 5;
     private static final int ID_COPY_PATH = 6;
+    private static final int ID_ADD_TO_ZIP = 7;
+    private static final int ID_CREATE_ZIP = 8;
 
     private static final String TAG = ContextMenuUtil.class.getCanonicalName();
     private final FileActivity activity;
@@ -63,6 +66,7 @@ class ContextMenuUtil {
         addShareToMenu(f, menu);
         addDeleteToMenu(f, menu);
         addCopyPathToMenu(f, menu);
+        addCreateZipToMenu(f, menu);
     }
 
     /**
@@ -103,13 +107,19 @@ class ContextMenuUtil {
                         if (activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
                             Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + zip.getName(), LENGTH_SHORT).show();
                         }
+
+                        new AlertDialog.Builder(activity)
+                                .setView(R.layout.layout_extract_now_prompt)
+                                .setPositiveButton(R.string.yes, (dialog, which) -> activity.finishFileOperation())
+                                .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+
                     } else {
                         AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
                                 R.string.extract,
                                 R.string.op_destination,
                                 R.drawable.ic_present_to_all_black_24dp,
                                 R.layout.layout_path_prompt,
-                                (d) -> ArchiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), zip),
+                                (d) -> ArchiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), zip, activity),
                                 (d) -> Log.d(TAG, "Cancelled."));
                         alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(zip, alertDialog));
                         alertDialog.show();
@@ -227,5 +237,47 @@ class ContextMenuUtil {
             ((ClipboardManager) Objects.requireNonNull(activity.getSystemService(Context.CLIPBOARD_SERVICE))).setPrimaryClip(ClipData.newPlainText(activity.getString(R.string.file_location), f.getFile().getAbsolutePath()));
             return true;
         });
+    }
+
+    /**
+     * Adds "Create zip" and "add to zip" to menu.
+     *
+     * @param f    the file
+     * @param menu the menu
+     */
+    private void addCreateZipToMenu(FMFile f, ContextMenu menu) {
+
+        EditablePair<OperationUtil.Operation, ArrayList<FMFile>> fileOpContext = activity.getFileOpContext();
+
+        boolean zipFileReady = fileOpContext.getFirst().equals(CREATE_ZIP) && fileOpContext.getSecond().size() >= 1;
+
+        menu.add(0, ID_ADD_TO_ZIP, 0, (zipFileReady) ? activity.getString(R.string.add_to_zip) : activity.getString(R.string.new_zip_file)).setOnMenuItemClickListener(item -> {
+            activity.addFileToOpContext(CREATE_ZIP, f);
+            if (activity.getDefaultPreferences().getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
+                Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + f.getName(), LENGTH_SHORT).show();
+            }
+            activity.reloadCurrentDirectory();
+            return true;
+        });
+
+        if (zipFileReady) {
+            menu.add(0, ID_CREATE_ZIP, 0, activity.getString(R.string.create_zip_file)).setOnMenuItemClickListener(item -> {
+                if (fileOpContext.getFirst().equals(CREATE_ZIP)) {
+                    AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
+                            R.string.create_zip_file,
+                            R.string.op_destination,
+                            R.drawable.ic_archive_black_24dp,
+                            R.layout.layout_name_prompt,
+                            (d) -> OperationUtil.createZipFile(fileOpContext.getSecond(), activity, d),
+                            (d) -> Log.d(TAG, "Cancelled."));
+                    alertDialog.show();
+                    activity.reloadCurrentDirectory();
+                    return true;
+                } else {
+                    Log.w(TAG, "Illegal operation mode. Expected " + CREATE_ZIP + " but was: " + fileOpContext.getFirst());
+                }
+                return false;
+            }).setVisible(fileOpContext.getFirst().equals(CREATE_ZIP));
+        }
     }
 }

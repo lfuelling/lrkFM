@@ -88,4 +88,11 @@
     <string name="a11y_desc_delete">Delete Item</string>
     <string name="copy_path">Copy Path</string>
     <string name="file_location">File Location</string>
+    <string name="new_zip_file">New ZIP FIle</string>
+    <string name="add_to_zip">Add to ZIP file</string>
+    <string name="create_zip_file">Create ZIP File</string>
+    <string name="unable_to_create_zip_file">Unable to create ZIP file! (IOException)</string>
+    <string name="err_invalid_input_zip">Invalid input for file name.</string>
+    <string name="no">No</string>
+    <string name="extract_in_this_directory_prompt_text">Do you want to extract the archive into this directory?\n\nIf you click no, you can navigate to another directory and select \'Extract\' from the menu.</string>
 </resources>

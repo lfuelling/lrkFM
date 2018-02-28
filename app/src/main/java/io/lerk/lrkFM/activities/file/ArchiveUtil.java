@@ -1,15 +1,13 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM.activities.file;
 
 import android.util.Log;
 
 import com.github.junrar.extract.ExtractArchive;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -33,16 +31,19 @@ public class ArchiveUtil {
         return new File(destination).isDirectory();
     }
 
-    public static boolean extractArchive(String path, FMFile f) {
+    public static boolean extractArchive(String path, FMFile f, FileActivity context) {
+        boolean result = false;
         if (f.getExtension().equals(RAR_EXTENSION)) {
-            return unpackRar(path, f);
+            result = unpackRar(path, f);
+
         } else { //noinspection SimplifiableIfStatement
             if (f.getExtension().equals(ZIP_EXTENSION)) {
-                return unpackZip(path, f);
-            } else {
-                return false;
+                result = unpackZip(path, f);
             }
-        } //TODO: cleanup when implementing next file type
+        }
+        context.clearFileOpCache();
+        context.reloadCurrentDirectory();
+        return result;
     }
 
     /**
@@ -56,10 +57,10 @@ public class ArchiveUtil {
     private static boolean unpackZip(String path, FMFile zip) {
         byte[] buffer = new byte[1024];
 
-        try{
+        try {
             //create output directory is not exists
             File folder = new File(path);
-            if(!folder.exists()){
+            if (!folder.exists()) {
                 folder.mkdirs();
             }
             //get the zip file content
@@ -68,10 +69,10 @@ public class ArchiveUtil {
             //get the zipped file list entry
             ZipEntry ze = zis.getNextEntry();
 
-            while(ze!=null){
+            while (ze != null) {
                 String fileName = ze.getName();
                 File newFile = new File(path + File.separator + fileName);
-                System.out.println("file unzip : "+ newFile.getAbsoluteFile());
+                System.out.println("file unzip : " + newFile.getAbsoluteFile());
 
                 //create all non exists folders
                 //else you will hit FileNotFoundException for compressed folder
@@ -86,9 +87,9 @@ public class ArchiveUtil {
             }
             zis.closeEntry();
             zis.close();
-        }catch(IOException ex){
-          Log.e(TAG,"Unable to extract zip!", ex);
-          return false;
+        } catch (IOException ex) {
+            Log.e(TAG, "Unable to extract zip!", ex);
+            return false;
         }
         return true;
     }

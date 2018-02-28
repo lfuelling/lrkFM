@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util.files;
+package io.lerk.lrkFM.activities.file;
 
 import android.app.AlertDialog;
 import android.os.Build;
@@ -9,17 +9,24 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseException;
+import com.google.firebase.crash.FirebaseCrash;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -62,6 +69,8 @@ public class OperationUtil {
         } else {
             success[0] = doCopyNoValidation(f, destination);
         }
+        context.clearFileOpCache();
+        context.reloadCurrentDirectory();
         return success[0];
     }
 
@@ -94,6 +103,8 @@ public class OperationUtil {
         } else {
             success[0] = doMoveNoValidation(f, destination);
         }
+        context.clearFileOpCache();
+        context.reloadCurrentDirectory();
         return success[0];
 
     }
@@ -117,6 +128,8 @@ public class OperationUtil {
             } else {
                 success[0] = doMoveNoValidation(f, destination);
             }
+            context.clearFileOpCache();
+            context.reloadCurrentDirectory();
             return success[0];
         }
     }
@@ -206,10 +219,83 @@ public class OperationUtil {
         }
     }
 
+    public static boolean createZipFile(ArrayList<FMFile> files, FileActivity context, AlertDialog d) {
+        Log.d(TAG, "Creating ZIP...");
+
+        EditText editText = d.findViewById(R.id.destinationName);
+        String fileName = editText.getText().toString();
+        if (fileName.isEmpty() || fileName.startsWith("/")) {
+            Toast.makeText(context, R.string.err_invalid_input_zip, LENGTH_SHORT).show();
+            return false;
+        } else if (!fileName.endsWith(".zip")) {
+            fileName = fileName + ".zip";
+        }
+
+        File destination = new File(context.getCurrentDirectory() + "/" + fileName);
+        final boolean[] success = {false};
+        if (destination.exists()) {
+            AlertDialog.Builder builder = getFileExistsDialogBuilder(context);
+            final File tdest = destination; //for lambda
+            builder.setOnDismissListener(dialogInterface -> success[0] = doCreateZipNoValidation(files, tdest, context))
+                    .setOnCancelListener(dialogInterface -> success[0] = false).show();
+        } else {
+            success[0] = doCreateZipNoValidation(files, destination, context);
+        }
+        context.clearFileOpCache();
+        context.reloadCurrentDirectory();
+        return success[0];
+    }
+
+    private static boolean doCreateZipNoValidation(ArrayList<FMFile> files, File destination, FileActivity context) {
+        try {
+            FileOutputStream fos = new FileOutputStream(destination);
+            ZipOutputStream zipOut = new ZipOutputStream(fos);
+            for (FMFile f : files) {
+                zipFile(f.getFile(), f.getName(), zipOut);
+            }
+            zipOut.close();
+            fos.close();
+
+            return true;
+        } catch (IOException e) {
+            Toast.makeText(context, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
+            FirebaseCrash.report(e);
+        }
+        return false;
+    }
+
+    /**
+     * Adds a file to a ZipInputStream. Also walks subdirectories.
+     *
+     * @param f    the file
+     * @param name the filename
+     * @param zos  the ZipOutputStream
+     * @throws IOException when there is an error
+     */
+    private static void zipFile(File f, String name, ZipOutputStream zos) throws IOException {
+        if (f.isDirectory()) {
+            File[] children = f.listFiles();
+            for (File childFile : children) {
+                zipFile(childFile, name + "/" + childFile.getName(), zos);
+            }
+            return;
+        }
+        FileInputStream fis = new FileInputStream(f);
+        ZipEntry zipEntry = new ZipEntry(name);
+        zos.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zos.write(bytes, 0, length);
+        }
+        fis.close();
+    }
+
     public enum Operation {
         COPY(R.string.copy),
         MOVE(R.string.move),
         EXTRACT(R.string.extract),
+        CREATE_ZIP(R.string.new_zip_file),
         NONE(R.string.todo);
 
         private final int title;

@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util.files;
+package io.lerk.lrkFM.activities.file;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -28,12 +28,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.util.ArchiveUtil;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.activities.FileActivity.PREF_FILENAME_LENGTH;
+import static io.lerk.lrkFM.activities.file.FileActivity.PREF_FILENAME_LENGTH;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
@@ -114,6 +112,9 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     private String getSizeFormatted(FMFile f) {
         String[] units = new String[]{"B", "KiB", "MiB", "GiB", "TiB", "PiB"};
         Long length = f.getFile().length();
+        if(length.equals(0L)) {
+            return "0";
+        }
         Double number = Math.floor(Math.log(length) / Math.log(1024));
         Double pow = Math.pow(1024, Math.floor(number));
         Double d = length / pow;

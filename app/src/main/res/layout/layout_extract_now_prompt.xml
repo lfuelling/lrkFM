@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/extract_in_this_directory_prompt_text"
+        android:textAlignment="center"
+        android:layout_marginStart="@dimen/file_view_margin"
+        android:layout_marginEnd="@dimen/file_view_margin"
+        android:layout_marginTop="@dimen/file_view_margin"/>
+</RelativeLayout>

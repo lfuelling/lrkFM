@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.activities;
+package io.lerk.lrkFM.activities.file;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -36,6 +36,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,22 +48,20 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.activities.SettingsActivity;
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.util.ArchiveUtil;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.util.EditablePair;
-import io.lerk.lrkFM.util.files.FileArrayAdapter;
-import io.lerk.lrkFM.util.files.FileLoader;
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.util.files.OperationUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static io.lerk.lrkFM.util.files.OperationUtil.Operation.COPY;
-import static io.lerk.lrkFM.util.files.OperationUtil.Operation.EXTRACT;
-import static io.lerk.lrkFM.util.files.OperationUtil.Operation.MOVE;
-import static io.lerk.lrkFM.util.files.OperationUtil.Operation.NONE;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.COPY;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.CREATE_ZIP;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.EXTRACT;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.MOVE;
+import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.NONE;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -94,7 +94,9 @@ public class FileActivity extends AppCompatActivity
     private View headerView;
     private HashMap<Integer, String> historyMap;
     private Integer historyCounter;
+    private FileArrayAdapter arrayAdapter;
     private EditablePair<OperationUtil.Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
+    private FirebaseAnalytics analytics;
 
     public ListView getFileListView() {
         return fileListView;
@@ -126,6 +128,8 @@ public class FileActivity extends AppCompatActivity
             builder.detectCleartextNetwork();
         }
         StrictMode.setVmPolicy(builder.build());
+
+        analytics = FirebaseAnalytics.getInstance(this);
 
         FileActivity.verifyStoragePermissions(FileActivity.this);
 
@@ -285,8 +289,8 @@ public class FileActivity extends AppCompatActivity
             errorText.setVisibility(GONE);
             emptyText.setVisibility(GONE);
 
-            FileArrayAdapter adapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, preferences.getString(PREF_SORT_FILES_BY, getString(R.string.pref_sortby_value_default))));
-            fileListView.setAdapter(adapter);
+            arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, preferences.getString(PREF_SORT_FILES_BY, getString(R.string.pref_sortby_value_default))));
+            fileListView.setAdapter(arrayAdapter);
         } catch (FileLoader.NoAccessException e) {
             Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
             fileListView.setVisibility(GONE);
@@ -454,13 +458,13 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
-    private void clearFileOpCache() {
+    void clearFileOpCache() {
         fileOpContext.setFirst(NONE);
         fileOpContext.setSecond(new ArrayList<>());
         reloadCurrentDirectory();
     }
 
-    private void finishFileOperation() {
+     void finishFileOperation() {
         if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
             if (fileOpContext.getFirst().equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -480,17 +484,25 @@ public class FileActivity extends AppCompatActivity
                 }
             } else if (fileOpContext.getFirst().equals(EXTRACT)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> ArchiveUtil.extractArchive(currentDirectory, f));
+                    fileOpContext.getSecond().forEach((f) -> ArchiveUtil.extractArchive(currentDirectory, f, this));
                 } else { // -_-
                     for (FMFile f : fileOpContext.getSecond()) {
-                        ArchiveUtil.extractArchive(currentDirectory, f);
+                        ArchiveUtil.extractArchive(currentDirectory, f, this);
                     }
                 }
+            } else if(fileOpContext.getFirst().equals(CREATE_ZIP)) {
+                AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
+                        R.string.create_zip_file,
+                        R.string.op_destination,
+                        R.drawable.ic_archive_black_24dp,
+                        R.layout.layout_name_prompt,
+                        (d) -> OperationUtil.createZipFile(fileOpContext.getSecond(), this, d),
+                        (d) -> Log.d(TAG, "Cancelled."));
+                alertDialog.show();
             }
         } else {
             Log.w(TAG, "No operation set!");
         }
-        clearFileOpCache();
     }
 
     public String getCurrentDirectory() {
@@ -547,16 +559,9 @@ public class FileActivity extends AppCompatActivity
     }
 
     public static void verifyStoragePermissions(Activity context) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    context,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
+            ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }
     }
 
@@ -581,6 +586,7 @@ public class FileActivity extends AppCompatActivity
     }
 
     private void launchBugReportTab() {
+        logEvent("report_bug", new Bundle());
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             builder.setToolbarColor(getColor(R.color.primary));
@@ -594,6 +600,7 @@ public class FileActivity extends AppCompatActivity
 
     @SuppressLint("ApplySharedPref")
     private void promptAndAddBookmark() {
+        logEvent("add_bookmark", new Bundle());
         Set<String> stringSet = preferences.getStringSet(PREF_BOOKMARKS, new HashSet<>());
         if (preferences.getBoolean(PREF_BOOKMARK_CURRENT_FOLDER, false)) {
             stringSet.add(currentDirectory);
@@ -617,6 +624,7 @@ public class FileActivity extends AppCompatActivity
     }
 
     private void promptAndLoadPath() {
+        logEvent("open_path_prompt", new Bundle());
         AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
         bookmarkDialogBuilder
                 .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Cancel pressed!"))
@@ -651,5 +659,15 @@ public class FileActivity extends AppCompatActivity
 
     public EditablePair<OperationUtil.Operation, ArrayList<FMFile>> getFileOpContext() {
         return fileOpContext;
+    }
+
+    /**
+     * Logs event with Firebase.
+     *
+     * @param label the label
+     * @param bundle the event content
+     */
+    public void logEvent(String label, Bundle bundle){
+        analytics.logEvent(label, bundle);
     }
 }
