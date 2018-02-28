@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.widget.EditText;
@@ -108,11 +109,14 @@ class ContextMenuUtil {
                             Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + zip.getName(), LENGTH_SHORT).show();
                         }
 
-                        new AlertDialog.Builder(activity)
-                                .setView(R.layout.layout_extract_now_prompt)
-                                .setPositiveButton(R.string.yes, (dialog, which) -> activity.finishFileOperation())
-                                .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
-
+                        if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(FileActivity.PREF_ALWAYS_EXTRACT_IN_CURRENT_DIR, false)) {
+                            activity.finishFileOperation();
+                        } else {
+                            new AlertDialog.Builder(activity)
+                                    .setView(R.layout.layout_extract_now_prompt)
+                                    .setPositiveButton(R.string.yes, (dialog, which) -> activity.finishFileOperation())
+                                    .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                        }
                     } else {
                         AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
                                 R.string.extract,

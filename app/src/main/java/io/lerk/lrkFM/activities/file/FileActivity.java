@@ -80,6 +80,7 @@ public class FileActivity extends AppCompatActivity
     private static final String PREF_SORT_FILES_BY = "sort_files_by";
     public static final String PREF_USE_CONTEXT_FOR_OPS = "context_for_ops";
     public static final String PREF_USE_CONTEXT_FOR_OPS_TOAST = "context_for_ops_toast";
+    public static final String PREF_ALWAYS_EXTRACT_IN_CURRENT_DIR = "always_extract_in_current_folder";
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE

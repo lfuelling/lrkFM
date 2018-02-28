@@ -14,4 +14,5 @@
     <dimen name="nav_header_padding_top">40dp</dimen>
     <dimen name="file_size_margin">12dp</dimen>
     <dimen name="status_bar_size">20dp</dimen>
+    <dimen name="context_menu_margin">8dp</dimen>
 </resources>
