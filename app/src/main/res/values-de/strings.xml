@@ -36,7 +36,7 @@
     <string name="warn_file_exists_title">Datei existiert</string>
     <string name="warn_file_exists_msg">Die Datei wird überschrieben. Willst du wirklich fortfahren?</string>
     <string name="delete">Löschen</string>
-    <string name="warn_delete_msg">Bist du sicher, dass folgender Ordner gelöscht werden soll:</string>
+    <string name="warn_delete_msg">Bist du sicher, dass folgender Ordner gelöscht werden soll:&nbsp;</string>
     <string name="move">Verschieben</string>
     <string name="rename">Umbenennen</string>
     <string name="name_input_hint">Dateiname</string>
@@ -75,4 +75,11 @@
     <string name="a11y_desc_delete">Objekt Löschen</string>
     <string name="copy_path">Pfad kopieren</string>
     <string name="file_location">Dateipfad</string>
+    <string name="new_zip_file">Neue ZIP Datei</string>
+    <string name="add_to_zip">Zur ZIP hinzufügen</string>
+    <string name="create_zip_file">ZIP Datei erstellen</string>
+    <string name="unable_to_create_zip_file">Fehler beim erstellen der ZIP-Datei! (IOException)</string>
+    <string name="err_invalid_input_zip">Ungültige Eingabe!</string>
+    <string name="no">Nein</string>
+    <string name="extract_in_this_directory_prompt_text">Soll das Archiv in den momentanen Ordner entpackt werden?\n\nFalls nein ausgewählt wird, kann das Archiv in einem anderen Ordner über das Menü entpackt werden.</string>
 </resources>
