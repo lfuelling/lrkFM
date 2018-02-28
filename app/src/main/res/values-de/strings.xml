@@ -36,7 +36,7 @@
     <string name="warn_file_exists_title">Datei existiert</string>
     <string name="warn_file_exists_msg">Die Datei wird überschrieben. Willst du wirklich fortfahren?</string>
     <string name="delete">Löschen</string>
-    <string name="warn_delete_msg">Bist du sicher, dass folgender Ordner gelöscht werden soll:&nbsp;</string>
+    <string name="warn_delete_msg">Bist du sicher, dass folgender Ordner gelöscht werden soll: </string>
     <string name="move">Verschieben</string>
     <string name="rename">Umbenennen</string>
     <string name="name_input_hint">Dateiname</string>
