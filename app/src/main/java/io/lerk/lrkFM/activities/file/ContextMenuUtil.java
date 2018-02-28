@@ -55,7 +55,7 @@ class ContextMenuUtil {
      * Adds menu buttons to context menu.
      *
      * @param f        the file
-     * @param fileName the file name for the title TODO: refactor, get name in this class
+     * @param fileName the file name for the title
      * @param menu     the context menu to fill
      */
     void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {

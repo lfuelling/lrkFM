@@ -82,4 +82,7 @@
     <string name="err_invalid_input_zip">Ungültige Eingabe!</string>
     <string name="no">Nein</string>
     <string name="extract_in_this_directory_prompt_text">Soll das Archiv in den momentanen Ordner entpackt werden?\n\nFalls nein ausgewählt wird, kann das Archiv in einem anderen Ordner über das Menü entpackt werden.</string>
+    <string name="pref_always_extract_in_current_folder">Immer im momentanen Ordner entpacken</string>
+    <string name="pref_always_extract_in_current_folder_desc">Falls aktiviert, werden alle Archive im momentanen Ordner entpackt.</string>
+    <string name="free">frei</string>
 </resources>

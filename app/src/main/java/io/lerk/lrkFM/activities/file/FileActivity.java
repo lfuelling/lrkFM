@@ -178,9 +178,9 @@ public class FileActivity extends AppCompatActivity
         String s = null;
         String nav_header_unit = preferences.getString("nav_header_unit", defaultValue);
         if (nav_header_unit.equals(getString(R.string.pref_header_unit_m_value))) {
-            s = DiskUtil.freeSpaceMebi(true) + " MiB free";
+            s = DiskUtil.freeSpaceMebi(true) + " MiB " + getString(R.string.free);
         } else if (nav_header_unit.equals(getString(R.string.pref_header_unit_g_value))) {
-            s = DiskUtil.freeSpaceGibi(true) + " GiB free";
+            s = DiskUtil.freeSpaceGibi(true) + " GiB " + getString(R.string.free);
         }
         if (s == null) {
             Log.e(TAG, "Unable to get free space! requested: " + nav_header_unit);
