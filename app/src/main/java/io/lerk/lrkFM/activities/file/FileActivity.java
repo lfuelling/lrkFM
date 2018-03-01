@@ -41,6 +41,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -315,14 +317,14 @@ public class FileActivity extends AppCompatActivity
                 files.sort(Comparator.comparing(FMFile::getName));
             } else { // FUCKING OUT OF DATE USERS >.<
                 //noinspection ComparatorCombinators,RedundantCast
-                Arrays.sort((FMFile[]) files.toArray(), (o1, o2) -> o1.getName().compareTo(o2.getName()));
+                Arrays.sort((FMFile[]) files.toArray(new FMFile[files.size()]), (o1, o2) -> o1.getName().compareTo(o2.getName()));
             }
         } else if (pref.equals(getString(R.string.pref_sortby_value_date))) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 files.sort(Comparator.comparing(FMFile::getLastModified));
             } else { // you see how beautiful the code above is?
                 //noinspection ComparatorCombinators,RedundantCast
-                Arrays.sort((FMFile[]) files.toArray(), (o1, o2) -> o1.getLastModified().compareTo(o2.getLastModified()));
+                Arrays.sort((FMFile[]) files.toArray(new FMFile[files.size()]), (o1, o2) -> o1.getLastModified().compareTo(o2.getLastModified()));
             }
         } else {
             Log.d(TAG, "This sort method is not implemented, skipping file sort!");
