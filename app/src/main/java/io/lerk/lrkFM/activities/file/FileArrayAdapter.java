@@ -24,6 +24,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -44,7 +47,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     private FileActivity activity;
 
-    public FileArrayAdapter(Context context, int resource, List<FMFile> items) {
+    FileArrayAdapter(Context context, int resource, List<FMFile> items) {
         super(context, resource, items);
         if (context instanceof FileActivity) {
             this.activity = (FileActivity) context;
@@ -65,15 +68,21 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      * @param f the file
      */
     private void openFile(FMFile f) {
+        Trace trace = FirebasePerformance.getInstance().newTrace("open_file");
+        trace.start();
         Intent i = new Intent(Intent.ACTION_VIEW);
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(f.getExtension());
+        trace.putAttribute("mime_type", mimeType != null ? mimeType : "null");
         i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             getContext().startActivity(i);
+            trace.putAttribute("unknown", "false");
         } catch (ActivityNotFoundException e) {
+            trace.putAttribute("unknown", "true");
             Toast.makeText(getContext(), R.string.no_app_to_handle_file, LENGTH_SHORT).show();
         }
+        trace.stop();
     }
 
     /**

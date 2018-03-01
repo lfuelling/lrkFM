@@ -3,6 +3,9 @@ package io.lerk.lrkFM.activities.file;
 import android.util.Log;
 
 import com.github.junrar.extract.ExtractArchive;
+import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,8 +30,13 @@ public class ArchiveUtil {
      * @return if the destination is a directory after extracting
      */
     private static boolean unpackRar(String destination, FMFile rar) {
+        Trace trace = FirebasePerformance.getInstance().newTrace("extract_rar");
+        trace.start();
         new ExtractArchive().extractArchive(rar.getFile(), new File(destination));
-        return new File(destination).isDirectory();
+        boolean success = new File(destination).isDirectory();
+        trace.putAttribute("success", String.valueOf(success));
+        trace.stop();
+        return success;
     }
 
     public static boolean extractArchive(String path, FMFile f, FileActivity context) {
@@ -57,15 +65,16 @@ public class ArchiveUtil {
     private static boolean unpackZip(String path, FMFile zip) {
         byte[] buffer = new byte[1024];
 
+        Trace trace = FirebasePerformance.getInstance().newTrace("extract_zip");
+        trace.start();
         try {
             //create output directory is not exists
             File folder = new File(path);
             if (!folder.exists()) {
-                folder.mkdirs();
+                trace.putAttribute("mkdir_success", String.valueOf(folder.mkdirs()));
             }
             //get the zip file content
-            ZipInputStream zis =
-                    new ZipInputStream(new FileInputStream(zip.getFile()));
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zip.getFile()));
             //get the zipped file list entry
             ZipEntry ze = zis.getNextEntry();
 
@@ -87,8 +96,13 @@ public class ArchiveUtil {
             }
             zis.closeEntry();
             zis.close();
+            trace.putAttribute("unpack_success", "true");
+            trace.stop();
         } catch (IOException ex) {
             Log.e(TAG, "Unable to extract zip!", ex);
+            trace.putAttribute("unpack_success", "true");
+            trace.stop();
+            FirebaseCrash.report(ex);
             return false;
         }
         return true;

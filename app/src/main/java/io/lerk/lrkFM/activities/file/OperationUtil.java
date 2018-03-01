@@ -9,14 +9,14 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.FirebaseException;
 import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -247,6 +247,8 @@ public class OperationUtil {
     }
 
     private static boolean doCreateZipNoValidation(ArrayList<FMFile> files, File destination, FileActivity context) {
+        Trace trace = FirebasePerformance.getInstance().newTrace("create_zip");
+        trace.start();
         try {
             FileOutputStream fos = new FileOutputStream(destination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
@@ -255,11 +257,14 @@ public class OperationUtil {
             }
             zipOut.close();
             fos.close();
-
+            trace.putAttribute("success", "true");
+            trace.stop();
             return true;
         } catch (IOException e) {
             Toast.makeText(context, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
             FirebaseCrash.report(e);
+            trace.putAttribute("success", "false");
+            trace.stop();
         }
         return false;
     }

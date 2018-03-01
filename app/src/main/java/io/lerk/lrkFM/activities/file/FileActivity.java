@@ -216,6 +216,7 @@ public class FileActivity extends AppCompatActivity
     }
 
     private void addBookmarkToMenu(Menu menu, String s, Set<String> bookmarks) {
+        FirebaseAnalytics.getInstance(this).logEvent("bookmark_created", new Bundle());
         String title = getTitleFromPath(s);
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
         item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
