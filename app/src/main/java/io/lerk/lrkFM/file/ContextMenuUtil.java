@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.activities.file;
+package io.lerk.lrkFM.file;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
@@ -16,16 +16,21 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.operations.ArchiveUtil;
+import io.lerk.lrkFM.operations.Operation;
+import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.EditablePair;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.activities.file.FileActivity.PREF_USE_CONTEXT_FOR_OPS;
-import static io.lerk.lrkFM.activities.file.FileActivity.PREF_USE_CONTEXT_FOR_OPS_TOAST;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.COPY;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.CREATE_ZIP;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.EXTRACT;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.MOVE;
+import static io.lerk.lrkFM.operations.Operation.COPY;
+import static io.lerk.lrkFM.operations.Operation.CREATE_ZIP;
+import static io.lerk.lrkFM.operations.Operation.EXTRACT;
+import static io.lerk.lrkFM.operations.Operation.MOVE;
+import static io.lerk.lrkFM.util.Consts.PREF_ALWAYS_EXTRACT_IN_CURRENT_DIR;
+import static io.lerk.lrkFM.util.Consts.PREF_USE_CONTEXT_FOR_OPS;
+import static io.lerk.lrkFM.util.Consts.PREF_USE_CONTEXT_FOR_OPS_TOAST;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
@@ -109,7 +114,7 @@ class ContextMenuUtil {
                             Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + zip.getName(), LENGTH_SHORT).show();
                         }
 
-                        if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(FileActivity.PREF_ALWAYS_EXTRACT_IN_CURRENT_DIR, false)) {
+                        if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(PREF_ALWAYS_EXTRACT_IN_CURRENT_DIR, false)) {
                             activity.finishFileOperation();
                         } else {
                             new AlertDialog.Builder(activity)
@@ -123,7 +128,7 @@ class ContextMenuUtil {
                                 R.string.op_destination,
                                 R.drawable.ic_present_to_all_black_24dp,
                                 R.layout.layout_path_prompt,
-                                (d) -> ArchiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), zip, activity),
+                                (d) -> activity.archiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), zip),
                                 (d) -> Log.d(TAG, "Cancelled."));
                         alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(zip, alertDialog));
                         alertDialog.show();
@@ -163,7 +168,7 @@ class ContextMenuUtil {
                     R.string.rename,
                     R.drawable.ic_mode_edit_black_24dp,
                     R.layout.layout_name_prompt,
-                    (d) -> OperationUtil.rename(f, activity, d),
+                    (d) -> activity.operationUtil.rename(f, d),
                     (d) -> Log.d(TAG, "Cancelled."));
             alertDialog.setOnShowListener(d -> arrayAdapter.presetNameForDialog(alertDialog, R.id.destinationName, f.getName()));
             alertDialog.show();
@@ -191,7 +196,7 @@ class ContextMenuUtil {
                         R.string.op_destination,
                         R.drawable.ic_content_cut_black_24dp,
                         R.layout.layout_path_prompt,
-                        (d) -> OperationUtil.move(f, activity, d),
+                        (d) -> activity.operationUtil.move(f, d),
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(f, alertDialog));
                 alertDialog.show();
@@ -220,7 +225,7 @@ class ContextMenuUtil {
                         R.string.op_destination,
                         R.drawable.ic_content_copy_black_24dp,
                         R.layout.layout_path_prompt,
-                        (d) -> OperationUtil.copy(f, activity, d),
+                        (d) -> activity.operationUtil.copy(f, d),
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(f, alertDialog));
                 alertDialog.show();
@@ -251,7 +256,7 @@ class ContextMenuUtil {
      */
     private void addCreateZipToMenu(FMFile f, ContextMenu menu) {
 
-        EditablePair<OperationUtil.Operation, ArrayList<FMFile>> fileOpContext = activity.getFileOpContext();
+        EditablePair<Operation, ArrayList<FMFile>> fileOpContext = activity.getFileOpContext();
 
         boolean zipFileReady = fileOpContext.getFirst().equals(CREATE_ZIP) && fileOpContext.getSecond().size() >= 1;
 
@@ -272,7 +277,7 @@ class ContextMenuUtil {
                             R.string.op_destination,
                             R.drawable.ic_archive_black_24dp,
                             R.layout.layout_name_prompt,
-                            (d) -> OperationUtil.createZipFile(fileOpContext.getSecond(), activity, d),
+                            (d) -> activity.archiveUtil.createZipFile(fileOpContext.getSecond(), d),
                             (d) -> Log.d(TAG, "Cancelled."));
                     alertDialog.show();
                     activity.reloadCurrentDirectory();

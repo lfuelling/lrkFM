@@ -52,7 +52,7 @@ public class FMFile {
     }
 
     public Date getLastModified() {
-        return lastModified;
+        return (Date) lastModified.clone();
     }
 
     public File getFile() {
@@ -65,7 +65,7 @@ public class FMFile {
 
     public String getExtension() {
         try {
-            return name.substring(name.indexOf(".") + 1, name.length());
+            return name.substring(name.indexOf('.') + 1, name.length());
         } catch (StringIndexOutOfBoundsException | ArrayIndexOutOfBoundsException e) {
             Log.e(TAG, "Unable to get file extension.", e);
             return "";

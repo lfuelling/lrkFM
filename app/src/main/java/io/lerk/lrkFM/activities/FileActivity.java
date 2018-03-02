@@ -1,9 +1,10 @@
-package io.lerk.lrkFM.activities.file;
+package io.lerk.lrkFM.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,8 +42,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,39 +49,40 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import io.lerk.lrkFM.activities.SettingsActivity;
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.operations.ArchiveUtil;
+import io.lerk.lrkFM.file.FileArrayAdapter;
+import io.lerk.lrkFM.file.FileLoader;
+import io.lerk.lrkFM.operations.Operation;
+import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.util.EditablePair;
 import io.lerk.lrkFM.R;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.COPY;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.CREATE_ZIP;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.EXTRACT;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.MOVE;
-import static io.lerk.lrkFM.activities.file.OperationUtil.Operation.NONE;
+import static io.lerk.lrkFM.operations.Operation.COPY;
+import static io.lerk.lrkFM.operations.Operation.CREATE_ZIP;
+import static io.lerk.lrkFM.operations.Operation.EXTRACT;
+import static io.lerk.lrkFM.operations.Operation.MOVE;
+import static io.lerk.lrkFM.operations.Operation.NONE;
+import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARKS;
+import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARK_CURRENT_FOLDER;
+import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARK_EDIT_MODE;
+import static io.lerk.lrkFM.util.Consts.PREF_HEADER_PATH_LENGTH;
+import static io.lerk.lrkFM.util.Consts.PREF_HOMEDIR;
+import static io.lerk.lrkFM.util.Consts.PREF_SHOW_TOAST;
+import static io.lerk.lrkFM.util.Consts.PREF_SORT_FILES_BY;
+import static io.lerk.lrkFM.util.Consts.PREF_USE_CONTEXT_FOR_OPS_TOAST;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String PREF_HOMEDIR = "home_dir";
-    private static final String PREF_BOOKMARKS = "bookmarks";
-    private static final String PREF_BOOKMARK_CURRENT_FOLDER = "bookmark_current_folder";
-    private static final String PREF_BOOKMARK_EDIT_MODE = "bookmark_deletion_on";
-    private static final String PREF_SHOW_TOAST = "show_toast_on_cd";
-    public static final String PREF_FILENAME_LENGTH = "filename_length";
-    private static final String PREF_HEADER_PATH_LENGTH = "header_path_length";
     private static final String TAG = FileActivity.class.getCanonicalName();
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String ROOT_DIR = "/";
     private static final String CURRENT_DIR_CACHE = "current_dir_cached";
-    private static final String PREF_SORT_FILES_BY = "sort_files_by";
-    public static final String PREF_USE_CONTEXT_FOR_OPS = "context_for_ops";
-    public static final String PREF_USE_CONTEXT_FOR_OPS_TOAST = "context_for_ops_toast";
-    public static final String PREF_ALWAYS_EXTRACT_IN_CURRENT_DIR = "always_extract_in_current_folder";
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -98,8 +98,10 @@ public class FileActivity extends AppCompatActivity
     private HashMap<Integer, String> historyMap;
     private Integer historyCounter;
     private FileArrayAdapter arrayAdapter;
-    private EditablePair<OperationUtil.Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
+    private EditablePair<Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
     private FirebaseAnalytics analytics;
+    public ArchiveUtil archiveUtil;
+    public OperationUtil operationUtil;
 
     public ListView getFileListView() {
         return fileListView;
@@ -127,9 +129,14 @@ public class FileActivity extends AppCompatActivity
                 .detectLeakedClosableObjects()
                 .detectLeakedRegistrationObjects()
                 .detectLeakedSqlLiteObjects();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             builder.detectCleartextNetwork();
         }
+
+        archiveUtil = new ArchiveUtil(this);
+        operationUtil = new OperationUtil(this);
+
         StrictMode.setVmPolicy(builder.build());
 
         analytics = FirebaseAnalytics.getInstance(this);
@@ -439,7 +446,6 @@ public class FileActivity extends AppCompatActivity
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.settings) {
@@ -462,36 +468,40 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
-    void clearFileOpCache() {
+    public void clearFileOpCache() {
         fileOpContext.setFirst(NONE);
         fileOpContext.setSecond(new ArrayList<>());
         reloadCurrentDirectory();
     }
 
-     void finishFileOperation() {
-        if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
+     public void finishFileOperation() {
+         ProgressDialog dialog  = new ProgressDialog (this);
+         dialog.setMessage(getString(fileOpContext.getFirst().getTitle()));
+         dialog.show();
+
+         if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
             if (fileOpContext.getFirst().equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> OperationUtil.copy(f, this, null));
+                    fileOpContext.getSecond().forEach((f) -> operationUtil.copy(f, null));
                 } else { // -_-
                     for (FMFile f : fileOpContext.getSecond()) {
-                        OperationUtil.copy(f, this, null);
+                        operationUtil.copy(f, null);
                     }
                 }
             } else if (fileOpContext.getFirst().equals(MOVE)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> OperationUtil.move(f, this, null));
+                    fileOpContext.getSecond().forEach((f) -> operationUtil.move(f, null));
                 } else { // -_-
                     for (FMFile f : fileOpContext.getSecond()) {
-                        OperationUtil.move(f, this, null);
+                        operationUtil.move(f, null);
                     }
                 }
             } else if (fileOpContext.getFirst().equals(EXTRACT)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> ArchiveUtil.extractArchive(currentDirectory, f, this));
+                    fileOpContext.getSecond().forEach((f) -> archiveUtil.extractArchive(currentDirectory, f));
                 } else { // -_-
                     for (FMFile f : fileOpContext.getSecond()) {
-                        ArchiveUtil.extractArchive(currentDirectory, f, this);
+                        archiveUtil.extractArchive(currentDirectory, f);
                     }
                 }
             } else if(fileOpContext.getFirst().equals(CREATE_ZIP)) {
@@ -500,13 +510,15 @@ public class FileActivity extends AppCompatActivity
                         R.string.op_destination,
                         R.drawable.ic_archive_black_24dp,
                         R.layout.layout_name_prompt,
-                        (d) -> OperationUtil.createZipFile(fileOpContext.getSecond(), this, d),
+                        (d) -> archiveUtil.createZipFile(fileOpContext.getSecond(), d),
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.show();
             }
         } else {
             Log.w(TAG, "No operation set!");
         }
+
+        dialog.dismiss();
     }
 
     public String getCurrentDirectory() {
@@ -521,7 +533,7 @@ public class FileActivity extends AppCompatActivity
                 .create();
         newDirDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (d, i) -> {
             String newDirName = currentDirectory + File.separator + ((EditText) newDirDialog.findViewById(R.id.destinationName)).getText().toString();
-            OperationUtil.newDir(new File(newDirName), FileActivity.this);
+            operationUtil.newDir(new File(newDirName));
             reloadCurrentDirectory();
         });
         newDirDialog.show();
@@ -645,12 +657,11 @@ public class FileActivity extends AppCompatActivity
         startActivity(i);
     }
 
-
     public SharedPreferences getDefaultPreferences() {
         return preferences;
     }
 
-    public void addFileToOpContext(OperationUtil.Operation op, FMFile f) {
+    public void addFileToOpContext(Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
             if (preferences.getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
                 Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
@@ -661,7 +672,7 @@ public class FileActivity extends AppCompatActivity
         fileOpContext.getSecond().add(f);
     }
 
-    public EditablePair<OperationUtil.Operation, ArrayList<FMFile>> getFileOpContext() {
+    public EditablePair<Operation, ArrayList<FMFile>> getFileOpContext() {
         return fileOpContext;
     }
 

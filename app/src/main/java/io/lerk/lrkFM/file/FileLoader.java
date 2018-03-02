@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.activities.file;
+package io.lerk.lrkFM.file;
 
 import android.os.Build;
 import android.support.annotation.Nullable;

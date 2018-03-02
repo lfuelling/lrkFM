@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.activities.file;
+package io.lerk.lrkFM.file;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -31,10 +31,12 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.operations.ArchiveUtil;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.activities.file.FileActivity.PREF_FILENAME_LENGTH;
+import static io.lerk.lrkFM.util.Consts.PREF_FILENAME_LENGTH;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
@@ -47,7 +49,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
     private FileActivity activity;
 
-    FileArrayAdapter(Context context, int resource, List<FMFile> items) {
+    public FileArrayAdapter(Context context, int resource, List<FMFile> items) {
         super(context, resource, items);
         if (context instanceof FileActivity) {
             this.activity = (FileActivity) context;
@@ -142,12 +144,12 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      * @param negativeCallBack the negative callback
      * @return the dialog
      */
-    AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,
-                                       @StringRes int title,
-                                       @DrawableRes int icon,
-                                       @LayoutRes int view,
-                                       ButtonCallBackInterface positiveCallBack,
-                                       ButtonCallBackInterface negativeCallBack) {
+    public AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,
+                                              @StringRes int title,
+                                              @DrawableRes int icon,
+                                              @LayoutRes int view,
+                                              ButtonCallBackInterface positiveCallBack,
+                                              ButtonCallBackInterface negativeCallBack) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(title)
