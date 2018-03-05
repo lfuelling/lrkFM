@@ -241,7 +241,7 @@ public class FileActivity extends AppCompatActivity
     }
 
     public String getTitleFromPath(String s) {
-        if (!s.equals(ROOT_DIR)) {
+        if (!ROOT_DIR.equals(s)) {
             String[] split = s.split("/");
             int i = split.length - 1;
             if (i < 0) {
