@@ -475,10 +475,6 @@ public class FileActivity extends AppCompatActivity
     }
 
      public void finishFileOperation() {
-         ProgressDialog dialog  = new ProgressDialog (this);
-         dialog.setMessage(getString(fileOpContext.getFirst().getTitle()));
-         dialog.show();
-
          if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
             if (fileOpContext.getFirst().equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -517,8 +513,6 @@ public class FileActivity extends AppCompatActivity
         } else {
             Log.w(TAG, "No operation set!");
         }
-
-        dialog.dismiss();
     }
 
     public String getCurrentDirectory() {
