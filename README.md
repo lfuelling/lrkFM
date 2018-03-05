@@ -5,7 +5,7 @@ File manager for Android. It has the following features:
 - set the directory the app starts in
 - full access to filesystem (if permissions are right)
 - can create zip archives
-- can extract zip and rar archives
+- can extract zip, rar, 7zip, tar, tar.gz archives
 - file operations (move and so on)
 - shows free space on filesystem
 - add bookmarks to the sidebar
