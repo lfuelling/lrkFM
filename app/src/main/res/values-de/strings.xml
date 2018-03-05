@@ -11,7 +11,7 @@
     <string name="nav_path">Pfad Öffnen</string>
     <string name="invalid_path">Ungültiger Pfad. Nur Ordner sind erlaubt!</string>
     <string name="add_bookmark">Lesezeichen hinzufügen</string>
-    <string name="share_app">App Teilen</string>
+    <string name="share_file">Datei Teilen</string>
     <string name="pref_show_toast_cd">Beim Ordnerwechsel Toast zeigen</string>
     <string name="pref_show_toast_cd_desc">Zeigt einen Toast beim laden eines Ordners</string>
     <string name="toast_cd_new_dir">Neuer Ordner</string>
