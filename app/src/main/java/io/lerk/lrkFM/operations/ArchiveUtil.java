@@ -1,6 +1,7 @@
 package io.lerk.lrkFM.operations;
 
 import android.app.AlertDialog;
+import android.os.Build;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -10,11 +11,21 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -32,6 +43,9 @@ public class ArchiveUtil {
 
     public static final String RAR_EXTENSION = "rar";
     public static final String ZIP_EXTENSION = "zip";
+    public static final String SEVENZIP_EXTENSION = "7z";
+    public static final String TAR_EXTENSION = "tar";
+    public static final String GZ_EXTENSION = "gz";
 
     private FileActivity context;
 
@@ -58,17 +72,82 @@ public class ArchiveUtil {
 
     public boolean extractArchive(String path, FMFile f) {
         boolean result = false;
-        if (f.getExtension().equals(RAR_EXTENSION)) {
-            result = unpackRar(path, f);
-
-        } else { //noinspection SimplifiableIfStatement
-            if (f.getExtension().equals(ZIP_EXTENSION)) {
+        switch (f.getExtension()) {
+            case RAR_EXTENSION:
+                result = unpackRar(path, f);
+                break;
+            case ZIP_EXTENSION:
                 result = unpackZip(path, f);
-            }
+                break;
+            case SEVENZIP_EXTENSION:
+                result = unpack7Zip(path, f);
+                break;
+            case TAR_EXTENSION:
+                result = unpackTar(path, f, GZ_EXTENSION.equals(f.getExtension()));
+                break;
+            default:
+                Toast.makeText(context, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
+                break;
         }
         context.clearFileOpCache();
         context.reloadCurrentDirectory();
         return result;
+    }
+
+    private boolean unpack7Zip(String path, FMFile f) {
+        try {
+            SevenZFile sevenZFile = new SevenZFile(f.getFile());
+            SevenZArchiveEntry entry;
+            while ((entry = sevenZFile.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                File curfile = new File(path + File.separator + entry.getName());
+                File parent = curfile.getParentFile();
+                if (!parent.exists()) {
+                    if (parent.mkdirs()) {
+                        Log.d(TAG, "extraction of parent dir successful");
+                    } else {
+                        Log.w(TAG, "extraction of parent dir unsuccessful");
+                    }
+                }
+                FileOutputStream out = new FileOutputStream(curfile);
+                byte[] content = new byte[(int) entry.getSize()];
+                sevenZFile.read(content, 0, content.length);
+                out.write(content);
+                out.close();
+            }
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to read 7zip");
+            return false;
+        }
+    }
+
+
+    private boolean unpackTar(String path, FMFile f, boolean isGzipped) {
+        try (TarArchiveInputStream fin = new TarArchiveInputStream((isGzipped) ? new FileInputStream(f.getFile()) : new GzipCompressorInputStream(new FileInputStream(f.getFile())))) {
+            TarArchiveEntry entry;
+            while ((entry = fin.getNextTarEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                File curfile = new File(path + File.separator + entry.getName());
+                File parent = curfile.getParentFile();
+                if (!parent.exists()) {
+                    if (parent.mkdirs()) {
+                        Log.d(TAG, "extraction of parent dir successful");
+                    } else {
+                        Log.w(TAG, "extraction of parent dir unsuccessful");
+                    }
+                }
+                IOUtils.copy(fin, new FileOutputStream(curfile));
+            }
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to read 7zip");
+            return false;
+        }
     }
 
     /**
