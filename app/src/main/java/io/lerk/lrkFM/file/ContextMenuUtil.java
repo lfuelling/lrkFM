@@ -22,6 +22,7 @@ import io.lerk.lrkFM.operations.ArchiveUtil;
 import io.lerk.lrkFM.operations.Operation;
 import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.EditablePair;
+import io.lerk.lrkFM.util.Handler;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.operations.Operation.COPY;
@@ -128,8 +129,8 @@ class ContextMenuUtil {
                                 R.string.op_destination,
                                 R.drawable.ic_present_to_all_black_24dp,
                                 R.layout.layout_path_prompt,
-                                (d) -> activity.archiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), zip),
-                                (d) -> Log.d(TAG, "Cancelled."));
+                                (Handler<AlertDialog>) (d) -> activity.archiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), zip),
+                                (Handler<AlertDialog>) (d) -> Log.d(TAG, "Cancelled."));
                         alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(zip, alertDialog));
                         alertDialog.show();
                     }
@@ -168,7 +169,7 @@ class ContextMenuUtil {
                     R.string.rename,
                     R.drawable.ic_mode_edit_black_24dp,
                     R.layout.layout_name_prompt,
-                    (d) -> activity.operationUtil.rename(f, d),
+                    (Handler<AlertDialog>) (d) -> activity.operationUtil.rename(f, d),
                     (d) -> Log.d(TAG, "Cancelled."));
             alertDialog.setOnShowListener(d -> arrayAdapter.presetNameForDialog(alertDialog, R.id.destinationName, f.getName()));
             alertDialog.show();
@@ -196,7 +197,7 @@ class ContextMenuUtil {
                         R.string.op_destination,
                         R.drawable.ic_content_cut_black_24dp,
                         R.layout.layout_path_prompt,
-                        (d) -> activity.operationUtil.move(f, d),
+                        (Handler<AlertDialog>) (d) -> activity.operationUtil.move(f, d),
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(f, alertDialog));
                 alertDialog.show();
@@ -225,7 +226,7 @@ class ContextMenuUtil {
                         R.string.op_destination,
                         R.drawable.ic_content_copy_black_24dp,
                         R.layout.layout_path_prompt,
-                        (d) -> activity.operationUtil.copy(f, d),
+                        (Handler<AlertDialog>) (d) -> activity.operationUtil.copy(f, d),
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(f, alertDialog));
                 alertDialog.show();
@@ -277,7 +278,7 @@ class ContextMenuUtil {
                             R.string.op_destination,
                             R.drawable.ic_archive_black_24dp,
                             R.layout.layout_name_prompt,
-                            (d) -> activity.archiveUtil.createZipFile(fileOpContext.getSecond(), d),
+                            (Handler<AlertDialog>) (d) -> activity.archiveUtil.createZipFile(fileOpContext.getSecond(), d),
                             (d) -> Log.d(TAG, "Cancelled."));
                     alertDialog.show();
                     activity.reloadCurrentDirectory();

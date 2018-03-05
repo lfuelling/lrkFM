@@ -59,6 +59,7 @@ import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.util.EditablePair;
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.util.Handler;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -79,46 +80,140 @@ import static io.lerk.lrkFM.util.Consts.PREF_USE_CONTEXT_FOR_OPS_TOAST;
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    /**
+     * Logtag.
+     */
     private static final String TAG = FileActivity.class.getCanonicalName();
+
+    /**
+     * 0 if we have no permission.
+     */
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
+
+    /**
+     * The rootfs path ('/').
+     */
     private static final String ROOT_DIR = "/";
+
+    /**
+     * Keyword for {@link SharedPreferences}
+     */
     private static final String CURRENT_DIR_CACHE = "current_dir_cached";
+
+    /**
+     * The permissions we need to do our job.
+     */
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    /**
+     * {@link ListView} that contains the files inside the current directory.
+     */
     private ListView fileListView;
+
+    /**
+     * The {@link SharedPreferences} of this app.
+     */
     private SharedPreferences preferences;
+
+    /**
+     * Bookmarks.
+     */
     private HashSet<Bookmark> bookmarkItems;
+
+    /**
+     * The current directory (empty when starting the app).
+     */
     private String currentDirectory = "";
+
+    /**
+     * The {@link Toolbar}.
+     */
     private Toolbar toolbar;
+
+    /**
+     * The navigation drawer.
+     */
     private NavigationView navigationView;
+
+    /**
+     * The {@link TextView} containing the shortened path of the current directoy.
+     * @see #shortenDirectoryPath(int)
+     */
     private TextView currentDirectoryTextView;
+
+    /**
+     * The header view of the {@link #navigationView}.
+     */
     private View headerView;
+
+    /**
+     * The history.
+     */
     private HashMap<Integer, String> historyMap;
+
+    /**
+     * The historyCounter (sorry).
+     */
     private Integer historyCounter;
+
+    /**
+     * The {@link android.widget.ArrayAdapter} implementation used in the {@link #fileListView}.
+     */
     private FileArrayAdapter arrayAdapter;
+
+    /**
+     * The file operation context containing the {@link Operation} to do and a list of {@link FMFile} objects.
+     */
     private EditablePair<Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
+
+    /**
+     * Analytics n'such.
+     */
     private FirebaseAnalytics analytics;
+
+    /**
+     * The {@link ArchiveUtil}.
+     */
     public ArchiveUtil archiveUtil;
+
+    /**
+     * The {@link OperationUtil}.
+     */
     public OperationUtil operationUtil;
 
+    /**
+     * Getter for the fileListView.
+     * @return fileListView
+     * @see #fileListView
+     */
     public ListView getFileListView() {
         return fileListView;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onPostResume() {
         super.onPostResume();
         setFreeSpaceText();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         loadHomeDir();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,6 +265,9 @@ public class FileActivity extends AppCompatActivity
         toggle.syncState();
     }
 
+    /**
+     * Initializes the navigation drawer and it's header.
+     */
     private void initNavAndHeader() {
         navigationView = findViewById(R.id.nav_view);
         setSupportActionBar(toolbar);
@@ -180,6 +278,9 @@ public class FileActivity extends AppCompatActivity
         setFreeSpaceText();
     }
 
+    /**
+     * Adds the free space text to the navigation drawer header.
+     */
     private void setFreeSpaceText() {
         TextView diskUsageTextView = headerView.findViewById(R.id.diskUsage);
 
@@ -197,6 +298,9 @@ public class FileActivity extends AppCompatActivity
         diskUsageTextView.setText(s);
     }
 
+    /**
+     * Loads the bookmarks into the menu.
+     */
     private void loadUserBookmarks() {
         Menu menu = navigationView.getMenu();
         TreeSet<String> bookmarks;
@@ -222,6 +326,12 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Adds a bookmark to the navigation drawer.
+     * @param menu the menu
+     * @param s the bookmark's display text
+     * @param bookmarks the bookmarks
+     */
     private void addBookmarkToMenu(Menu menu, String s, Set<String> bookmarks) {
         FirebaseAnalytics.getInstance(this).logEvent("bookmark_created", new Bundle());
         String title = getTitleFromPath(s);
@@ -250,19 +360,37 @@ public class FileActivity extends AppCompatActivity
         bookmarkItems.add(bookmark);
     }
 
+    /**
+     * Returns the last part of a path.
+     *
+     * @param s absolute path
+     * @return last item of path
+     */
     public String getTitleFromPath(String s) {
-        if (!s.equals(ROOT_DIR)) {
-            String[] split = s.split("/");
-            int i = split.length - 1;
-            if (i < 0) {
-                i = 0;
+        if (s != null) {
+            if (!s.equals(ROOT_DIR)) {
+                String[] split = s.split("/");
+                int i = split.length - 1;
+                if (i < 0) {
+                    i = 0;
+                }
+                return split[i];
+            } else {
+                return s;
             }
-            return split[i];
         } else {
-            return s;
+            return "null";
         }
     }
 
+    /**
+     * Removes a bookmark.
+     * @param menu the bookmarks menu
+     * @param s entry to remove
+     * @param bookmarks the bookmarks
+     * @param item the menu item to remove
+     * @param bookmark the bookmark to remove
+     */
     @SuppressLint("ApplySharedPref")
     private void removeBookmarkFromMenu(Menu menu, String s, Set<String> bookmarks, MenuItem item, Bookmark bookmark) {
         menu.removeItem(item.getItemId());
@@ -271,6 +399,9 @@ public class FileActivity extends AppCompatActivity
         preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).commit();
     }
 
+    /**
+     * Loads home dir selected by user.
+     */
     @SuppressLint("UseSparseArrays")
     private void loadHomeDir() {
         historyMap = new HashMap<>();
@@ -285,10 +416,17 @@ public class FileActivity extends AppCompatActivity
         loadDirectory(startDir);
     }
 
+    /**
+     * F5
+     */
     public void reloadCurrentDirectory() {
         loadDirectory(currentDirectory);
     }
 
+    /**
+     * Changes directory.
+     * @param startDir directory to load
+     */
     public void loadDirectory(String startDir) {
         ArrayList<FMFile> files;
         FileLoader fileLoader = new FileLoader(startDir);
@@ -319,6 +457,12 @@ public class FileActivity extends AppCompatActivity
         setFreeSpaceText();
     }
 
+    /**
+     * Sorts files by user preference.
+     * @param files files to sort
+     * @param pref chosen preference
+     * @return sorted list
+     */
     private ArrayList<FMFile> sortFilesByPreference(ArrayList<FMFile> files, String pref) {
         if (pref.equals(getString(R.string.pref_sortby_value_name))) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -340,6 +484,9 @@ public class FileActivity extends AppCompatActivity
         return files;
     }
 
+    /**
+     * Removes the most recent item from the history and goes back.
+     */
     private void removeFromHistoryAndGoBack() {
         int key = historyCounter - 2;
         String s = historyMap.get(key);
@@ -350,6 +497,9 @@ public class FileActivity extends AppCompatActivity
         historyCounter = key + 1;
     }
 
+    /**
+     * Sets the text in the toolbar.
+     */
     private void setToolbarText() {
         if (toolbar != null) {
             if (!Objects.equals(currentDirectory, ROOT_DIR)) {
@@ -372,6 +522,12 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Shortens the current path by limiting directory paths
+     * to one char length until the desired maxLength is reached.
+     * @param maxLength max length (chars) of the result
+     * @return the shortened string
+     */
     @NonNull
     private String shortenDirectoryPath(int maxLength) {
         final String[] res = {currentDirectory};
@@ -405,11 +561,9 @@ public class FileActivity extends AppCompatActivity
         return res[0];
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
+    /**
+     * Handles the back button.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -422,6 +576,11 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Prepares the options menu.
+     * @param menu the menu
+     * @return true
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
@@ -439,6 +598,11 @@ public class FileActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Creates the options menu.
+     * @param menu the menu to create
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -446,6 +610,11 @@ public class FileActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Called when an item in the options menu is clicked.
+     * @param item the id of the clicked item
+     * @return false if item id not "found"
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.settings) {
@@ -468,14 +637,20 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Clears the current file operation context.
+     */
     public void clearFileOpCache() {
         fileOpContext.setFirst(NONE);
         fileOpContext.setSecond(new ArrayList<>());
         reloadCurrentDirectory();
     }
 
-     public void finishFileOperation() {
-         if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
+    /**
+     * Finishes the current file operation context.
+     */
+    public void finishFileOperation() {
+        if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
             if (fileOpContext.getFirst().equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     fileOpContext.getSecond().forEach((f) -> operationUtil.copy(f, null));
@@ -500,13 +675,13 @@ public class FileActivity extends AppCompatActivity
                         archiveUtil.extractArchive(currentDirectory, f);
                     }
                 }
-            } else if(fileOpContext.getFirst().equals(CREATE_ZIP)) {
+            } else if (fileOpContext.getFirst().equals(CREATE_ZIP)) {
                 AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
                         R.string.create_zip_file,
                         R.string.op_destination,
                         R.drawable.ic_archive_black_24dp,
                         R.layout.layout_name_prompt,
-                        (d) -> archiveUtil.createZipFile(fileOpContext.getSecond(), d),
+                        (Handler<AlertDialog>) (d) -> archiveUtil.createZipFile(fileOpContext.getSecond(), d),
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.show();
             }
@@ -515,10 +690,17 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Getter for the current directory.
+     * @return the current directory.
+     */
     public String getCurrentDirectory() {
         return currentDirectory;
     }
 
+    /**
+     * Launches a prompt to create a new directory.
+     */
     private void launchNewDirDialog() {
         AlertDialog newDirDialog = new AlertDialog.Builder(this)
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> Log.d(TAG, "Cancel pressed"))
@@ -533,6 +715,11 @@ public class FileActivity extends AppCompatActivity
         newDirDialog.show();
     }
 
+    /**
+     * Called when a navigation item is selected.
+     * @param item the selected navigation item id
+     * @return true
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -568,6 +755,10 @@ public class FileActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Checks if permission to access files is granted.
+     * @param context the context
+     */
     public static void verifyStoragePermissions(Activity context) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
@@ -575,18 +766,27 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStop() {
         super.onStop();
         preferences.edit().putString(CURRENT_DIR_CACHE, currentDirectory).apply();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         preferences.edit().putString(CURRENT_DIR_CACHE, "").apply();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -595,19 +795,20 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Opens the bug report page.
+     */
     private void launchBugReportTab() {
         logEvent("report_bug", new Bundle());
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            builder.setToolbarColor(getColor(R.color.primary));
-        } else { // hate 'em -_-
-            //noinspection deprecation
-            builder.setToolbarColor(getResources().getColor(R.color.primary));
-        }
+        builder.setToolbarColor(getColor(R.color.primary));
         CustomTabsIntent build = builder.build();
         build.launchUrl(this, Uri.parse("https://github.com/lfuelling/lrkFM/issues/new"));
     }
 
+    /**
+     * Adds a bookmark. Prompts for location.
+     */
     @SuppressLint("ApplySharedPref")
     private void promptAndAddBookmark() {
         logEvent("add_bookmark", new Bundle());
@@ -633,6 +834,11 @@ public class FileActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Changes directory. With a prompt.
+     *
+     * @see #loadDirectory(String)
+     */
     private void promptAndLoadPath() {
         logEvent("open_path_prompt", new Bundle());
         AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
@@ -646,15 +852,31 @@ public class FileActivity extends AppCompatActivity
         alertDialog.show();
     }
 
+    /**
+     * Launches the {@link SettingsActivity}.
+     */
     public void launchSettings() {
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
     }
 
+    /**
+     * Returns the preference object.
+     *
+     * @return {@link SharedPreferences}
+     */
     public SharedPreferences getDefaultPreferences() {
         return preferences;
     }
 
+    /**
+     * Adds a file to the operation context.
+     * If the selected operation mode is not the same used in the current context,
+     * the previous state will be discarded.
+     *
+     * @param op operation to do
+     * @param f  file to operate on
+     */
     public void addFileToOpContext(Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
             if (preferences.getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
@@ -673,10 +895,10 @@ public class FileActivity extends AppCompatActivity
     /**
      * Logs event with Firebase.
      *
-     * @param label the label
+     * @param label  the label
      * @param bundle the event content
      */
-    public void logEvent(String label, Bundle bundle){
+    public void logEvent(String label, Bundle bundle) {
         analytics.logEvent(label, bundle);
     }
 }

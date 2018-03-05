@@ -29,11 +29,13 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Objects;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.operations.ArchiveUtil;
+import io.lerk.lrkFM.util.Handler;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.util.Consts.PREF_FILENAME_LENGTH;
@@ -123,7 +125,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     private String getSizeFormatted(FMFile f) {
         String[] units = new String[]{"B", "KiB", "MiB", "GiB", "TiB", "PiB"};
         Long length = f.getFile().length();
-        if(length.equals(0L)) {
+        if(Objects.equals(length, 0L)) {
             return "0";
         }
         Double number = Math.floor(Math.log(length) / Math.log(1024));
@@ -148,8 +150,8 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                                               @StringRes int title,
                                               @DrawableRes int icon,
                                               @LayoutRes int view,
-                                              ButtonCallBackInterface positiveCallBack,
-                                              ButtonCallBackInterface negativeCallBack) {
+                                              Handler positiveCallBack,
+                                              Handler negativeCallBack) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(title)

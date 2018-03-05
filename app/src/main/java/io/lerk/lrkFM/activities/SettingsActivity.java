@@ -1,5 +1,6 @@
 package io.lerk.lrkFM.activities;
 
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -9,10 +10,14 @@ import android.util.Log;
 
 import io.lerk.lrkFM.R;
 
+@SuppressLint("ExportedPreferenceActivity")
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity {
     private static final String TAG = SettingsActivity.class.getCanonicalName();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

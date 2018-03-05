@@ -20,8 +20,14 @@ import io.lerk.lrkFM.entities.FMFile;
  */
 public class FileLoader {
 
+    /**
+     * The location.
+     */
     private String location;
 
+    /**
+     * Logtag.
+     */
     private static final String TAG = FileLoader.class.getCanonicalName();
 
     /**
@@ -33,10 +39,23 @@ public class FileLoader {
         this.location = location;
     }
 
+    /**
+     * Calls {@link #FileLoader(String)} with <pre>null</pre> as argument.
+     * @see #loadLocationFiles(String)
+     * @throws NoAccessException if no access
+     * @throws EmptyDirectoryException  if no contents
+     */
     public ArrayList<FMFile> loadLocationFiles() throws NoAccessException, EmptyDirectoryException {
         return this.loadLocationFiles(null);
     }
 
+    /**
+     * Loads the contents of a directory.
+     * @param parent the parent dir
+     * @return the files and subdirectories
+     * @throws NoAccessException if no access
+     * @throws EmptyDirectoryException if no contents
+     */
     private ArrayList<FMFile> loadLocationFiles(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
         if (parent != null) {
             location = parent;
@@ -102,6 +121,9 @@ public class FileLoader {
         return new ArrayList<>();
     }
 
+    /**
+     * {@link NoAccessException}.
+     */
     public class NoAccessException extends Exception implements Serializable {
         static final long serialVersionUID = 10L;
 
@@ -110,6 +132,9 @@ public class FileLoader {
         }
     }
 
+    /**
+     * {@link EmptyDirectoryException}.
+     */
     public class EmptyDirectoryException extends Exception implements Serializable {
         static final long serialVersionUID = 10L;
 

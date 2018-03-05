@@ -63,6 +63,10 @@ public class FMFile {
         this.file = file;
     }
 
+    /**
+     * Gets a file's extension.
+     * @return the file's extension
+     */
     public String getExtension() {
         try {
             return name.substring(name.indexOf('.') + 1, name.length());
