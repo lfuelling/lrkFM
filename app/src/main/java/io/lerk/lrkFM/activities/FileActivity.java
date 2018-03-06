@@ -71,6 +71,7 @@ import static io.lerk.lrkFM.operations.Operation.NONE;
 import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARKS;
 import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARK_CURRENT_FOLDER;
 import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARK_EDIT_MODE;
+import static io.lerk.lrkFM.util.Consts.PREF_FIRST_START;
 import static io.lerk.lrkFM.util.Consts.PREF_HEADER_PATH_LENGTH;
 import static io.lerk.lrkFM.util.Consts.PREF_HOMEDIR;
 import static io.lerk.lrkFM.util.Consts.PREF_SHOW_TOAST;
@@ -140,6 +141,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * The {@link TextView} containing the shortened path of the current directoy.
+     *
      * @see #shortenDirectoryPath(int)
      */
     private TextView currentDirectoryTextView;
@@ -185,7 +187,15 @@ public class FileActivity extends AppCompatActivity
     public OperationUtil operationUtil;
 
     /**
+     * Extra used in {@link IntroActivity}.
+     *
+     * @see Intent#hasExtra(String)
+     */
+    public static final String FIRST_START_EXTRA = "firstStartDone";
+
+    /**
      * Getter for the fileListView.
+     *
      * @return fileListView
      * @see #fileListView
      */
@@ -236,9 +246,18 @@ public class FileActivity extends AppCompatActivity
 
         analytics = FirebaseAnalytics.getInstance(this);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
+            preferences.edit().putBoolean(PREF_FIRST_START, false).apply();
+        } else if (preferences.getBoolean(PREF_FIRST_START, true)) {
+            analytics.logEvent("first_start", new Bundle());
+            startActivity(new Intent(this, IntroActivity.class));
+            finish();
+        }
+
         FileActivity.verifyStoragePermissions(FileActivity.this);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         fileListView = findViewById(R.id.fileView);
         registerForContextMenu(fileListView);
 
@@ -328,8 +347,9 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Adds a bookmark to the navigation drawer.
-     * @param menu the menu
-     * @param s the bookmark's display text
+     *
+     * @param menu      the menu
+     * @param s         the bookmark's display text
      * @param bookmarks the bookmarks
      */
     private void addBookmarkToMenu(Menu menu, String s, Set<String> bookmarks) {
@@ -385,11 +405,12 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Removes a bookmark.
-     * @param menu the bookmarks menu
-     * @param s entry to remove
+     *
+     * @param menu      the bookmarks menu
+     * @param s         entry to remove
      * @param bookmarks the bookmarks
-     * @param item the menu item to remove
-     * @param bookmark the bookmark to remove
+     * @param item      the menu item to remove
+     * @param bookmark  the bookmark to remove
      */
     @SuppressLint("ApplySharedPref")
     private void removeBookmarkFromMenu(Menu menu, String s, Set<String> bookmarks, MenuItem item, Bookmark bookmark) {
@@ -425,6 +446,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Changes directory.
+     *
      * @param startDir directory to load
      */
     public void loadDirectory(String startDir) {
@@ -459,8 +481,9 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Sorts files by user preference.
+     *
      * @param files files to sort
-     * @param pref chosen preference
+     * @param pref  chosen preference
      * @return sorted list
      */
     private ArrayList<FMFile> sortFilesByPreference(ArrayList<FMFile> files, String pref) {
@@ -525,6 +548,7 @@ public class FileActivity extends AppCompatActivity
     /**
      * Shortens the current path by limiting directory paths
      * to one char length until the desired maxLength is reached.
+     *
      * @param maxLength max length (chars) of the result
      * @return the shortened string
      */
@@ -578,6 +602,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Prepares the options menu.
+     *
      * @param menu the menu
      * @return true
      */
@@ -600,6 +625,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Creates the options menu.
+     *
      * @param menu the menu to create
      * @return true
      */
@@ -612,6 +638,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Called when an item in the options menu is clicked.
+     *
      * @param item the id of the clicked item
      * @return false if item id not "found"
      */
@@ -692,6 +719,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Getter for the current directory.
+     *
      * @return the current directory.
      */
     public String getCurrentDirectory() {
@@ -717,6 +745,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Called when a navigation item is selected.
+     *
      * @param item the selected navigation item id
      * @return true
      */
@@ -757,6 +786,7 @@ public class FileActivity extends AppCompatActivity
 
     /**
      * Checks if permission to access files is granted.
+     *
      * @param context the context
      */
     public static void verifyStoragePermissions(Activity context) {

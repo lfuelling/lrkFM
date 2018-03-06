@@ -9,4 +9,5 @@
     <color name="icons">#212121</color>
     <color name="divider">#BDBDBD</color>
     <color name="transparent">#000000FF</color>
+    <color name="link">#2222FF</color>
 </resources>

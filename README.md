@@ -1,4 +1,4 @@
-# lrkFM
+# lrkFM ![badge](https://travis-ci.org/lfuelling/lrkFM.svg?branch=master)
 
 File manager for Android. It has the following features:
 

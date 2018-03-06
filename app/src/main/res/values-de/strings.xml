@@ -86,4 +86,17 @@
     <string name="pref_always_extract_in_current_folder_desc">Falls aktiviert, werden alle Archive im momentanen Ordner entpackt.</string>
     <string name="free">frei</string>
     <string name="unable_to_recognize_archive_format">Unbekanntes Archiv-Format.</string>
+    <string name="title_activity_intro">Willkommen</string>
+    <string name="intro_text_1">Willkommen bei lrkFM.</string>
+    <string name="intro_text_2">Wir hoffen, dass Sie mit dieser App zufrieden sein werden.</string>
+    <string name="intro_text_3">Es ist empfehlenswert, die\u00A0</string>
+    <string name="intro_link_1">Einstellungen</string>
+    <string name="intro_text_3_1">vor der ersten Nutzung einmal durchzugehen.</string>
+    <string name="intro_text_4">Wenn du etwas nicht magst, reiche bitte einen Fehlerbericht über den Link im Menü ein.</string>
+    <string name="intro_text_5">Bitte\u00A0</string>
+    <string name="intro_link_2">akzeptiere auch die Erlaubnis,</string>
+    <string name="intro_text_5_1">den Telefonspeicher zu lesen.</string>
+    <string name="intro_text_6">Danach \'Aktualisieren\' im Menü oben rechts verwenden.</string>
+
+    <string name="action_settings">@string/settings</string>
 </resources>

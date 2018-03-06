@@ -1,6 +1,7 @@
 package io.lerk.lrkFM.util;
 
 public class Consts {
+    public static final String PREF_FIRST_START = "first_start";
     public static final String PREF_HOMEDIR = "home_dir";
     public static final String PREF_BOOKMARKS = "bookmarks";
     public static final String PREF_BOOKMARK_CURRENT_FOLDER = "bookmark_current_folder";

@@ -99,4 +99,17 @@
     <string name="pref_always_extract_in_current_folder_desc">When activated, all archives will be extracted in the current directory.</string>
     <string name="free">free</string>
     <string name="unable_to_recognize_archive_format">Unable to recognize archive format.</string>
+    <string name="title_activity_intro">Welcome</string>
+    <string name="intro_text_1">Welcome to lrkFM.</string>
+    <string name="intro_text_2">We hope that you will like this app.</string>
+    <string name="intro_text_3">It\'s a good idea to go through the\u00A0</string>
+    <string name="intro_link_1">Settings</string>
+    <string name="intro_text_3_1">before doing anything.</string>
+    <string name="intro_text_4">If there is anything wrong please file</string>
+    <string name="intro_text_5">a bug using the link in the menu.</string>
+    <string name="intro_text_6">Please also\u00A0</string>
+    <string name="intro_link_2">grant the Permission</string>
+    <string name="intro_text_6_1">to read phone storage.</string>
+    <string name="intro_text_7">After that, use \'refresh\' in the top right menu.</string>
+    <string name="action_settings">@string/settings</string>
 </resources>
