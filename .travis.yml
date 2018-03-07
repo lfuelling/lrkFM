@@ -3,10 +3,12 @@ android:
   components:
   - build-tools-27.0.3
   - android-27
+  - android-24
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
   - addon-google_apis-google-27
+  - addon-google_apis-google-24
   - sys-img-armeabi-v7a-android-24
 before_install:
 - openssl aes-256-cbc -K $encrypted_54b4757d8d03_key -iv $encrypted_54b4757d8d03_iv
