@@ -11,7 +11,7 @@
     <string name="nav_path">Pfad Öffnen</string>
     <string name="invalid_path">Ungültiger Pfad. Nur Ordner sind erlaubt!</string>
     <string name="add_bookmark">Lesezeichen hinzufügen</string>
-    <string name="share_app">App Teilen</string>
+    <string name="share_file">Datei Teilen</string>
     <string name="pref_show_toast_cd">Beim Ordnerwechsel Toast zeigen</string>
     <string name="pref_show_toast_cd_desc">Zeigt einen Toast beim laden eines Ordners</string>
     <string name="toast_cd_new_dir">Neuer Ordner</string>
@@ -85,4 +85,26 @@
     <string name="pref_always_extract_in_current_folder">Immer im momentanen Ordner entpacken</string>
     <string name="pref_always_extract_in_current_folder_desc">Falls aktiviert, werden alle Archive im momentanen Ordner entpackt.</string>
     <string name="free">frei</string>
+    <string name="unable_to_recognize_archive_format">Unbekanntes Archiv-Format.</string>
+    <string name="title_activity_intro">Willkommen</string>
+    <string name="intro_text_1">Willkommen bei lrkFM.</string>
+    <string name="intro_text_2">Wir hoffen, dass Du mit dieser App zufrieden sein wirst.</string>
+    <string name="intro_text_3">Es ist empfehlenswert, die\u00A0</string>
+    <string name="intro_link_1">Einstellungen</string>
+    <string name="intro_text_3_1">vor der ersten Nutzung einmal durchzugehen.</string>
+    <string name="intro_text_4">Wenn du etwas nicht magst, reiche bitte</string>
+    <string name="intro_text_5">einen Fehlerbericht über den Link im Menü ein.</string>
+    <string name="intro_text_6">Bitte\u00A0</string>
+    <string name="intro_link_2">akzeptiere auch die Erlaubnis,</string>
+    <string name="intro_text_6_1">den Telefonspeicher zu lesen.</string>
+    <string name="intro_text_7">Danach \'Aktualisieren\' im Menü oben rechts verwenden.</string>
+    <string name="intro_text_8">Um mit Dateien zu Interagieren, kann das Menü an jedem Dateieintrag genutzt werden. Ein Eintrag kann auch lange gedrückt werden, um das Menü zu öffnen.</string>
+    <string name="action_settings">@string/settings</string>
+    <string name="type_rar">Rar</string>
+    <string name="type_zip">Zip</string>
+    <string name="type_tar">Tar</string>
+    <string name="type_p7z">7Zip</string>
+    <string name="type_tgz">tar.gz</string>
+    <string name="type_unknown">Unbekannt</string>
+    <string name="invalid_operation">Ungültige Operation</string>
 </resources>

@@ -33,7 +33,7 @@
         android:id="@+id/fileSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/fileTitle"
+        android:layout_toStartOf="@id/fileIcon"
         android:layout_marginTop="@dimen/file_size_margin"
         android:text="1 MB"/>
     <TextView
@@ -44,7 +44,7 @@
         android:layout_below="@id/fileTitle"
         android:layout_marginStart="@dimen/file_view_margin"
         android:layout_marginBottom="@dimen/file_view_margin"
-        android:text="-rwxrwxrwx"/>
+        android:text="drwx"/>
     <ImageView
         android:id="@+id/fileIcon"
         android:layout_width="wrap_content"

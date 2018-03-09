@@ -1,10 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.idea/caches
-.idea/dictionaries
+.idea
 .DS_Store
 /build
 /captures
@@ -13,3 +10,4 @@
 keystore.properties
 google-services.json
 /app/release
+*.afphoto

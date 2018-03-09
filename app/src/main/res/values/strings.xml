@@ -16,7 +16,7 @@
     <string name="invalid_path">Invalid path! Only absolute paths pointing to a directory please.</string>
     <string name="add_bookmark">Add Bookmark</string>
     <string name="nav_bug_report" translatable="false">Report Bug</string>
-    <string name="share_app">Share App</string>
+    <string name="share_file">Share File</string>
     <string name="pref_show_toast_cd">Show Toast on directory change</string>
     <string name="pref_show_toast_cd_desc">When loading a new directory, a toast will be shown.</string>
     <string name="toast_cd_new_dir">New Directory:&#160;</string>
@@ -48,7 +48,7 @@
     <string name="warn_file_exists_msg">The existing file will be overwritten. Are you sure that you want to continue?</string>
     <string name="yes">@android:string/yes</string>
     <string name="delete">Delete</string>
-    <string name="warn_delete_msg">Are you sure that you want to delete:</string>
+    <string name="warn_delete_msg">Are you sure that you want to delete: </string>
     <string name="move">Move</string>
     <string name="rename">Rename</string>
     <string name="name_input_hint">Enter new file name</string>
@@ -98,4 +98,26 @@
     <string name="pref_always_extract_in_current_folder">Always extract in current directory</string>
     <string name="pref_always_extract_in_current_folder_desc">When activated, all archives will be extracted in the current directory.</string>
     <string name="free">free</string>
+    <string name="unable_to_recognize_archive_format">Unable to recognize archive format.</string>
+    <string name="title_activity_intro">Welcome</string>
+    <string name="intro_text_1">Welcome to lrkFM.</string>
+    <string name="intro_text_2">We hope that you will like this app.</string>
+    <string name="intro_text_3">It\'s a good idea to go through the\u00A0</string>
+    <string name="intro_link_1">Settings</string>
+    <string name="intro_text_3_1">before doing anything.</string>
+    <string name="intro_text_4">If there is anything wrong please file</string>
+    <string name="intro_text_5">a bug using the link in the menu.</string>
+    <string name="intro_text_6">Please also\u00A0</string>
+    <string name="intro_link_2">grant the Permission</string>
+    <string name="intro_text_6_1">to read phone storage.</string>
+    <string name="intro_text_7">After that, use \'refresh\' in the top right menu.</string>
+    <string name="intro_text_8">To interact with files you can either use the menu button next to each file entry or long press a file entry.</string>
+    <string name="action_settings">@string/settings</string>
+    <string name="type_rar">Rar</string>
+    <string name="type_zip">Zip</string>
+    <string name="type_tar">Tar</string>
+    <string name="type_p7z">7Zip</string>
+    <string name="type_tgz">tar.gz</string>
+    <string name="type_unknown">Unknown</string>
+    <string name="invalid_operation">Invalid Operation</string>
 </resources>

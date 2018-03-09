@@ -1,10 +1,34 @@
 language: android
 android:
   components:
-    - build-tools-27.0.3
-    - android-27
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - addon-google_apis-google-27
-    - sys-img-armeabi-v7a-android-27
+  - build-tools-27.0.3
+  - android-27
+  - android-24
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository
+  - addon-google_apis-google-27
+  - addon-google_apis-google-24
+  - sys-img-armeabi-v7a-android-24
+before_install:
+- openssl aes-256-cbc -K $encrypted_54b4757d8d03_key -iv $encrypted_54b4757d8d03_iv
+  -in google-services.json.enc -out app/google-services.json -d
+env:
+  global:
+  - secure: HVxNEYS6IGjmjrTpcAyODGUPjlpDN1QOWTkB26MPIzZf9LICifWyRircrYmb4LzRc6FQrRK2qi8v9r+NlNdkMLCnFC2bZNDfROsGB6E/qDoAJ10EsxiZS+LNJ3pUcJETnoesP9R45lhv0NKwkFqf9UaIRiJ+8h6d7AMhMNRdRU+iLVJHRcIzlTev88ueLT7cLat4UYXCBPDAfjdQ1ldIL+ELKPoAdper7Yy0GEv5kNHWi8x8BwJw9rsNpNJVUER099hFsz4SverwmLl+5FaNjKTLHf+2qGqYgpRl9Yz7Jn0sFTSFBNLepDgqJi/8DzpP3VvTbQYxEqVGhp2HMSb2OLlc0hYGjR0T8l0K+4Zw8O7uT77GueGXzTW0aPpAFO+j6uK8VAl/P33YaEXAevwe/GQnQh5HBBEuE0CW62mWQeCGMl7XCMjmRwUEMp0/dnhYaztOwch367kh5ATUfw14PrN3adQm+1Jig6OFk/WSNdjGF6bmtMhFTZWs+D5KvcgxTPoidJXaSHQ3L2uud6m3JcSwW4goyOTaqdbrWcPBFr/yuD6YYohuqP42BP4qqdcn3/v+P45nAZ5aq6BFwIzIaEXhad+8NSzHVVzAvCuEm5cKE3xuZaUlIXcSMI8wnL3Ejky+mMj1MkWO1GDQlr7aBn0lSrPp2v/YILhI4DdOAz8=
+  - secure: AFf7kwJvd5/eBUtk2lPo7jCi+jMjuyJx6voDppoRWeT0lwgoaSvYbwV753PSnf/VdX6gq5C78WbyXL1HZE5VyjGCpCIhz46hBMqz/PF5dBf16ZEACRW/gaF2WVUjyxMDU4Hx0c8YEXaXPJ/CiEF2G+0PoEe217KNJcxDA91MLErAz0ISvKVXP5v+DTvq0GRQ8MLp1kSG6VTGicGgmu5abKvGrDF19GsfVe3LzIXUD9PRq17/zovz/0avx4OrYRd9Xd8/iMcgtabsNg9M9aL2jy98S191In62JNXnCG4bw7EdZhfqjDZR9daLbNNfqy8wo52iRzgmhiaVHw1/XkwVy8yoOatlLiGa3k9MoQs7VgIOJzXkaKDBlw4DHuNOtcZaNknBGdkWtNHW8/bNSCk/Xi7sr79/y0tBb0pu6/D3M+7dkq/HkEOtOR+JIN/CYNV8u+Pv3DQgJ5VpeHm/BEg6HrKSPFTTU2bvH2MckVI/DOVD4LGFsSXMEWevDsFlHwr/jyi5BiYRvixeGaEebazrAF7ZAeIDpvpKQTx210EOrMiwdy9yzYxXsww8A65I6mH7qD/RMKEPi6xPbJS129DXPnPw1dbhFgGBx9VGRl8KuHh3ZOuubGBhga6tmMI8mjJTO/ALCMpWkDCzDWdwSgfwSTdohlXuCSbQedCQlx3ajb8=
+  - secure: NT7M/O5J22ENXeBv8mZoTwckwFRuFKlDNM31GvkolNSE/FWWfSgaltS6d1+2foxE2X1HumQWJ5DUpRVXjbsFKb3GDvzY+cNWa6DbplBYJGjZusCcFy67+6CyRyrlGyYJvFTo9Dg3v8qz6MEtTCzo8vhPaKguUTVfC3Bt2BC37XklHYQ7ISpxkzPLeDMjin4eXVYWYGNkwlQlL12KZzJQVKfhvdAaRGF9l7hQK90aXXTNtuWxVpJCYkQGkz3l9mVfJlqBxa73syM9kYxMrUAB+3ThOiwN9mNswQhhswYKLhbuMpTkw0LaAi4l851OtSDIpn8jZOi3Tmb7l2yWWyzRzwbpKQyextBcNGH01tsGrwh979n4ltm2jOIUpnt3CbTqK6ezQ6kO/FqfnR1UybIg1XKhb7KNWjBIDNiMOD3sGnOP7kNNmm0iSNe1zbordnHQbN7puUFUq25fr+eOiI71bT0pCVAPGwGjx3jzjqabKSMJMUIXppxFLRec2xw/YQgeXfrTgnesSRfKsBfhoOalhN68ky5ksIX2G8R1c1WaT/GyATNap5MbzDBuqujH5IUdRq+DpTYz3DjdXiKqCwieyysUYl8lvPxaWmV8Ft/JdE3ikTVHkFq6NTrd+qMiIGISn9Q8x1o/WJTL5G3B4VfdWjXiVDFjGmaUljJJVH/xA5A=
+  - secure: GKXQJpFJ2Bi0ZM+6hrETI6hwXVGGQipNlsiENKJjDOFodDCmRoXvgfoiNWHBD9ReCrYgBravSYBen3wk9Hho2ADnc5CK+ssfTvk2RZRSShJ91eOBQ1iFl9au5lXnLEv5lPSEqQLk2UuJMUSbzo5uP9z6jO8YJ6/qQ09ds4VYdTHk2u55NDVhvVgVVm/tqtDNCyAlmvSWk3LUGWqiZxp2+X1H4/Pf6JabZ84eN365jnArhz/B32cD59/yFx0goAdSFH7LBi1DgUAKwkw8gSFB9Nr/sNGJ/f28gFQEqsNAAFcIXRdwP11nfTS11/5jwhsP6uysPxHNXKv1B2xuUmNckX8377Sua0PhopJ5Aox3EhJ0ZCe58wC/TUHy/t/WI+Iy4UmPkyDhUXYvdiEVBKnF8IY16taqIlBkIVgE6FKKdnzu9FWicq5xdRLHxu9aeHN0ZtQJZMDGlAOOntVSNjQdfwWiZBnA84kLYZdUYqDmu5/P7BMqWzITgRhJ71yRoGAH+8HRA1AJNEshkB+yn4ZYiZJCUmNPV1kbXDmDHHBMWusAqcsZSoS0Z94yBtsdcEh478CSaV+an/E/vMRCl5MWspL0z+0VnA9tEMgUqNsi89aFt99YASDkmI1BoRG0Viei22nWBOQo7NruA6v37duOuuWH3aAnsBRFnBY6IusOrCY=
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=8
+
+before_script:
+  - android list targets
+  - echo no | android create avd --force -n test -t android-24 --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+
+script:
+  - ./gradlew connectedAndroidTest -PdisablePreDex

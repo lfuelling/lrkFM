@@ -3,7 +3,11 @@ package io.lerk.lrkFM.entities;
 import android.util.Log;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
+
+import io.lerk.lrkFM.consts.FileType;
+import io.lerk.lrkFM.operations.ArchiveUtil;
 
 /**
  * File object.
@@ -52,7 +56,7 @@ public class FMFile {
     }
 
     public Date getLastModified() {
-        return lastModified;
+        return (Date) lastModified.clone();
     }
 
     public File getFile() {
@@ -63,12 +67,35 @@ public class FMFile {
         this.file = file;
     }
 
-    public String getExtension() {
+    /**
+     * Gets a file's extension.
+     *
+     * @return the file's extension
+     */
+    private String getExtension() {
         try {
-            return name.substring(name.indexOf(".") + 1, name.length());
+            return name.substring(name.indexOf('.') + 1, name.length());
         } catch (StringIndexOutOfBoundsException | ArrayIndexOutOfBoundsException e) {
             Log.e(TAG, "Unable to get file extension.", e);
             return "";
         }
+    }
+
+    public FileType getFileType() {
+        for (FileType fileType : Arrays.asList(FileType.values())) {
+            if (fileType.getExtension().equals(getExtension())) {
+                return fileType;
+            }
+        }
+        return FileType.UNKNOWN;
+    }
+
+    public boolean isArchive() {
+        FileType type = getFileType();
+        return type.equals(FileType.ARCHIVE_ZIP) ||
+                type.equals(FileType.ARCHIVE_RAR) ||
+                type.equals(FileType.ARCHIVE_TAR) ||
+                type.equals(FileType.ARCHIVE_TGZ) ||
+                type.equals(FileType.ARCHIVE_P7Z);
     }
 }
