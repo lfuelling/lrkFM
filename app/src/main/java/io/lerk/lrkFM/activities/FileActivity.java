@@ -4,12 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,29 +52,28 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.operations.ArchiveUtil;
 import io.lerk.lrkFM.file.FileArrayAdapter;
 import io.lerk.lrkFM.file.FileLoader;
-import io.lerk.lrkFM.operations.Operation;
+import io.lerk.lrkFM.consts.Operation;
 import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.util.EditablePair;
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.util.Handler;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static io.lerk.lrkFM.operations.Operation.COPY;
-import static io.lerk.lrkFM.operations.Operation.CREATE_ZIP;
-import static io.lerk.lrkFM.operations.Operation.EXTRACT;
-import static io.lerk.lrkFM.operations.Operation.MOVE;
-import static io.lerk.lrkFM.operations.Operation.NONE;
-import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARKS;
-import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARK_CURRENT_FOLDER;
-import static io.lerk.lrkFM.util.Consts.PREF_BOOKMARK_EDIT_MODE;
-import static io.lerk.lrkFM.util.Consts.PREF_FIRST_START;
-import static io.lerk.lrkFM.util.Consts.PREF_HEADER_PATH_LENGTH;
-import static io.lerk.lrkFM.util.Consts.PREF_HOMEDIR;
-import static io.lerk.lrkFM.util.Consts.PREF_SHOW_TOAST;
-import static io.lerk.lrkFM.util.Consts.PREF_SORT_FILES_BY;
-import static io.lerk.lrkFM.util.Consts.PREF_USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.consts.Operation.COPY;
+import static io.lerk.lrkFM.consts.Operation.CREATE_ZIP;
+import static io.lerk.lrkFM.consts.Operation.EXTRACT;
+import static io.lerk.lrkFM.consts.Operation.MOVE;
+import static io.lerk.lrkFM.consts.Operation.NONE;
+import static io.lerk.lrkFM.consts.Preference.BOOKMARKS;
+import static io.lerk.lrkFM.consts.Preference.BOOKMARK_CURRENT_FOLDER;
+import static io.lerk.lrkFM.consts.Preference.BOOKMARK_EDIT_MODE;
+import static io.lerk.lrkFM.consts.Preference.FIRST_START;
+import static io.lerk.lrkFM.consts.Preference.HEADER_PATH_LENGTH;
+import static io.lerk.lrkFM.consts.Preference.HOME_DIR;
+import static io.lerk.lrkFM.consts.Preference.SHOW_TOAST;
+import static io.lerk.lrkFM.consts.Preference.SORT_FILES_BY;
+import static io.lerk.lrkFM.consts.Preference.USE_CONTEXT_FOR_OPS_TOAST;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -227,6 +224,17 @@ public class FileActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        analytics = FirebaseAnalytics.getInstance(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
+            preferences.edit().putBoolean(FIRST_START.getKey(), false).apply();
+        } else if (preferences.getBoolean(FIRST_START.getKey(), true)) {
+            analytics.logEvent("first_start", new Bundle());
+            startActivity(new Intent(this, IntroActivity.class));
+            finish();
+        }
+
         setContentView(R.layout.activity_main);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder()
@@ -243,18 +251,6 @@ public class FileActivity extends AppCompatActivity
         operationUtil = new OperationUtil(this);
 
         StrictMode.setVmPolicy(builder.build());
-
-        analytics = FirebaseAnalytics.getInstance(this);
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
-            preferences.edit().putBoolean(PREF_FIRST_START, false).apply();
-        } else if (preferences.getBoolean(PREF_FIRST_START, true)) {
-            analytics.logEvent("first_start", new Bundle());
-            startActivity(new Intent(this, IntroActivity.class));
-            finish();
-        }
 
         FileActivity.verifyStoragePermissions(FileActivity.this);
 
@@ -329,7 +325,7 @@ public class FileActivity extends AppCompatActivity
             //noinspection ComparatorCombinators
             bookmarks = new TreeSet<>((o1, o2) -> getTitleFromPath(o1).compareTo(getTitleFromPath(o2)));
         }
-        bookmarks.addAll(preferences.getStringSet(PREF_BOOKMARKS, new HashSet<>()));
+        bookmarks.addAll(preferences.getStringSet(BOOKMARKS.getKey(), new HashSet<>()));
         if (!bookmarks.isEmpty()) {
             bookmarkItems = new HashSet<>();
             menu.removeGroup(R.id.bookmarksMenuGroup);
@@ -358,7 +354,7 @@ public class FileActivity extends AppCompatActivity
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
         item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
         Bookmark bookmark = new Bookmark(s, title, item);
-        if (preferences.getBoolean(PREF_BOOKMARK_EDIT_MODE, false)) {
+        if (preferences.getBoolean(BOOKMARK_EDIT_MODE.getKey(), false)) {
             item.setActionView(R.layout.editable_menu_item);
             View v = item.getActionView();
             ImageButton deleteButton = v.findViewById(R.id.menu_item_action_delete);
@@ -417,7 +413,7 @@ public class FileActivity extends AppCompatActivity
         menu.removeItem(item.getItemId());
         bookmarkItems.remove(bookmark);
         bookmarks.remove(s);
-        preferences.edit().putStringSet(PREF_BOOKMARKS, bookmarks).commit();
+        preferences.edit().putStringSet(BOOKMARKS.getKey(), bookmarks).commit();
     }
 
     /**
@@ -429,9 +425,9 @@ public class FileActivity extends AppCompatActivity
         historyCounter = 0;
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String startDir = preferences.getString(PREF_HOMEDIR, null);
+        String startDir = preferences.getString(HOME_DIR.getKey(), null);
         if (startDir == null) {
-            preferences.edit().putString(PREF_HOMEDIR, absolutePath).apply();
+            preferences.edit().putString(HOME_DIR.getKey(), absolutePath).apply();
             startDir = absolutePath;
         }
         loadDirectory(startDir);
@@ -460,7 +456,7 @@ public class FileActivity extends AppCompatActivity
             errorText.setVisibility(GONE);
             emptyText.setVisibility(GONE);
 
-            arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, preferences.getString(PREF_SORT_FILES_BY, getString(R.string.pref_sortby_value_default))));
+            arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, preferences.getString(SORT_FILES_BY.getKey(), getString(R.string.pref_sortby_value_default))));
             fileListView.setAdapter(arrayAdapter);
         } catch (FileLoader.NoAccessException e) {
             Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
@@ -532,7 +528,7 @@ public class FileActivity extends AppCompatActivity
             }
         }
         if (currentDirectoryTextView != null) {
-            int maxLength = Integer.parseInt(preferences.getString(PREF_HEADER_PATH_LENGTH, getString(R.string.pref_header_path_length_default)));
+            int maxLength = Integer.parseInt(preferences.getString(HEADER_PATH_LENGTH.getKey(), getString(R.string.pref_header_path_length_default)));
 
             if (currentDirectory.length() > maxLength) {
                 currentDirectoryTextView.setText(shortenDirectoryPath(maxLength));
@@ -540,7 +536,7 @@ public class FileActivity extends AppCompatActivity
                 currentDirectoryTextView.setText(currentDirectory);
             }
         }
-        if (preferences.getBoolean(PREF_SHOW_TOAST, false)) {
+        if (preferences.getBoolean(SHOW_TOAST.getKey(), false)) {
             Toast.makeText(this, getText(R.string.toast_cd_new_dir) + " " + currentDirectory, Toast.LENGTH_SHORT).show();
         }
     }
@@ -677,40 +673,44 @@ public class FileActivity extends AppCompatActivity
      * Finishes the current file operation context.
      */
     public void finishFileOperation() {
-        if (!fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty()) {
-            if (fileOpContext.getFirst().equals(COPY)) {
+        Operation operation = fileOpContext.getFirst();
+        ArrayList<FMFile> files = fileOpContext.getSecond();
+        if(!operation.equals(NONE) && !files.isEmpty()) {
+            if (operation.equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> operationUtil.copy(f, null));
+                    files.forEach((f) -> operationUtil.copy(f, null));
                 } else { // -_-
-                    for (FMFile f : fileOpContext.getSecond()) {
+                    for (FMFile f : files) {
                         operationUtil.copy(f, null);
                     }
                 }
-            } else if (fileOpContext.getFirst().equals(MOVE)) {
+            } else if (operation.equals(MOVE)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> operationUtil.move(f, null));
+                    files.forEach((f) -> operationUtil.move(f, null));
                 } else { // -_-
-                    for (FMFile f : fileOpContext.getSecond()) {
+                    for (FMFile f : files) {
                         operationUtil.move(f, null);
                     }
                 }
-            } else if (fileOpContext.getFirst().equals(EXTRACT)) {
+            } else if (operation.equals(EXTRACT)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    fileOpContext.getSecond().forEach((f) -> archiveUtil.extractArchive(currentDirectory, f));
+                    files.forEach((f) -> archiveUtil.extractArchive(currentDirectory, f));
                 } else { // -_-
-                    for (FMFile f : fileOpContext.getSecond()) {
+                    for (FMFile f : files) {
                         archiveUtil.extractArchive(currentDirectory, f);
                     }
                 }
-            } else if (fileOpContext.getFirst().equals(CREATE_ZIP)) {
+            } else if (operation.equals(CREATE_ZIP)) {
                 AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
                         R.string.create_zip_file,
                         R.string.op_destination,
                         R.drawable.ic_archive_black_24dp,
                         R.layout.layout_name_prompt,
-                        (Handler<AlertDialog>) (d) -> archiveUtil.createZipFile(fileOpContext.getSecond(), d),
+                        (d) -> archiveUtil.createZipFile(files, d),
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.show();
+            } else {
+                Toast.makeText(this, R.string.invalid_operation, Toast.LENGTH_LONG).show();
             }
         } else {
             Log.w(TAG, "No operation set!");
@@ -842,8 +842,8 @@ public class FileActivity extends AppCompatActivity
     @SuppressLint("ApplySharedPref")
     private void promptAndAddBookmark() {
         logEvent("add_bookmark", new Bundle());
-        Set<String> stringSet = preferences.getStringSet(PREF_BOOKMARKS, new HashSet<>());
-        if (preferences.getBoolean(PREF_BOOKMARK_CURRENT_FOLDER, false)) {
+        Set<String> stringSet = preferences.getStringSet(BOOKMARKS.getKey(), new HashSet<>());
+        if (preferences.getBoolean(BOOKMARK_CURRENT_FOLDER.getKey(), false)) {
             stringSet.add(currentDirectory);
         } else {
             AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
@@ -857,7 +857,7 @@ public class FileActivity extends AppCompatActivity
             AlertDialog alertDialog = bookmarkDialogBuilder.create();
             alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> stringSet.add(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
             alertDialog.setOnDismissListener(dialog -> {
-                preferences.edit().putStringSet(PREF_BOOKMARKS, stringSet).commit();
+                preferences.edit().putStringSet(BOOKMARKS.getKey(), stringSet).commit();
                 loadUserBookmarks();
             });
             alertDialog.show();
@@ -909,7 +909,7 @@ public class FileActivity extends AppCompatActivity
      */
     public void addFileToOpContext(Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
-            if (preferences.getBoolean(PREF_USE_CONTEXT_FOR_OPS_TOAST, true)) {
+            if (preferences.getBoolean(USE_CONTEXT_FOR_OPS_TOAST.getKey(), true)) {
                 Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
             }
             fileOpContext.setFirst(op);

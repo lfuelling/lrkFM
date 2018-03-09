@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -34,11 +33,10 @@ import java.util.Objects;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.operations.ArchiveUtil;
-import io.lerk.lrkFM.util.Handler;
+import io.lerk.lrkFM.operations.Handler;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.util.Consts.PREF_FILENAME_LENGTH;
+import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
@@ -75,7 +73,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
         Trace trace = FirebasePerformance.getInstance().newTrace("open_file");
         trace.start();
         Intent i = new Intent(Intent.ACTION_VIEW);
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(f.getExtension());
+        String mimeType = f.getFileType().getMimeType();
         trace.putAttribute("mime_type", mimeType != null ? mimeType : "null");
         i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -125,7 +123,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     private String getSizeFormatted(FMFile f) {
         String[] units = new String[]{"B", "KiB", "MiB", "GiB", "TiB", "PiB"};
         Long length = f.getFile().length();
-        if(Objects.equals(length, 0L)) {
+        if (Objects.equals(length, 0L)) {
             return "0";
         }
         Double number = Math.floor(Math.log(length) / Math.log(1024));
@@ -150,8 +148,8 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                                               @StringRes int title,
                                               @DrawableRes int icon,
                                               @LayoutRes int view,
-                                              Handler positiveCallBack,
-                                              Handler negativeCallBack) {
+                                              Handler<AlertDialog> positiveCallBack,
+                                              Handler<AlertDialog> negativeCallBack) {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(title)
@@ -205,7 +203,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
             final String fileName = f.getName();
             if (fileNameView != null) {
-                int maxLength = Integer.parseInt(activity.getDefaultPreferences().getString(PREF_FILENAME_LENGTH, "27"));
+                int maxLength = Integer.parseInt(activity.getDefaultPreferences().getString(FILENAME_LENGTH.getKey(), "27"));
                 if (fileName.length() >= maxLength) {
                     @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength - 3) + "...";
                     fileNameView.setText(output); //shorten long names
@@ -228,10 +226,11 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
             }
             if (fileImage != null) {
                 if (!f.isDirectory()) {
-                    if(f.getExtension().equals(ArchiveUtil.ZIP_EXTENSION) || f.getExtension().equals(ArchiveUtil.RAR_EXTENSION)) {
+                    if (f.isArchive()) {
                         fileImage.setImageDrawable(getContext().getDrawable(R.drawable.ic_perm_media_black_24dp));
+                    } else {
+                        fileImage.setImageDrawable(getContext().getDrawable(R.drawable.ic_insert_drive_file_black_24dp));
                     }
-                    fileImage.setImageDrawable(getContext().getDrawable(R.drawable.ic_insert_drive_file_black_24dp));
                 }
             }
             if (f.isDirectory()) {

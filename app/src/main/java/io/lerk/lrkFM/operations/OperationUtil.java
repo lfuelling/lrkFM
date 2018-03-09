@@ -151,6 +151,11 @@ public class OperationUtil {
     }
 
     public static boolean deleteNoValidation(FMFile f) {
+        if(f.isDirectory()){
+            for (File file : f.getFile().listFiles()) {
+                deleteNoValidation(new FMFile(file));
+            }
+        }
         return f.getFile().exists() && f.getFile().delete();
     }
 

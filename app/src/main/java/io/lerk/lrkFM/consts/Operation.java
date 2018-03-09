@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.operations;
+package io.lerk.lrkFM.consts;
 
 import android.support.annotation.StringRes;
 

@@ -1,7 +1,6 @@
 package io.lerk.lrkFM.operations;
 
 import android.app.AlertDialog;
-import android.os.Build;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -11,27 +10,32 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Enumeration;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.consts.FileType;
 import io.lerk.lrkFM.entities.FMFile;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -41,11 +45,6 @@ public class ArchiveUtil {
 
     private static final String TAG = ArchiveUtil.class.getCanonicalName();
 
-    public static final String RAR_EXTENSION = "rar";
-    public static final String ZIP_EXTENSION = "zip";
-    public static final String SEVENZIP_EXTENSION = "7z";
-    public static final String TAR_EXTENSION = "tar";
-    public static final String GZ_EXTENSION = "gz";
 
     private FileActivity context;
 
@@ -71,27 +70,62 @@ public class ArchiveUtil {
     }
 
     public boolean extractArchive(String path, FMFile f) {
-        boolean result = false;
-        switch (f.getExtension()) {
-            case RAR_EXTENSION:
-                result = unpackRar(path, f);
-                break;
-            case ZIP_EXTENSION:
-                result = unpackZip(path, f);
-                break;
-            case SEVENZIP_EXTENSION:
-                result = unpack7Zip(path, f);
-                break;
-            case TAR_EXTENSION:
-                result = unpackTar(path, f, GZ_EXTENSION.equals(f.getExtension()));
-                break;
-            default:
-                Toast.makeText(context, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
-                break;
-        }
+        AtomicBoolean result = new AtomicBoolean(false);
+
+        FileType fileType = f.getFileType();
+        fileType.newHandler(fi -> {
+            try {
+                InputStream is = new FileInputStream(f.getFile());
+                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
+                ZipEntry entry = null;
+
+                while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
+
+                    if (entry.getName().endsWith("/")) {
+                        File dir = new File(path + File.separator + entry.getName());
+                        if (!dir.exists()) {
+                            //noinspection ResultOfMethodCallIgnored
+                            dir.mkdirs();
+                        }
+                        continue;
+                    }
+
+                    File outFile = new File(path + File.separator + entry.getName());
+
+                    if (outFile.isDirectory()) {
+                        continue;
+                    }
+
+                    if (outFile.exists()) {
+                        continue;
+                    }
+
+                    FileOutputStream out = new FileOutputStream(outFile);
+                    try {
+                        byte[] buffer = new byte[1024];
+                        //noinspection UnusedAssignment
+                        int length = 0;
+                        while ((length = ais.read(buffer)) > 0) {
+                            out.write(buffer, 0, length);
+                            out.flush();
+                        }
+                        out.close();
+                    } catch (IOException e){
+                        out.close();
+                    }
+
+                    result.set(true);
+                }
+            } catch (IOException | ArchiveException e) {
+                Log.e(TAG, "Error extracting " + fileType.getExtension());
+                result.set(false);
+            }
+
+        }).handle(f);
+
         context.clearFileOpCache();
         context.reloadCurrentDirectory();
-        return result;
+        return result.get();
     }
 
     private boolean unpack7Zip(String path, FMFile f) {
@@ -159,49 +193,30 @@ public class ArchiveUtil {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static boolean unpackZip(String path, FMFile zip) {
-        byte[] buffer = new byte[1024];
-
-        Trace trace = FirebasePerformance.getInstance().newTrace("extract_zip");
-        trace.start();
         try {
-            //create output directory is not exists
-            File folder = new File(path);
-            if (!folder.exists()) {
-                trace.putAttribute("mkdir_success", String.valueOf(folder.mkdirs()));
-            }
-            //get the zip file content
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(zip.getFile()));
-            //get the zipped file list entry
-            ZipEntry ze = zis.getNextEntry();
-
-            while (ze != null) {
-                String fileName = ze.getName();
-                File newFile = new File(path + File.separator + fileName);
-                System.out.println("file unzip : " + newFile.getAbsoluteFile());
-
-                //create all non exists folders
-                //else you will hit FileNotFoundException for compressed folder
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
+            Enumeration<ZipArchiveEntry> zipFile = new ZipFile(zip.getFile()).getEntries();
+            ZipArchiveEntry entry;
+            while (zipFile.hasMoreElements()) {
+                entry = zipFile.nextElement();
+                if (entry.isDirectory()) {
+                    continue;
                 }
-                fos.close();
-                ze = zis.getNextEntry();
+                File curfile = new File(path + File.separator + entry.getName());
+                File parent = curfile.getParentFile();
+                if (!parent.exists()) {
+                    if (parent.mkdirs()) {
+                        Log.d(TAG, "extraction of parent dir successful");
+                    } else {
+                        Log.w(TAG, "extraction of parent dir unsuccessful");
+                    }
+                }
+
             }
-            zis.closeEntry();
-            zis.close();
-            trace.putAttribute("unpack_success", "true");
-            trace.stop();
-        } catch (IOException ex) {
-            Log.e(TAG, "Unable to extract zip!", ex);
-            trace.putAttribute("unpack_success", "true");
-            trace.stop();
-            FirebaseCrash.report(ex);
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to read 7zip");
             return false;
         }
-        return true;
     }
 
     public boolean createZipFile(ArrayList<FMFile> files, AlertDialog d) {

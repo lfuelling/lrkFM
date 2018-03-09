@@ -16,8 +16,8 @@ android {
         applicationId "io.lerk.lrkFM"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 27
-        versionName '1.4.1'
+        versionCode 28
+        versionName '1.5'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         dexOptions {
@@ -73,6 +73,7 @@ dependencies {
     implementation 'com.android.support:design:27.1.0'
     implementation 'com.android.support:customtabs:27.1.0'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.github.BoD:aLibGlitch:1.0.0'
     implementation 'commons-io:commons-io:2.5'
     implementation 'org.apache.commons:commons-compress:1.16.1'
     implementation('com.github.junrar:junrar:0.7') {

@@ -48,7 +48,7 @@
     <string name="warn_file_exists_msg">The existing file will be overwritten. Are you sure that you want to continue?</string>
     <string name="yes">@android:string/yes</string>
     <string name="delete">Delete</string>
-    <string name="warn_delete_msg">Are you sure that you want to delete:</string>
+    <string name="warn_delete_msg">Are you sure that you want to delete: </string>
     <string name="move">Move</string>
     <string name="rename">Rename</string>
     <string name="name_input_hint">Enter new file name</string>
@@ -111,5 +111,13 @@
     <string name="intro_link_2">grant the Permission</string>
     <string name="intro_text_6_1">to read phone storage.</string>
     <string name="intro_text_7">After that, use \'refresh\' in the top right menu.</string>
+    <string name="intro_text_8">To interact with files you can either use the menu button next to each file entry or long press a file entry.</string>
     <string name="action_settings">@string/settings</string>
+    <string name="type_rar">Rar</string>
+    <string name="type_zip">Zip</string>
+    <string name="type_tar">Tar</string>
+    <string name="type_p7z">7Zip</string>
+    <string name="type_tgz">tar.gz</string>
+    <string name="type_unknown">Unknown</string>
+    <string name="invalid_operation">Invalid Operation</string>
 </resources>
