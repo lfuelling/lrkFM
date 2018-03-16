@@ -76,9 +76,6 @@ dependencies {
     implementation 'com.github.BoD:aLibGlitch:1.0.0'
     implementation 'commons-io:commons-io:2.5'
     implementation 'org.apache.commons:commons-compress:1.16.1'
-    implementation('com.github.junrar:junrar:0.7') {
-        exclude group: 'commons-logging', module: 'commons-logging'
-    }
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.2.0'
 }

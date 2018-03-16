@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.widget.EditText;
@@ -21,6 +20,7 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.consts.Operation;
 import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.EditablePair;
+import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Operation.COPY;
@@ -107,18 +107,20 @@ class ContextMenuUtil {
     private void addExtractToMenu(FMFile file, ContextMenu menu) {
         menu.add(0, ID_EXTRACT, 0, activity.getString(R.string.extract))
                 .setOnMenuItemClickListener(i -> {
-                    if (activity.getDefaultPreferences().getBoolean(USE_CONTEXT_FOR_OPS.getKey(), true)) {
+                    if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS).getValue()) {
                         activity.addFileToOpContext(EXTRACT, file);
-                        if (activity.getDefaultPreferences().getBoolean(USE_CONTEXT_FOR_OPS_TOAST.getKey(), true)) {
+                        if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                             Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + file.getName(), LENGTH_SHORT).show();
                         }
 
-                        if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(ALWAYS_EXTRACT_IN_CURRENT_DIR.getKey(), false)) {
+                        PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
+                        if(alwaysExtractInCurrentPref.getValue()) {
                             activity.finishFileOperation();
                         } else {
                             new AlertDialog.Builder(activity)
                                     .setView(R.layout.layout_extract_now_prompt)
                                     .setPositiveButton(R.string.yes, (dialog, which) -> activity.finishFileOperation())
+                                    .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
                                     .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
                         }
                     } else {
@@ -184,9 +186,9 @@ class ContextMenuUtil {
      */
     private void addMoveToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_MOVE, 0, activity.getString(R.string.move)).setOnMenuItemClickListener(item -> {
-            if (activity.getDefaultPreferences().getBoolean(USE_CONTEXT_FOR_OPS.getKey(), true)) {
+            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS).getValue()) {
                 activity.addFileToOpContext(MOVE, f);
-                if (activity.getDefaultPreferences().getBoolean(USE_CONTEXT_FOR_OPS_TOAST.getKey(), true)) {
+                if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                     Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + f.getName(), LENGTH_SHORT).show();
                 }
             } else {
@@ -213,9 +215,9 @@ class ContextMenuUtil {
      */
     private void addCopyToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_COPY, 0, activity.getString(R.string.copy)).setOnMenuItemClickListener(item -> {
-            if (activity.getDefaultPreferences().getBoolean(USE_CONTEXT_FOR_OPS.getKey(), true)) {
+            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS).getValue()) {
                 activity.addFileToOpContext(COPY, f);
-                if (activity.getDefaultPreferences().getBoolean(USE_CONTEXT_FOR_OPS_TOAST.getKey(), true)) {
+                if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                     Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + f.getName(), LENGTH_SHORT).show();
                 }
             } else {
@@ -261,7 +263,7 @@ class ContextMenuUtil {
 
         menu.add(0, ID_ADD_TO_ZIP, 0, (zipFileReady) ? activity.getString(R.string.add_to_zip) : activity.getString(R.string.new_zip_file)).setOnMenuItemClickListener(item -> {
             activity.addFileToOpContext(CREATE_ZIP, f);
-            if (activity.getDefaultPreferences().getBoolean(USE_CONTEXT_FOR_OPS_TOAST.getKey(), true)) {
+            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                 Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + f.getName(), LENGTH_SHORT).show();
             }
             activity.reloadCurrentDirectory();

@@ -34,6 +34,7 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.operations.Handler;
+import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;
@@ -203,7 +204,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
 
             final String fileName = f.getName();
             if (fileNameView != null) {
-                int maxLength = Integer.parseInt(activity.getDefaultPreferences().getString(FILENAME_LENGTH.getKey(), "27"));
+                int maxLength = Integer.parseInt(new PrefUtils<String>(FILENAME_LENGTH).getValue());
                 if (fileName.length() >= maxLength) {
                     @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength - 3) + "...";
                     fileNameView.setText(output); //shorten long names

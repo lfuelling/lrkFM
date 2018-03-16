@@ -57,6 +57,7 @@ import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.util.EditablePair;
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -226,14 +227,18 @@ public class FileActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         analytics = FirebaseAnalytics.getInstance(this);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        PrefUtils<Boolean> firstStartPref = new PrefUtils<>(FIRST_START);
         if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
-            preferences.edit().putBoolean(FIRST_START.getKey(), false).apply();
-        } else if (preferences.getBoolean(FIRST_START.getKey(), true)) {
+            firstStartPref.setValue(false);
+        } else if (firstStartPref.getValue()) {
             analytics.logEvent("first_start", new Bundle());
             startActivity(new Intent(this, IntroActivity.class));
             finish();
         }
+
+
 
         setContentView(R.layout.activity_main);
 
@@ -325,7 +330,7 @@ public class FileActivity extends AppCompatActivity
             //noinspection ComparatorCombinators
             bookmarks = new TreeSet<>((o1, o2) -> getTitleFromPath(o1).compareTo(getTitleFromPath(o2)));
         }
-        bookmarks.addAll(preferences.getStringSet(BOOKMARKS.getKey(), new HashSet<>()));
+        bookmarks.addAll(new PrefUtils<HashSet<String>>(BOOKMARKS).getValue());
         if (!bookmarks.isEmpty()) {
             bookmarkItems = new HashSet<>();
             menu.removeGroup(R.id.bookmarksMenuGroup);
@@ -354,7 +359,7 @@ public class FileActivity extends AppCompatActivity
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
         item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
         Bookmark bookmark = new Bookmark(s, title, item);
-        if (preferences.getBoolean(BOOKMARK_EDIT_MODE.getKey(), false)) {
+        if (new PrefUtils<Boolean>(BOOKMARK_EDIT_MODE).getValue()) {
             item.setActionView(R.layout.editable_menu_item);
             View v = item.getActionView();
             ImageButton deleteButton = v.findViewById(R.id.menu_item_action_delete);
@@ -413,7 +418,7 @@ public class FileActivity extends AppCompatActivity
         menu.removeItem(item.getItemId());
         bookmarkItems.remove(bookmark);
         bookmarks.remove(s);
-        preferences.edit().putStringSet(BOOKMARKS.getKey(), bookmarks).commit();
+        new PrefUtils<Set<String>>(BOOKMARKS).setValue(bookmarks);
     }
 
     /**
@@ -424,10 +429,10 @@ public class FileActivity extends AppCompatActivity
         historyMap = new HashMap<>();
         historyCounter = 0;
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String startDir = preferences.getString(HOME_DIR.getKey(), null);
+        PrefUtils<String> homeDirPreference = new PrefUtils<>(HOME_DIR);
+        String startDir = homeDirPreference.getValue();
         if (startDir == null) {
-            preferences.edit().putString(HOME_DIR.getKey(), absolutePath).apply();
+            homeDirPreference.setValue(absolutePath);
             startDir = absolutePath;
         }
         loadDirectory(startDir);
@@ -456,7 +461,7 @@ public class FileActivity extends AppCompatActivity
             errorText.setVisibility(GONE);
             emptyText.setVisibility(GONE);
 
-            arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, preferences.getString(SORT_FILES_BY.getKey(), getString(R.string.pref_sortby_value_default))));
+            arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
             fileListView.setAdapter(arrayAdapter);
         } catch (FileLoader.NoAccessException e) {
             Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
@@ -528,7 +533,7 @@ public class FileActivity extends AppCompatActivity
             }
         }
         if (currentDirectoryTextView != null) {
-            int maxLength = Integer.parseInt(preferences.getString(HEADER_PATH_LENGTH.getKey(), getString(R.string.pref_header_path_length_default)));
+            int maxLength = Integer.parseInt(new PrefUtils<String>(HEADER_PATH_LENGTH).getValue());
 
             if (currentDirectory.length() > maxLength) {
                 currentDirectoryTextView.setText(shortenDirectoryPath(maxLength));
@@ -536,7 +541,7 @@ public class FileActivity extends AppCompatActivity
                 currentDirectoryTextView.setText(currentDirectory);
             }
         }
-        if (preferences.getBoolean(SHOW_TOAST.getKey(), false)) {
+        if (new PrefUtils<Boolean>(SHOW_TOAST).getValue()) {
             Toast.makeText(this, getText(R.string.toast_cd_new_dir) + " " + currentDirectory, Toast.LENGTH_SHORT).show();
         }
     }
@@ -842,8 +847,8 @@ public class FileActivity extends AppCompatActivity
     @SuppressLint("ApplySharedPref")
     private void promptAndAddBookmark() {
         logEvent("add_bookmark", new Bundle());
-        Set<String> stringSet = preferences.getStringSet(BOOKMARKS.getKey(), new HashSet<>());
-        if (preferences.getBoolean(BOOKMARK_CURRENT_FOLDER.getKey(), false)) {
+        Set<String> stringSet = new PrefUtils<HashSet<String>>(BOOKMARKS).getValue();
+        if (new PrefUtils<Boolean>(BOOKMARK_CURRENT_FOLDER).getValue()) {
             stringSet.add(currentDirectory);
         } else {
             AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
@@ -891,15 +896,6 @@ public class FileActivity extends AppCompatActivity
     }
 
     /**
-     * Returns the preference object.
-     *
-     * @return {@link SharedPreferences}
-     */
-    public SharedPreferences getDefaultPreferences() {
-        return preferences;
-    }
-
-    /**
      * Adds a file to the operation context.
      * If the selected operation mode is not the same used in the current context,
      * the previous state will be discarded.
@@ -909,7 +905,7 @@ public class FileActivity extends AppCompatActivity
      */
     public void addFileToOpContext(Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
-            if (preferences.getBoolean(USE_CONTEXT_FOR_OPS_TOAST.getKey(), true)) {
+            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                 Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
             }
             fileOpContext.setFirst(op);

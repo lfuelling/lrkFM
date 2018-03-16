@@ -120,4 +120,7 @@
     <string name="type_tgz">tar.gz</string>
     <string name="type_unknown">Unknown</string>
     <string name="invalid_operation">Invalid Operation</string>
+    <string name="backup_quota_exceeded_title">Backup Quota Exceeded</string>
+    <string name="backup_quota_exceeded_message">Unable to create cloud backup. Quota exceeded.</string>
+    <string name="yes_and_remember">Yes, Forever</string>
 </resources>

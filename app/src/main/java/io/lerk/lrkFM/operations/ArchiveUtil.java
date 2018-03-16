@@ -5,7 +5,6 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.junrar.extract.ExtractArchive;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
@@ -45,28 +44,10 @@ public class ArchiveUtil {
 
     private static final String TAG = ArchiveUtil.class.getCanonicalName();
 
-
     private FileActivity context;
 
     public ArchiveUtil(FileActivity context) {
         this.context = context;
-    }
-
-    /**
-     * Unpacks a rar file.
-     *
-     * @param destination destination path (directory)
-     * @param rar         rarfile
-     * @return if the destination is a directory after extracting
-     */
-    private static boolean unpackRar(String destination, FMFile rar) {
-        Trace trace = FirebasePerformance.getInstance().newTrace("extract_rar");
-        trace.start();
-        new ExtractArchive().extractArchive(rar.getFile(), new File(destination));
-        boolean success = new File(destination).isDirectory();
-        trace.putAttribute("success", String.valueOf(success));
-        trace.stop();
-        return success;
     }
 
     public boolean extractArchive(String path, FMFile f) {

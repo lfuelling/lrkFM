@@ -9,6 +9,10 @@ import android.view.View;
 
 import io.lerk.lrkFM.R;
 
+/**
+ * Intro.
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class IntroActivity extends AppCompatActivity {
 
     @Override
@@ -23,6 +27,7 @@ public class IntroActivity extends AppCompatActivity {
             Intent intent = new Intent(this, FileActivity.class);
             intent.putExtra("firstStartDone", true);
             startActivity(intent);
+            finish();
         });
     }
 
