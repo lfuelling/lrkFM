@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.file;
+package io.lerk.lrkFM.util;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -30,11 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
-import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.Handler;
+import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.operations.Handler;
-import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;

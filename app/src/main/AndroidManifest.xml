@@ -7,7 +7,7 @@
 
     <application
         android:name=".LrkFMApp"
-        android:backupAgent=".util.LrkFMBackupAgent"
+        android:backupAgent=".LrkFMBackupAgent"
         android:restoreAnyVersion="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

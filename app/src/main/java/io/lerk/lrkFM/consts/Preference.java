@@ -3,6 +3,8 @@ package io.lerk.lrkFM.consts;
 import java.util.HashSet;
 
 import io.lerk.lrkFM.LrkFMApp;
+import io.lerk.lrkFM.LrkFMBackupAgent;
+import io.lerk.lrkFM.util.PrefUtils;
 import io.lerk.lrkFM.R;
 
 /**
@@ -164,8 +166,8 @@ public enum Preference {
         /**
          * Name of the preferences.
          *
-         * @see io.lerk.lrkFM.util.LrkFMBackupAgent
-         * @see io.lerk.lrkFM.util.PrefUtils
+         * @see LrkFMBackupAgent
+         * @see PrefUtils
          */
         private final String name;
 

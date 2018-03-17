@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.file;
+package io.lerk.lrkFM.util;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
@@ -14,13 +14,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
-import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.consts.Operation;
-import io.lerk.lrkFM.operations.OperationUtil;
-import io.lerk.lrkFM.util.EditablePair;
-import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.op.OperationUtil;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Operation.COPY;

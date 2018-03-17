@@ -1,9 +1,10 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM;
 
 import android.app.backup.BackupAgentHelper;
 import android.app.backup.SharedPreferencesBackupHelper;
 
 import io.lerk.lrkFM.consts.Preference;
+import io.lerk.lrkFM.util.PrefUtils;
 
 import static io.lerk.lrkFM.consts.Preference.BACKUP_QUOTA_EXCEEDED;
 
@@ -25,5 +26,4 @@ public class LrkFMBackupAgent extends BackupAgentHelper {
         super.onQuotaExceeded(backupDataBytes, quotaBytes);
         new PrefUtils<Boolean>(BACKUP_QUOTA_EXCEEDED).setValue(true);
     }
-
 }

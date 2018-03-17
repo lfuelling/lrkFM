@@ -4,9 +4,9 @@ import android.support.annotation.StringRes;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.operations.Handler;
 
 public enum FileType {
     ARCHIVE_RAR(R.string.type_rar, "rar"),

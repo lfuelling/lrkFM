@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM;
 
 /**
  * Editable pair. Such mystery.

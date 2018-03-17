@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 import io.lerk.lrkFM.consts.FileType;
-import io.lerk.lrkFM.operations.ArchiveUtil;
 
 /**
  * File object.

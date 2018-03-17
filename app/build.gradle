@@ -4,9 +4,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 jacocoAndroidUnitTestReport {
-    csv.enabled false
-    html.enabled true
-    xml.enabled false
+    csv.enabled true
 }
 
 android {
@@ -60,9 +58,6 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     implementation 'com.google.firebase:firebase-crash:11.8.0'
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
         transitive = true
@@ -78,6 +73,9 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.16.1'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.2.0'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }
 
 apply plugin: 'com.google.gms.google-services'

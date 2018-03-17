@@ -47,17 +47,17 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.op.ArchiveUtil;
 import io.lerk.lrkFM.entities.Bookmark;
-import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.operations.ArchiveUtil;
-import io.lerk.lrkFM.file.FileArrayAdapter;
-import io.lerk.lrkFM.file.FileLoader;
-import io.lerk.lrkFM.consts.Operation;
-import io.lerk.lrkFM.operations.OperationUtil;
 import io.lerk.lrkFM.util.DiskUtil;
-import io.lerk.lrkFM.util.EditablePair;
-import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.EditablePair;
+import io.lerk.lrkFM.consts.Operation;
+import io.lerk.lrkFM.op.OperationUtil;
 import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.util.FileArrayAdapter;
+import io.lerk.lrkFM.util.FileLoader;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -796,7 +796,6 @@ public class FileActivity extends AppCompatActivity
      */
     public static void verifyStoragePermissions(Activity context) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }
     }

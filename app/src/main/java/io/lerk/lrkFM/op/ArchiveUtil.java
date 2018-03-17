@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.operations;
+package io.lerk.lrkFM.op;
 
 import android.app.AlertDialog;
 import android.util.Log;
@@ -34,11 +34,11 @@ import java.util.zip.ZipOutputStream;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
-import io.lerk.lrkFM.consts.FileType;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.consts.FileType;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.operations.OperationUtil.getFileExistsDialogBuilder;
+import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 
 public class ArchiveUtil {
 

@@ -5,15 +5,17 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import io.lerk.lrkFM.R;
 
 /**
  * Intro.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  */
 public class IntroActivity extends AppCompatActivity {
+
+    private static int c = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,18 +26,16 @@ public class IntroActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            Intent intent = new Intent(this, FileActivity.class);
-            intent.putExtra("firstStartDone", true);
-            startActivity(intent);
-            finish();
+            if (c <= 0) {
+                FileActivity.verifyStoragePermissions(IntroActivity.this);
+                fab.setBackgroundDrawable(getDrawable(R.drawable.ic_chevron_right_white_24dp));
+                c++;
+            } else {
+                Intent intent = new Intent(IntroActivity.this, FileActivity.class);
+                intent.putExtra("firstStartDone", true);
+                startActivity(intent);
+                finish();
+            }
         });
-    }
-
-    public void launchSettings(View view) {
-        startActivity(new Intent(this, SettingsActivity.class));
-    }
-
-    public void grantPermission(View view) {
-        FileActivity.verifyStoragePermissions(this);
     }
 }
