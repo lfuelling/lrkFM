@@ -34,10 +34,13 @@ import java.util.zip.ZipOutputStream;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.consts.Preference;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.consts.FileType;
+import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
+import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
 import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 
 public class ArchiveUtil {
@@ -109,97 +112,6 @@ public class ArchiveUtil {
         return result.get();
     }
 
-    private boolean unpack7Zip(String path, FMFile f) {
-        try {
-            SevenZFile sevenZFile = new SevenZFile(f.getFile());
-            SevenZArchiveEntry entry;
-            while ((entry = sevenZFile.getNextEntry()) != null) {
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                File curfile = new File(path + File.separator + entry.getName());
-                File parent = curfile.getParentFile();
-                if (!parent.exists()) {
-                    if (parent.mkdirs()) {
-                        Log.d(TAG, "extraction of parent dir successful");
-                    } else {
-                        Log.w(TAG, "extraction of parent dir unsuccessful");
-                    }
-                }
-                FileOutputStream out = new FileOutputStream(curfile);
-                byte[] content = new byte[(int) entry.getSize()];
-                sevenZFile.read(content, 0, content.length);
-                out.write(content);
-                out.close();
-            }
-            return true;
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to read 7zip");
-            return false;
-        }
-    }
-
-
-    private boolean unpackTar(String path, FMFile f, boolean isGzipped) {
-        try (TarArchiveInputStream fin = new TarArchiveInputStream((isGzipped) ? new FileInputStream(f.getFile()) : new GzipCompressorInputStream(new FileInputStream(f.getFile())))) {
-            TarArchiveEntry entry;
-            while ((entry = fin.getNextTarEntry()) != null) {
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                File curfile = new File(path + File.separator + entry.getName());
-                File parent = curfile.getParentFile();
-                if (!parent.exists()) {
-                    if (parent.mkdirs()) {
-                        Log.d(TAG, "extraction of parent dir successful");
-                    } else {
-                        Log.w(TAG, "extraction of parent dir unsuccessful");
-                    }
-                }
-                IOUtils.copy(fin, new FileOutputStream(curfile));
-            }
-            return true;
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to read 7zip");
-            return false;
-        }
-    }
-
-    /**
-     * Method to extract a zip archive.
-     *
-     * @param path Path where the zip will be extracted
-     * @param zip  Zip file
-     * @return result of extraction
-     */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static boolean unpackZip(String path, FMFile zip) {
-        try {
-            Enumeration<ZipArchiveEntry> zipFile = new ZipFile(zip.getFile()).getEntries();
-            ZipArchiveEntry entry;
-            while (zipFile.hasMoreElements()) {
-                entry = zipFile.nextElement();
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                File curfile = new File(path + File.separator + entry.getName());
-                File parent = curfile.getParentFile();
-                if (!parent.exists()) {
-                    if (parent.mkdirs()) {
-                        Log.d(TAG, "extraction of parent dir successful");
-                    } else {
-                        Log.w(TAG, "extraction of parent dir unsuccessful");
-                    }
-                }
-
-            }
-            return true;
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to read 7zip");
-            return false;
-        }
-    }
-
     public boolean createZipFile(ArrayList<FMFile> files, AlertDialog d) {
         Log.d(TAG, "Creating ZIP...");
 
@@ -228,8 +140,11 @@ public class ArchiveUtil {
     }
 
     private boolean doCreateZipNoValidation(ArrayList<FMFile> files, File destination) {
-        Trace trace = FirebasePerformance.getInstance().newTrace("create_zip");
-        trace.start();
+        Trace trace = null;
+        if(new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()) {
+            trace = FirebasePerformance.getInstance().newTrace("create_zip");
+            trace.start();
+        }
         try {
             FileOutputStream fos = new FileOutputStream(destination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
@@ -238,14 +153,18 @@ public class ArchiveUtil {
             }
             zipOut.close();
             fos.close();
-            trace.putAttribute("success", "true");
-            trace.stop();
+            if(trace != null) {
+                trace.putAttribute("success", "true");
+                trace.stop();
+            }
             return true;
         } catch (IOException e) {
             Toast.makeText(context, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
             FirebaseCrash.report(e);
-            trace.putAttribute("success", "false");
-            trace.stop();
+            if(trace != null) {
+                trace.putAttribute("success", "false");
+                trace.stop();
+            }
         }
         return false;
     }

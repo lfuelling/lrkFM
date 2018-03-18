@@ -39,6 +39,11 @@ public enum Preference {
      */
     BACKUP_QUOTA_EXCEEDED(Store.LOCAL, "backup_quota_exceeded", false),
 
+    /**
+     * If performance monitoring is allowed.
+     */
+    PERFORMANCE_REPORTING(Store.LOCAL, "performance_reporting", true),
+
     // Backed up to cloud
 
     /**

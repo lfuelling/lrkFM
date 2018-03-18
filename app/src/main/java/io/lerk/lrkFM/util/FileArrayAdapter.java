@@ -37,6 +37,7 @@ import io.lerk.lrkFM.entities.FMFile;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;
+import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
@@ -70,21 +71,32 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      * @param f the file
      */
     private void openFile(FMFile f) {
-        Trace trace = FirebasePerformance.getInstance().newTrace("open_file");
-        trace.start();
+        Trace trace = null;
+        if (new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()) {
+            trace = FirebasePerformance.getInstance().newTrace("open_file");
+            trace.start();
+        }
         Intent i = new Intent(Intent.ACTION_VIEW);
         String mimeType = f.getFileType().getMimeType();
-        trace.putAttribute("mime_type", mimeType != null ? mimeType : "null");
+        if (trace != null) {
+            trace.putAttribute("mime_type", mimeType != null ? mimeType : "null");
+        }
         i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             getContext().startActivity(i);
-            trace.putAttribute("unknown", "false");
+            if (trace != null) {
+                trace.putAttribute("unknown", "false");
+            }
         } catch (ActivityNotFoundException e) {
-            trace.putAttribute("unknown", "true");
+            if (trace != null) {
+                trace.putAttribute("unknown", "true");
+            }
             Toast.makeText(getContext(), R.string.no_app_to_handle_file, LENGTH_SHORT).show();
         }
-        trace.stop();
+        if (trace != null) {
+            trace.stop();
+        }
     }
 
     /**
