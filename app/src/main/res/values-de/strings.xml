@@ -101,4 +101,14 @@
     <string name="type_tgz">tar.gz</string>
     <string name="type_unknown">Unbekannt</string>
     <string name="invalid_operation">Ungültige Operation</string>
+    <string name="backup_quota_exceeded_title">Backup Speicher Erschöpft</string>
+    <string name="backup_quota_exceeded_message">Backup konnte nicht erstellt werden. Speicher zu knapp.</string>
+    <string name="yes_and_remember">Ja, Immer</string>
+    <string name="title_activity_preference">@string/settings</string>
+    <string name="pref_header_general">Allgemein</string>
+    <string name="pref_header_ui">UI</string>
+    <string name="pref_header_analytics">Analytics</string>
+    <string name="pref_cat_toasts">Toasts</string>
+    <string name="pref_crash_reporting_toast">Crashreports</string>
+    <string name="pref_crash_reporting_desc">Nur zur Kenntnisnahme. (kann für keine Google Play app abgeschaltet werden)</string>
 </resources>

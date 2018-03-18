@@ -28,7 +28,7 @@ public class IntroActivity extends AppCompatActivity {
         fab.setOnClickListener(view -> {
             if (c <= 0) {
                 FileActivity.verifyStoragePermissions(IntroActivity.this);
-                fab.setBackgroundDrawable(getDrawable(R.drawable.ic_chevron_right_white_24dp));
+                fab.setImageResource(R.drawable.ic_chevron_right_white_24dp);
                 c++;
             } else {
                 Intent intent = new Intent(IntroActivity.this, FileActivity.class);

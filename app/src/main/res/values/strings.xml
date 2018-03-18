@@ -117,4 +117,11 @@
     <string name="backup_quota_exceeded_title">Backup Quota Exceeded</string>
     <string name="backup_quota_exceeded_message">Unable to create cloud backup. Quota exceeded.</string>
     <string name="yes_and_remember">Yes, Forever</string>
+    <string name="title_activity_preference">@string/settings</string>
+    <string name="pref_header_general">General</string>
+    <string name="pref_header_ui">UI</string>
+    <string name="pref_header_analytics">Analytics</string>
+    <string name="pref_cat_toasts">Toasts</string>
+    <string name="pref_crash_reporting_toast">Crash Reporting</string>
+    <string name="pref_crash_reporting_desc">Just FYI, you can\'t turn this off (for any Google Play app)</string>
 </resources>

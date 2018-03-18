@@ -22,7 +22,7 @@ public enum Preference {
     /**
      * The home directory of the application.
      */
-    HOME_DIR(Store.LOCAL, "home_dir", ""),
+    HOME_DIR(Store.LOCAL, "home_dir", "/storage/emulated/0"),
 
     /**
      * If the bookmarks can currently be edited.
