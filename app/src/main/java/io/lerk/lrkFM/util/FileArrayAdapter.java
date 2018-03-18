@@ -38,6 +38,7 @@ import io.lerk.lrkFM.entities.FMFile;
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;
 import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
+import static io.lerk.lrkFM.consts.Preference.ZIPS_EXPLORABLE;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
@@ -246,7 +247,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 }
             }
             if (f.isDirectory()) {
-                v.setOnClickListener(v1 -> activity.loadDirectory(f.getFile().getAbsolutePath()));
+                v.setOnClickListener(v1 -> activity.loadPath(f.getFile().getAbsolutePath()));
             } else {
                 v.setOnClickListener(v1 -> openFile(f));
             }

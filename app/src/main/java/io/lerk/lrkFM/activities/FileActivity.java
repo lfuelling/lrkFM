@@ -36,8 +36,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -47,8 +50,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
+import io.lerk.lrkFM.exceptions.NoAccessException;
 import io.lerk.lrkFM.op.ArchiveUtil;
 import io.lerk.lrkFM.entities.Bookmark;
+import io.lerk.lrkFM.util.ArchiveLoader;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.consts.Operation;
@@ -72,6 +78,7 @@ import static io.lerk.lrkFM.consts.Preference.BOOKMARK_EDIT_MODE;
 import static io.lerk.lrkFM.consts.Preference.FIRST_START;
 import static io.lerk.lrkFM.consts.Preference.HEADER_PATH_LENGTH;
 import static io.lerk.lrkFM.consts.Preference.HOME_DIR;
+import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
 import static io.lerk.lrkFM.consts.Preference.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.Preference.SORT_FILES_BY;
 import static io.lerk.lrkFM.consts.Preference.USE_CONTEXT_FOR_OPS_TOAST;
@@ -106,6 +113,11 @@ public class FileActivity extends AppCompatActivity
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    /**
+     * Self.
+     */
+    private static WeakReference<FileActivity> context;
 
     /**
      * {@link ListView} that contains the files inside the current directory.
@@ -226,6 +238,8 @@ public class FileActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        context = new WeakReference<>(this);
+
         analytics = FirebaseAnalytics.getInstance(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
@@ -237,7 +251,6 @@ public class FileActivity extends AppCompatActivity
             startActivity(new Intent(this, IntroActivity.class));
             finish();
         }
-
 
 
         setContentView(R.layout.activity_main);
@@ -265,7 +278,7 @@ public class FileActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener((v) -> FileActivity.this.loadDirectory(new File(currentDirectory).getParent()));
+        fab.setOnClickListener((v) -> FileActivity.this.loadPath(new File(currentDirectory).getParent()));
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
@@ -435,22 +448,56 @@ public class FileActivity extends AppCompatActivity
             homeDirPreference.setValue(absolutePath);
             startDir = absolutePath;
         }
-        loadDirectory(startDir);
+        loadPath(startDir);
     }
 
     /**
      * F5
      */
     public void reloadCurrentDirectory() {
-        loadDirectory(currentDirectory);
+        loadPath(currentDirectory);
+    }
+
+
+    @SuppressWarnings("deprecation") // only method that may call the "deprecated" functions.
+    public void loadPath(String path) {
+        boolean archive = false;
+        FMFile aF = null;
+        String tPath = path;
+        Trace trace = null;
+        if(new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()){
+            trace = FirebasePerformance.startTrace("check_if_parent_is_archive");
+        }
+        while ("/".equals(tPath)) {
+            FMFile f = new FMFile(new File(tPath));
+            if (f.isArchive()) {
+                archive = true;
+                aF = f;
+            }
+            tPath = new File(tPath).getParent();
+            if(trace != null) {
+                trace.incrementCounter("parent_depth");
+            }
+        }
+        if(trace!=null){
+            trace.putAttribute("archive", String.valueOf(archive));
+            trace.stop();
+        }
+        if (archive) {
+            loadArchive(path, aF);
+        } else {
+            loadDirectory(path);
+        }
     }
 
     /**
      * Changes directory.
      *
+     * @deprecated may only be called by {@link #loadPath(String)}
      * @param startDir directory to load
      */
-    public void loadDirectory(String startDir) {
+    @SuppressWarnings("DeprecatedIsStillUsed") // see above
+    private void loadDirectory(String startDir) {
         ArrayList<FMFile> files;
         FileLoader fileLoader = new FileLoader(startDir);
         View errorText = findViewById(R.id.unableToLoadText);
@@ -463,18 +510,45 @@ public class FileActivity extends AppCompatActivity
 
             arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
             fileListView.setAdapter(arrayAdapter);
-        } catch (FileLoader.NoAccessException e) {
+        } catch (NoAccessException e) {
             Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
             fileListView.setVisibility(GONE);
             errorText.setVisibility(VISIBLE);
             emptyText.setVisibility(GONE);
-        } catch (FileLoader.EmptyDirectoryException e) {
+        } catch (EmptyDirectoryException e) {
             Log.w(TAG, "Can't read '" + startDir + "': Empty directory!");
             fileListView.setVisibility(GONE);
             errorText.setVisibility(GONE);
             emptyText.setVisibility(VISIBLE);
         }
         currentDirectory = startDir;
+        historyMap.put(historyCounter++, currentDirectory);
+        setToolbarText();
+        setFreeSpaceText();
+    }
+
+    /**
+     * Changes "directory" into an archive.
+     *
+     * @param path archive to load
+     * @deprecated may only be called by {@link #loadPath(String)}
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed") // see above
+    private void loadArchive(String path, FMFile archive) {
+        ArrayList<FMFile> files;
+        ArchiveLoader loader = new ArchiveLoader(archive);
+        View errorText = findViewById(R.id.unableToLoadText);
+        View emptyText = findViewById(R.id.emptyDirText);
+
+        files = loader.loadLocationFiles();
+        fileListView.setVisibility(VISIBLE);
+        errorText.setVisibility(GONE);
+        emptyText.setVisibility(GONE);
+
+        arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
+        fileListView.setAdapter(arrayAdapter);
+
+        currentDirectory = path;
         historyMap.put(historyCounter++, currentDirectory);
         setToolbarText();
         setFreeSpaceText();
@@ -516,7 +590,7 @@ public class FileActivity extends AppCompatActivity
         String s = historyMap.get(key);
         historyMap.remove(key);
         if (s != null && !s.isEmpty()) {
-            loadDirectory(s);
+            loadPath(s);
         }
         historyCounter = key + 1;
     }
@@ -680,7 +754,7 @@ public class FileActivity extends AppCompatActivity
     public void finishFileOperation() {
         Operation operation = fileOpContext.getFirst();
         ArrayList<FMFile> files = fileOpContext.getSecond();
-        if(!operation.equals(NONE) && !files.isEmpty()) {
+        if (!operation.equals(NONE) && !files.isEmpty()) {
             if (operation.equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     files.forEach((f) -> operationUtil.copy(f, null));
@@ -772,13 +846,13 @@ public class FileActivity extends AppCompatActivity
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 bookmarkItems.forEach(bookmark -> {
                     if (bookmark.getMenuItem().getItemId() == id) {
-                        loadDirectory(bookmark.getPath());
+                        loadPath(bookmark.getPath());
                     }
                 });
             } else {
                 for (Bookmark bookmark : bookmarkItems) {
                     if (bookmark.getMenuItem().getItemId() == id) {
-                        loadDirectory(bookmark.getPath());
+                        loadPath(bookmark.getPath());
                     }
                 }
             }
@@ -882,7 +956,7 @@ public class FileActivity extends AppCompatActivity
                 .setTitle(R.string.nav_path);
 
         AlertDialog alertDialog = bookmarkDialogBuilder.create();
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> loadDirectory(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> loadPath(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
         alertDialog.show();
     }
 
@@ -926,4 +1000,9 @@ public class FileActivity extends AppCompatActivity
     public void logEvent(String label, Bundle bundle) {
         analytics.logEvent(label, bundle);
     }
+
+    public static FileActivity get() {
+        return context.get();
+    }
+
 }

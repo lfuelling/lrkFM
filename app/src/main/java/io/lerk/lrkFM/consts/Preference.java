@@ -44,6 +44,11 @@ public enum Preference {
      */
     PERFORMANCE_REPORTING(Store.LOCAL, "performance_reporting", true),
 
+    /**
+     * If zip files should be explorable
+     */
+    ZIPS_EXPLORABLE(Store.LOCAL, "zips_explorable", false),
+
     // Backed up to cloud
 
     /**
