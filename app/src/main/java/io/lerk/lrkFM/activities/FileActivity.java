@@ -55,6 +55,7 @@ import io.lerk.lrkFM.exceptions.NoAccessException;
 import io.lerk.lrkFM.op.ArchiveUtil;
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.util.ArchiveLoader;
+import io.lerk.lrkFM.util.ArchiveParentFinder;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.consts.Operation;
@@ -461,28 +462,9 @@ public class FileActivity extends AppCompatActivity
 
     @SuppressWarnings("deprecation") // only method that may call the "deprecated" functions.
     public void loadPath(String path) {
-        boolean archive = false;
-        FMFile aF = null;
-        String tPath = path;
-        Trace trace = null;
-        if(new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()){
-            trace = FirebasePerformance.startTrace("check_if_parent_is_archive");
-        }
-        while ("/".equals(tPath)) {
-            FMFile f = new FMFile(new File(tPath));
-            if (f.isArchive()) {
-                archive = true;
-                aF = f;
-            }
-            tPath = new File(tPath).getParent();
-            if(trace != null) {
-                trace.incrementCounter("parent_depth");
-            }
-        }
-        if(trace!=null){
-            trace.putAttribute("archive", String.valueOf(archive));
-            trace.stop();
-        }
+        ArchiveParentFinder archiveResult = new ArchiveParentFinder(path).invoke();
+        boolean archive = archiveResult.isArchive();
+        FMFile aF = archiveResult.getArchiveFile();
         if (archive) {
             loadArchive(path, aF);
         } else {
@@ -536,7 +518,7 @@ public class FileActivity extends AppCompatActivity
     @SuppressWarnings("DeprecatedIsStillUsed") // see above
     private void loadArchive(String path, FMFile archive) {
         ArrayList<FMFile> files;
-        ArchiveLoader loader = new ArchiveLoader(archive);
+        ArchiveLoader loader = new ArchiveLoader(archive, path);
         View errorText = findViewById(R.id.unableToLoadText);
         View emptyText = findViewById(R.id.emptyDirText);
 
@@ -1004,5 +986,4 @@ public class FileActivity extends AppCompatActivity
     public static FileActivity get() {
         return context.get();
     }
-
 }

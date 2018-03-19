@@ -125,7 +125,8 @@
     <string name="pref_crash_reporting_toast">Crash Reporting</string>
     <string name="pref_crash_reporting_desc">Just FYI, you can\'t turn this off (for any Google Play app)</string>
     <string name="pref_performance_reporting_title">Performance Reporting</string>
-    <string name="pref_performance_reporting_desc">Measures the time it takes to create and extract archives.</string>
+    <string name="pref_performance_reporting_desc">Measures the time it takes to complete various stuff. (like creating and extracting archives, etc.)</string>
     <string name="pref_zips_explorable">Explore archives by default</string>
     <string name="pref_zips_explorable_desc">On single tap, archives will be handled like folders.</string>
+    <string name="explore">Explore</string>
 </resources>

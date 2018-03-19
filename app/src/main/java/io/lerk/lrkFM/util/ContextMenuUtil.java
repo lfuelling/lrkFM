@@ -44,6 +44,7 @@ class ContextMenuUtil {
     private static final int ID_COPY_PATH = 6;
     private static final int ID_ADD_TO_ZIP = 7;
     private static final int ID_CREATE_ZIP = 8;
+    private static final int ID_EXPLORE = 9;
 
     private static final String TAG = ContextMenuUtil.class.getCanonicalName();
     private final FileActivity activity;
@@ -71,6 +72,7 @@ class ContextMenuUtil {
         addDeleteToMenu(f, menu);
         addCopyPathToMenu(f, menu);
         addCreateZipToMenu(f, menu);
+        addExploreToMenu(f, menu);
     }
 
     /**
@@ -106,10 +108,15 @@ class ContextMenuUtil {
     private void addExtractToMenu(FMFile file, ContextMenu menu) {
         menu.add(0, ID_EXTRACT, 0, activity.getString(R.string.extract))
                 .setOnMenuItemClickListener(i -> {
+                    FMFile archiveToExtract = file;
+                    ArchiveParentFinder parentFinder = new ArchiveParentFinder(file.getFile().getAbsolutePath()).invoke();
+                    if(!file.isArchive() && parentFinder.isArchive()) {
+                        archiveToExtract = parentFinder.getArchiveFile();
+                    }
                     if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS).getValue()) {
-                        activity.addFileToOpContext(EXTRACT, file);
+                        activity.addFileToOpContext(EXTRACT, archiveToExtract);
                         if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
-                            Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + file.getName(), LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
                         }
 
                         PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
@@ -123,20 +130,21 @@ class ContextMenuUtil {
                                     .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
                         }
                     } else {
+                        final FMFile finalArchiveToExtract = archiveToExtract; // 👀
                         AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
                                 R.string.extract,
                                 R.string.op_destination,
                                 R.drawable.ic_present_to_all_black_24dp,
                                 R.layout.layout_path_prompt,
-                                (d) -> activity.archiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), file),
+                                (d) -> activity.archiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), finalArchiveToExtract),
                                 (d) -> Log.d(TAG, "Cancelled."));
-                        alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(file, alertDialog));
+                        alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(finalArchiveToExtract, alertDialog));
                         alertDialog.show();
                     }
                     activity.reloadCurrentDirectory();
                     return true;
                 })
-                .setVisible(file.isArchive());
+                .setVisible(file.isArchive() || new ArchiveParentFinder(file.getFile().getAbsolutePath()).isArchive());
     }
 
     /**
@@ -288,5 +296,13 @@ class ContextMenuUtil {
                 return false;
             }).setVisible(fileOpContext.getFirst().equals(CREATE_ZIP));
         }
+    }
+
+
+    private void addExploreToMenu(FMFile f, ContextMenu menu) {
+        menu.add(0, ID_EXPLORE, 0, activity.getString(R.string.explore)).setOnMenuItemClickListener(item -> {
+            activity.loadPath(f.getFile().getAbsolutePath());
+            return true;
+        }).setVisible(f.isArchive());
     }
 }

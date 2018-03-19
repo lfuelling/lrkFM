@@ -195,16 +195,20 @@ public class ArchiveUtil {
      */
     public ArrayList<FMFile> loadArchiveContents(FMFile archive, String path){
 
+        if(path == null || path.isEmpty()) {
+            path = "/";
+        }
         ArrayList<FMFile> res = new ArrayList<>();
         FileType fileType = archive.getFileType();
+        final String finalPath = path;
         fileType.newHandler(fi -> {
             try {
                 InputStream is = new FileInputStream(fi.getFile());
                 ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
                 ZipEntry entry;
                 while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
-                    File outFile = new File(path + File.separator + entry.getName());
-                    if (outFile.isDirectory()) {
+                    File outFile = new File(entry.getName());
+                    if(!entry.getName().contains(finalPath)) {
                         continue;
                     }
                     res.add(new FMFile(outFile));

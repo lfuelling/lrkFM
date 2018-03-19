@@ -246,7 +246,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                     }
                 }
             }
-            if (f.isDirectory()) {
+            if (f.isDirectory() || f.isArchive() && new PrefUtils<Boolean>(ZIPS_EXPLORABLE).getValue()) {
                 v.setOnClickListener(v1 -> activity.loadPath(f.getFile().getAbsolutePath()));
             } else {
                 v.setOnClickListener(v1 -> openFile(f));
