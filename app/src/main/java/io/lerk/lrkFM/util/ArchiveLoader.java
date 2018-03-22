@@ -5,26 +5,25 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.op.ArchiveUtil;
 
 public class ArchiveLoader extends AbstractLoader {
-    private final FMFile archive;
+    private final FMArchive archive;
     private String path;
 
-    public ArchiveLoader(@NonNull FMFile archive, String path) {
-        this.archive = archive;
+    public ArchiveLoader(@NonNull FMFile archiveFile, String path) {
+        this.archive = new FMArchive(archiveFile.getFile());
         this.path = path;
     }
 
     @Override
     public ArrayList<FMFile> loadLocationFiles() {
-        return this.loadLocationFilesInternal(path);
+        return this.loadLocationFilesForPath(path);
     }
 
     @Override
-    protected ArrayList<FMFile> loadLocationFilesInternal(@Nullable String parent) {
-        return new ArchiveUtil(FileActivity.get()).loadArchiveContents(archive, parent);
+    public ArrayList<FMFile> loadLocationFilesForPath(@Nullable String parent) {
+        return archive.getContentForPath((parent != null) ? parent : "/");
     }
 }

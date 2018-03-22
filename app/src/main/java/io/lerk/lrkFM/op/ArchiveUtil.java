@@ -188,10 +188,10 @@ public class ArchiveUtil {
     }
 
     /**
-     *
      * @param archive the archive
      * @param path the path (can be inside the archive)
      * @return path contents
+     * @deprecated use {@link io.lerk.lrkFM.entities.FMArchive}
      */
     public ArrayList<FMFile> loadArchiveContents(FMFile archive, String path){
 

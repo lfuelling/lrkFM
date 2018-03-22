@@ -103,7 +103,7 @@
     <string name="intro_text_1">Welcome to lrkFM.</string>
     <string name="intro_text_2">We hope that you will like this app.</string>
     <string name="intro_text_3">It\'s a good idea to go through the Settings before doing anything. If there is anything wrong please file a bug using the link in the menu.</string>
-    <string name="intro_text_4">Please tap the lock to grant permission to read phone storage. If no files are being shown after that, use \'refresh\' in the top right menu.</string>
+    <string name="intro_text_4">Please tap the lock to grant permission to read phone storage. If no files are being shown after that, use \'refresh\' in the top right menu. (If the lock is not visible, the permission is already granted)</string>
     <string name="intro_text_5">To interact with files you can either use the menu button next to each file entry or long press a file entry.</string>
     <string name="intro_text_6">Note that there are no loading indicators when creating or extracting archives (yet). We hope you won\'t get too confused by this.</string>
     <string name="action_settings">@string/settings</string>

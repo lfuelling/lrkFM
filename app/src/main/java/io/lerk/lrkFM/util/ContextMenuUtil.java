@@ -301,7 +301,7 @@ class ContextMenuUtil {
 
     private void addExploreToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_EXPLORE, 0, activity.getString(R.string.explore)).setOnMenuItemClickListener(item -> {
-            activity.loadPath(f.getFile().getAbsolutePath());
+            activity.loadPath(f.getFile().getAbsolutePath() + "/");
             return true;
         }).setVisible(f.isArchive());
     }

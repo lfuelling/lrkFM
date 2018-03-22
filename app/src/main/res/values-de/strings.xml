@@ -90,7 +90,7 @@
     <string name="intro_text_1">Willkommen bei lrkFM.</string>
     <string name="intro_text_2">Wir hoffen, dass Du mit dieser App zufrieden sein wirst.</string>
     <string name="intro_text_3">Es ist empfehlenswert, die Einstellungen vor der ersten Nutzung einmal durchzugehen. Wenn du etwas nicht magst, reiche bitte einen Fehlerbericht über den Link im Menü ein.</string>
-    <string name="intro_text_4">Klicke auf das Schloss, um die Erlaubnis den Telefonspeicher zu lesen zu erteilen. Falls danach keine Dateien angezeigt werden, einfach \'Aktualisieren\' im Menü oben rechts verwenden.</string>
+    <string name="intro_text_4">Klicke auf das Schloss, um die Erlaubnis den Telefonspeicher zu lesen zu erteilen. Falls danach keine Dateien angezeigt werden, einfach \'Aktualisieren\' im Menü oben rechts verwenden. (Wenn kein Schloss sichtbar ist, wurde die Erlaubnis bereits erteilt)</string>
     <string name="intro_text_5">Um mit Dateien zu Interagieren, kann das Menü an jedem Dateieintrag genutzt werden. Ein Eintrag kann auch lange gedrückt werden, um das Menü zu öffnen.</string>
     <string name="intro_text_6">Leider sind (noch) keine Ladesymbole vorhanden, wenn ein Archiv erstellt oder entpackt wird. Hoffentlich ist das nicht zu verwirrend.</string>
     <string name="action_settings">@string/settings</string>
@@ -111,4 +111,9 @@
     <string name="pref_cat_toasts">Toasts</string>
     <string name="pref_crash_reporting_toast">Crashreports</string>
     <string name="pref_crash_reporting_desc">Nur zur Kenntnisnahme. (kann für keine Google Play app abgeschaltet werden)</string>
+    <string name="pref_performance_reporting_title">Performancereports</string>
+    <string name="pref_performance_reporting_desc">Protokolliert die Dauer mancher Vorgänge (z.B. Archive erstellen oder entpacken, etc.)</string>
+    <string name="pref_zips_explorable">Archivinhalt standardmäßig anzeigen</string>
+    <string name="pref_zips_explorable_desc">Behandelt Archive wie Ordner. (Inhalt anzeigen wenn angeklickt)</string>
+    <string name="explore">Explore</string>
 </resources>

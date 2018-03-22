@@ -11,12 +11,13 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
 
+import io.lerk.lrkFM.BuildConfig;
 import io.lerk.lrkFM.LrkFMApp;
 import io.lerk.lrkFM.consts.Preference;
 
 /**
  * Yes, I really like hacky stuff.
- *
+ * <p>
  * To read settings you can replace
  * <pre>PreferenceManager.getDefaultSharedPreferences(context).getBoolean(MY_PREFERENCE.getKey(), false);</pre>
  * with <pre>new PrefUtils&lt;Boolean&gt;(MY_PREFERENCE).getValue();</pre>.
@@ -49,6 +50,7 @@ public class PrefUtils<T> {
 
     /**
      * The context.
+     *
      * @see LrkFMApp#getContext()
      */
     private final Context context;
@@ -60,6 +62,7 @@ public class PrefUtils<T> {
 
     /**
      * Constructor.
+     *
      * @param preference the preference to use
      */
     public PrefUtils(Preference preference) {
@@ -72,6 +75,7 @@ public class PrefUtils<T> {
 
     /**
      * Gets a value.
+     *
      * @return the value of the preference.
      */
     @SuppressWarnings("unchecked")
@@ -79,7 +83,7 @@ public class PrefUtils<T> {
         if (context != null) {
             try {
                 if (type.equals(Boolean.class)) {
-                    return (T) Boolean.valueOf(preferences.getBoolean(key, (Boolean) preference.getDefaultValue()));
+                    return (T) returnBooleanValueCheckForDebug();
                 } else if (type.equals(String.class)) {
                     return (T) preferences.getString(key, (String) preference.getDefaultValue());
                 } else if (type.equals(HashSet.class)) {
@@ -93,12 +97,29 @@ public class PrefUtils<T> {
     }
 
     /**
+     * Returns the value of a {@link Boolean} preference but also checks for {@link BuildConfig#DEBUG} and returns other values in this case.
+     * @return The preference value
+     */
+    private Boolean returnBooleanValueCheckForDebug() {
+        if (BuildConfig.DEBUG) {
+            if(preference.equals(Preference.PERFORMANCE_REPORTING)) {
+                return Boolean.FALSE; // Disable performance monitoring in debug mode
+            } else if(preference.equals(Preference.FIRST_START)) {
+                return Boolean.TRUE; // In debug, every start is a firstStart
+            }
+        }
+        // return the actual value
+        return preferences.getBoolean(key, (Boolean) preference.getDefaultValue());
+    }
+
+    /**
      * Let's you set a value. Currently {@link Boolean}, {@link String}, {@link HashSet}.
+     *
      * @param value the value.
      */
     @SuppressWarnings("unchecked")
     public void setValue(@NonNull T value) {
-        if(context != null) {
+        if (context != null) {
             try {
                 if (type.equals(Boolean.class)) {
                     preferences.edit().putBoolean(key, (Boolean) value).apply();
@@ -115,6 +136,7 @@ public class PrefUtils<T> {
 
     /**
      * Does logging and analytics.
+     *
      * @param e The {@link ClassCastException}
      */
     private void handleError(ClassCastException e) {

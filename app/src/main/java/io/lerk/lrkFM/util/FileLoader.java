@@ -42,12 +42,12 @@ public class FileLoader extends AbstractLoader {
 
     /**
      * Calls {@link #FileLoader(String)} with <pre>null</pre> as argument.
-     * @see #loadLocationFilesInternal(String)
+     * @see #loadLocationFilesForPath(String)
      * @throws NoAccessException if no access
      * @throws EmptyDirectoryException  if no contents
      */
     public ArrayList<FMFile> loadLocationFiles() throws NoAccessException, EmptyDirectoryException {
-        return this.loadLocationFilesInternal(null);
+        return this.loadLocationFilesForPath(null);
     }
 
     /**
@@ -57,7 +57,7 @@ public class FileLoader extends AbstractLoader {
      * @throws NoAccessException if no access
      * @throws EmptyDirectoryException if no contents
      */
-    protected ArrayList<FMFile> loadLocationFilesInternal(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
+    protected ArrayList<FMFile> loadLocationFilesForPath(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
         if (parent != null) {
             location = parent;
         }
@@ -108,7 +108,7 @@ public class FileLoader extends AbstractLoader {
             String newParent = locationFile.getParent();
             Log.d(TAG, "Location '" + location + "' not a directory");
             if (newParent != null) {
-                ArrayList<FMFile> fmFiles = loadLocationFilesInternal(newParent);
+                ArrayList<FMFile> fmFiles = loadLocationFilesForPath(newParent);
                 if (fmFiles != null) {
                     return fmFiles;
                 } else {

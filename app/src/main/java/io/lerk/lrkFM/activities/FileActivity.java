@@ -460,6 +460,10 @@ public class FileActivity extends AppCompatActivity
     }
 
 
+    /**
+     * Changes directory.
+     * @param path the path to cd into
+     */
     @SuppressWarnings("deprecation") // only method that may call the "deprecated" functions.
     public void loadPath(String path) {
         ArchiveParentFinder archiveResult = new ArchiveParentFinder(path).invoke();
