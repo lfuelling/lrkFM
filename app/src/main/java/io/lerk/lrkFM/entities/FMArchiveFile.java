@@ -17,4 +17,7 @@ public class FMArchiveFile extends FMFile {
     public void setDirectory(boolean b) {
         this.directory = b;
     }
+    public void setAbsolutePath(String path) {
+        this.absolutePath = path;
+    }
 }

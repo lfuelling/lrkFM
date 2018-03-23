@@ -21,6 +21,7 @@ public class FMFile {
     private Date lastModified;
     private File file;
     Boolean directory;
+    String absolutePath;
 
     /**
      * Constructor.
@@ -36,6 +37,7 @@ public class FMFile {
                 ((this.file.canWrite()) ? "w" : "-") +
                 ((this.file.canExecute()) ? "x" : "-"); // lol
         this.directory = f.isDirectory();
+        this.absolutePath = f.getAbsolutePath();
     }
 
     public String getName() {
@@ -64,6 +66,10 @@ public class FMFile {
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public String getAbsolutePath() {
+        return absolutePath;
     }
 
     /**

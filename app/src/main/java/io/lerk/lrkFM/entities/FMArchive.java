@@ -57,17 +57,25 @@ public class FMArchive extends FMFile {
      * @return the contents
      */
     public ArrayList<FMFile> getContentForPath(String path) {
+
         String rPath;
-        try {
-            rPath = path.split(getName())[1];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            rPath = ROOT_DIR;
+        if (!path.startsWith(ROOT_DIR)) {
+            rPath = ROOT_DIR + path;
+        } else {
+            try {
+                rPath = path.split(getName())[1];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                rPath = ROOT_DIR;
+            }
+        }
+        if (!rPath.equals(ROOT_DIR) && rPath.endsWith("/")) {
+            rPath = rPath.substring(0, rPath.length() - 1);
         }
         ArrayList<FMFile> pathContents = contents.get(rPath);
         if (pathContents == null && rPath.equals(ROOT_DIR)) {
             pathContents = new ArrayList<>();
             for (String s : contents.keySet()) {
-                String[] split = s.split("/");
+                String[] split = s.split(File.separator);
                 if (split.length == 2) {
                     pathContents.add(new FMFile(new File(split[1])));
                 }
@@ -102,16 +110,20 @@ public class FMArchive extends FMFile {
 
                 FMArchiveFile outFile = new FMArchiveFile(new File(entry.getName()));
                 outFile.setDirectory(entry.isDirectory());
+                outFile.setAbsolutePath(entry.getName());
 
                 String fileParent = new File(filePath).getParent();
-                String parent = "/" + ((fileParent != null) ? fileParent : "");
+                String parent = ROOT_DIR + ((fileParent != null) ? fileParent : "");
                 ArrayList<FMFile> pathContents = res.get(parent);
                 if (pathContents == null) {
                     pathContents = new ArrayList<>();
                 }
+
                 pathContents.add(outFile);
                 res.put(parent, pathContents);
             }
+            ais.close();
+            is.close();
             if (trace != null) {
                 trace.putAttribute("success", String.valueOf(true));
             }

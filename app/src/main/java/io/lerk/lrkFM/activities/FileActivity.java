@@ -49,6 +49,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
+import io.lerk.lrkFM.entities.FMArchive;
+import io.lerk.lrkFM.entities.HistoryEntry;
 import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
 import io.lerk.lrkFM.exceptions.NoAccessException;
 import io.lerk.lrkFM.op.ArchiveUtil;
@@ -164,7 +166,7 @@ public class FileActivity extends AppCompatActivity
     /**
      * The history.
      */
-    private HashMap<Integer, String> historyMap;
+    private HashMap<Integer, HistoryEntry> historyMap;
 
     /**
      * The historyCounter (sorry).
@@ -278,7 +280,13 @@ public class FileActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener((v) -> FileActivity.this.loadPath(new File(currentDirectory).getParent()));
+        fab.setOnClickListener((v) -> {
+            if (historyMap.size() > 1) {
+                removeFromHistoryAndGoBack();
+            } else {
+                FileActivity.this.loadPath(new File(currentDirectory).getParent());
+            }
+        });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
@@ -458,16 +466,23 @@ public class FileActivity extends AppCompatActivity
         loadPath(currentDirectory);
     }
 
+    @SuppressWarnings("deprecation")
+    // one of the two methods that may call the "deprecated" functions.
+    public void loadArchivePath(String path, FMArchive archive) {
+        loadArchive(path, archive);
+    }
 
     /**
      * Changes directory.
+     *
      * @param path the path to cd into
      */
-    @SuppressWarnings("deprecation") // only method that may call the "deprecated" functions.
+    @SuppressWarnings("deprecation")
+    // one of the two methods that may call the "deprecated" functions.
     public void loadPath(String path) {
         ArchiveParentFinder archiveResult = new ArchiveParentFinder(path).invoke();
         boolean archive = archiveResult.isArchive();
-        FMFile aF = archiveResult.getArchiveFile();
+        FMArchive aF = archiveResult.getArchiveFile();
         if (archive) {
             loadArchive(path, aF);
         } else {
@@ -478,8 +493,8 @@ public class FileActivity extends AppCompatActivity
     /**
      * Changes directory.
      *
-     * @deprecated may only be called by {@link #loadPath(String)}
      * @param startDir directory to load
+     * @deprecated may only be called by {@link #loadPath(String)}
      */
     @SuppressWarnings("DeprecatedIsStillUsed") // see above
     private void loadDirectory(String startDir) {
@@ -507,7 +522,7 @@ public class FileActivity extends AppCompatActivity
             emptyText.setVisibility(VISIBLE);
         }
         currentDirectory = startDir;
-        historyMap.put(historyCounter++, currentDirectory);
+        historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, null));
         setToolbarText();
         setFreeSpaceText();
     }
@@ -519,7 +534,7 @@ public class FileActivity extends AppCompatActivity
      * @deprecated may only be called by {@link #loadPath(String)}
      */
     @SuppressWarnings("DeprecatedIsStillUsed") // see above
-    private void loadArchive(String path, FMFile archive) {
+    private void loadArchive(String path, FMArchive archive) {
         ArrayList<FMFile> files;
         ArchiveLoader loader = new ArchiveLoader(archive, path);
         View errorText = findViewById(R.id.unableToLoadText);
@@ -530,11 +545,12 @@ public class FileActivity extends AppCompatActivity
         errorText.setVisibility(GONE);
         emptyText.setVisibility(GONE);
 
-        arrayAdapter = new ArchiveArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
+        arrayAdapter = new ArchiveArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()), archive);
         fileListView.setAdapter(arrayAdapter);
 
         currentDirectory = path;
-        historyMap.put(historyCounter++, currentDirectory);
+
+        historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, archive));
         setToolbarText();
         setFreeSpaceText();
     }
@@ -572,10 +588,12 @@ public class FileActivity extends AppCompatActivity
      */
     private void removeFromHistoryAndGoBack() {
         int key = historyCounter - 2;
-        String s = historyMap.get(key);
+        HistoryEntry entry = historyMap.get(key);
         historyMap.remove(key);
-        if (s != null && !s.isEmpty()) {
-            loadPath(s);
+        if (entry != null && !entry.getPath().isEmpty() && !entry.isInArchive()) {
+            loadPath(entry.getPath());
+        } else if (entry != null && !entry.getPath().isEmpty() && entry.isInArchive()) {
+            loadArchivePath(entry.getPath(), entry.getArchive());
         }
         historyCounter = key + 1;
     }

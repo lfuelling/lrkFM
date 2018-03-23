@@ -19,6 +19,7 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
+import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.op.OperationUtil;
 
@@ -302,7 +303,7 @@ public class ContextMenuUtil {
 
     private void addExploreToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_EXPLORE, 0, activity.getString(R.string.explore)).setOnMenuItemClickListener(item -> {
-            activity.loadPath(f.getFile().getAbsolutePath());
+            activity.loadPath(f.getAbsolutePath());
             return true;
         }).setVisible(f.isArchive());
     }

@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.util.ContextMenuUtil;
 import io.lerk.lrkFM.util.PrefUtils;
@@ -27,8 +29,11 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
 
     private static final String TAG = ArchiveArrayAdapter.class.getCanonicalName();
 
-    public ArchiveArrayAdapter(Context context, int resource, List<FMFile> items) {
+    private final FMArchive archive;
+
+    public ArchiveArrayAdapter(Context context, int resource, List<FMFile> items, FMArchive archive) {
         super(context, resource, items);
+        this.archive = archive;
     }
 
     @NonNull
@@ -44,7 +49,11 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
      */
     @Override
     protected void openFile(FMFile f) {
-        activity.loadPath(f.getName());
+        if(f.isDirectory()) {
+            activity.loadArchivePath(f.getAbsolutePath(), archive);
+        } else {
+            Toast.makeText(activity, R.string.only_browsing_in_archives, Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -83,11 +92,8 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
                     }
                 }
             }
-            if (f.isDirectory() || (f.isArchive() && new PrefUtils<Boolean>(ZIPS_EXPLORABLE).getValue())) {
-                v.setOnClickListener(v1 -> activity.loadPath(f.getFile().getAbsolutePath()));
-            } else {
-                v.setOnClickListener(v1 -> openFile(f));
-            }
+
+            v.setOnClickListener(v1 -> openFile(f));
             v.setOnCreateContextMenuListener((menu, view, info) -> new ContextMenuUtil(activity, this).initializeContextMenu(f, fileName, menu));
             ImageButton contextButton = v.findViewById(R.id.contextMenuButton);
             contextButton.setOnClickListener(v1 -> activity.getFileListView().showContextMenuForChild(v));

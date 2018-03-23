@@ -129,4 +129,5 @@
     <string name="pref_zips_explorable">Explore archives by default</string>
     <string name="pref_zips_explorable_desc">On single tap, archives will be handled like folders.</string>
     <string name="explore">Explore</string>
+    <string name="only_browsing_in_archives">Only directories can be accessed when inside an archive.</string>
 </resources>

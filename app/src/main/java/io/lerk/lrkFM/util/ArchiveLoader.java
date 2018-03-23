@@ -12,8 +12,8 @@ public class ArchiveLoader extends AbstractLoader {
     private final FMArchive archive;
     private String path;
 
-    public ArchiveLoader(@NonNull FMFile archiveFile, String path) {
-        this.archive = new FMArchive(archiveFile.getFile());
+    public ArchiveLoader(@NonNull FMArchive archiveFile, String path) {
+        this.archive = archiveFile;
         this.path = path;
     }
 
