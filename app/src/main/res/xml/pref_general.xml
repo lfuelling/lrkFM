@@ -16,6 +16,11 @@
     <PreferenceCategory android:title="@string/pref_cat_app">
         <SwitchPreference
             android:defaultValue="false"
+            android:key="zips_explorable"
+            android:summary="@string/pref_zips_explorable_desc"
+            android:title="@string/pref_zips_explorable" />
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="always_extract_in_current_folder"
             android:summary="@string/pref_always_extract_in_current_folder_desc"
             android:title="@string/pref_always_extract_in_current_folder" />

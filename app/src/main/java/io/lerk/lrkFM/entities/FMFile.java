@@ -1,5 +1,6 @@
 package io.lerk.lrkFM.entities;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;
@@ -20,14 +21,15 @@ public class FMFile {
     private String name, permissions;
     private Date lastModified;
     private File file;
-    private Boolean directory;
+    Boolean directory;
+    String absolutePath;
 
     /**
      * Constructor.
      *
      * @param f the file
      */
-    public FMFile(File f) {
+    public FMFile(@NonNull File f) {
         this.file = f;
         this.name = this.file.getName();
         this.lastModified = new Date(f.lastModified());
@@ -36,6 +38,7 @@ public class FMFile {
                 ((this.file.canWrite()) ? "w" : "-") +
                 ((this.file.canExecute()) ? "x" : "-"); // lol
         this.directory = f.isDirectory();
+        this.absolutePath = f.getAbsolutePath();
     }
 
     public String getName() {
@@ -64,6 +67,10 @@ public class FMFile {
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public String getAbsolutePath() {
+        return absolutePath;
     }
 
     /**

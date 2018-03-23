@@ -12,14 +12,7 @@ import com.google.firebase.perf.metrics.Trace;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,20 +20,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
-import io.lerk.lrkFM.consts.Preference;
-import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.consts.FileType;
+import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
+import static io.lerk.lrkFM.consts.PreferenceEntity.PERFORMANCE_REPORTING;
 import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 
 public class ArchiveUtil {
@@ -59,7 +50,7 @@ public class ArchiveUtil {
         FileType fileType = f.getFileType();
         fileType.newHandler(fi -> {
             try {
-                InputStream is = new FileInputStream(f.getFile());
+                InputStream is = new FileInputStream(fi.getFile());
                 ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
                 ZipEntry entry = null;
 
@@ -194,5 +185,39 @@ public class ArchiveUtil {
             zos.write(bytes, 0, length);
         }
         fis.close();
+    }
+
+    /**
+     * @param archive the archive
+     * @param path the path (can be inside the archive)
+     * @return path contents
+     * @deprecated use {@link io.lerk.lrkFM.entities.FMArchive}
+     */
+    public ArrayList<FMFile> loadArchiveContents(FMFile archive, String path){
+
+        if(path == null || path.isEmpty()) {
+            path = "/";
+        }
+        ArrayList<FMFile> res = new ArrayList<>();
+        FileType fileType = archive.getFileType();
+        final String finalPath = path;
+        fileType.newHandler(fi -> {
+            try {
+                InputStream is = new FileInputStream(fi.getFile());
+                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
+                ZipEntry entry;
+                while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
+                    File outFile = new File(entry.getName());
+                    if(!entry.getName().contains(finalPath)) {
+                        continue;
+                    }
+                    res.add(new FMFile(outFile));
+                }
+            } catch (IOException | ArchiveException e) {
+                Log.e(TAG, "Error extracting " + fileType.getExtension());
+                FirebaseCrash.report(e);
+            }
+        }).handle(archive);
+        return res;
     }
 }

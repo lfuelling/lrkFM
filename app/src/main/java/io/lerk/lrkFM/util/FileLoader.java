@@ -5,20 +5,21 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
+import io.lerk.lrkFM.exceptions.NoAccessException;
 
 /**
  * This class handles file loading.
  *
  * @author Lukas Fülling (lukas@k40s.net)
  */
-public class FileLoader {
+public class FileLoader extends AbstractLoader {
 
     /**
      * The location.
@@ -41,12 +42,12 @@ public class FileLoader {
 
     /**
      * Calls {@link #FileLoader(String)} with <pre>null</pre> as argument.
-     * @see #loadLocationFiles(String)
+     * @see #loadLocationFilesForPath(String)
      * @throws NoAccessException if no access
      * @throws EmptyDirectoryException  if no contents
      */
     public ArrayList<FMFile> loadLocationFiles() throws NoAccessException, EmptyDirectoryException {
-        return this.loadLocationFiles(null);
+        return this.loadLocationFilesForPath(null);
     }
 
     /**
@@ -56,7 +57,7 @@ public class FileLoader {
      * @throws NoAccessException if no access
      * @throws EmptyDirectoryException if no contents
      */
-    private ArrayList<FMFile> loadLocationFiles(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
+    protected ArrayList<FMFile> loadLocationFilesForPath(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
         if (parent != null) {
             location = parent;
         }
@@ -107,7 +108,7 @@ public class FileLoader {
             String newParent = locationFile.getParent();
             Log.d(TAG, "Location '" + location + "' not a directory");
             if (newParent != null) {
-                ArrayList<FMFile> fmFiles = loadLocationFiles(newParent);
+                ArrayList<FMFile> fmFiles = loadLocationFilesForPath(newParent);
                 if (fmFiles != null) {
                     return fmFiles;
                 } else {
@@ -121,25 +122,4 @@ public class FileLoader {
         return new ArrayList<>();
     }
 
-    /**
-     * {@link NoAccessException}.
-     */
-    public class NoAccessException extends Exception implements Serializable {
-        static final long serialVersionUID = 10L;
-
-        NoAccessException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * {@link EmptyDirectoryException}.
-     */
-    public class EmptyDirectoryException extends Exception implements Serializable {
-        static final long serialVersionUID = 10L;
-
-        EmptyDirectoryException(String message) {
-            super(message);
-        }
-    }
 }
