@@ -493,13 +493,13 @@ public class FileActivity extends AppCompatActivity
     /**
      * Changes directory.
      *
-     * @param startDir directory to load
+     * @param path directory to load
      * @deprecated may only be called by {@link #loadPath(String)}
      */
     @SuppressWarnings("DeprecatedIsStillUsed") // see above
-    private void loadDirectory(String startDir) {
+    private void loadDirectory(String path) {
         ArrayList<FMFile> files;
-        FileLoader fileLoader = new FileLoader(startDir);
+        FileLoader fileLoader = new FileLoader(path);
         View errorText = findViewById(R.id.unableToLoadText);
         View emptyText = findViewById(R.id.emptyDirText);
         try {
@@ -511,18 +511,22 @@ public class FileActivity extends AppCompatActivity
             arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
             fileListView.setAdapter(arrayAdapter);
         } catch (NoAccessException e) {
-            Log.w(TAG, "Can't read '" + startDir + "': Permission denied!");
+            Log.w(TAG, "Can't read '" + path + "': Permission denied!");
             fileListView.setVisibility(GONE);
             errorText.setVisibility(VISIBLE);
             emptyText.setVisibility(GONE);
         } catch (EmptyDirectoryException e) {
-            Log.w(TAG, "Can't read '" + startDir + "': Empty directory!");
+            Log.w(TAG, "Can't read '" + path + "': Empty directory!");
             fileListView.setVisibility(GONE);
             errorText.setVisibility(GONE);
             emptyText.setVisibility(VISIBLE);
         }
-        currentDirectory = startDir;
-        historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, null));
+        currentDirectory = path;
+
+        HistoryEntry entry = historyMap.get(historyCounter);
+        if (entry != null && !entry.getPath().equals(currentDirectory)) {
+            historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, null));
+        }
         setToolbarText();
         setFreeSpaceText();
     }
@@ -549,7 +553,6 @@ public class FileActivity extends AppCompatActivity
         fileListView.setAdapter(arrayAdapter);
 
         currentDirectory = path;
-
         historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, archive));
         setToolbarText();
         setFreeSpaceText();
@@ -587,7 +590,10 @@ public class FileActivity extends AppCompatActivity
      * Removes the most recent item from the history and goes back.
      */
     private void removeFromHistoryAndGoBack() {
-        int key = historyCounter - 2;
+        int key = historyCounter - 1;
+        if (key < 0) {
+            key = 0;
+        }
         HistoryEntry entry = historyMap.get(key);
         historyMap.remove(key);
         if (entry != null && !entry.getPath().isEmpty() && !entry.isInArchive()) {
@@ -595,7 +601,7 @@ public class FileActivity extends AppCompatActivity
         } else if (entry != null && !entry.getPath().isEmpty() && entry.isInArchive()) {
             loadArchivePath(entry.getPath(), entry.getArchive());
         }
-        historyCounter = key + 1;
+        historyCounter = key;
     }
 
     /**
@@ -604,6 +610,10 @@ public class FileActivity extends AppCompatActivity
     private void setToolbarText() {
         if (toolbar != null) {
             if (!Objects.equals(currentDirectory, ROOT_DIR)) {
+                HistoryEntry entry = historyMap.get(historyCounter - 1);
+                if (entry != null && entry.isInArchive()) {
+                    toolbar.setTitle(getTitleFromPath(entry.getArchive().getAbsolutePath()));
+                }
                 toolbar.setTitle(getTitleFromPath(currentDirectory));
             } else {
                 toolbar.setTitle(currentDirectory);

@@ -1,5 +1,6 @@
 package io.lerk.lrkFM.entities;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class FMFile {
      *
      * @param f the file
      */
-    public FMFile(File f) {
+    public FMFile(@NonNull File f) {
         this.file = f;
         this.name = this.file.getName();
         this.lastModified = new Date(f.lastModified());

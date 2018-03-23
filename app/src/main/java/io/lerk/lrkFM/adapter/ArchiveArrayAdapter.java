@@ -55,7 +55,6 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
         }
     }
 
-
     /**
      * Initializes the UI for each file.
      *
