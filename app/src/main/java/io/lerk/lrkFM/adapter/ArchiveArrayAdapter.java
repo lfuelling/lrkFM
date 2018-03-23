@@ -19,8 +19,7 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.util.ContextMenuUtil;
 import io.lerk.lrkFM.util.PrefUtils;
 
-import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;
-import static io.lerk.lrkFM.consts.Preference.ZIPS_EXPLORABLE;
+import static io.lerk.lrkFM.consts.PreferenceEntity.FILENAME_LENGTH;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)

@@ -3,10 +3,10 @@ package io.lerk.lrkFM;
 import android.app.backup.BackupAgentHelper;
 import android.app.backup.SharedPreferencesBackupHelper;
 
-import io.lerk.lrkFM.consts.Preference;
+import io.lerk.lrkFM.consts.PreferenceEntity;
 import io.lerk.lrkFM.util.PrefUtils;
 
-import static io.lerk.lrkFM.consts.Preference.BACKUP_QUOTA_EXCEEDED;
+import static io.lerk.lrkFM.consts.PreferenceEntity.BACKUP_QUOTA_EXCEEDED;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
@@ -18,7 +18,7 @@ public class LrkFMBackupAgent extends BackupAgentHelper {
     @Override
     public void onCreate() {
         super.onCreate();
-        addHelper(BACKUP_KEY, new SharedPreferencesBackupHelper(this, Preference.Store.CLOUD_BACKED.getName()));
+        addHelper(BACKUP_KEY, new SharedPreferencesBackupHelper(this, PreferenceEntity.Store.CLOUD_BACKED.getName()));
     }
 
     @Override

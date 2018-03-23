@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 import io.lerk.lrkFM.BuildConfig;
 import io.lerk.lrkFM.LrkFMApp;
-import io.lerk.lrkFM.consts.Preference;
+import io.lerk.lrkFM.consts.PreferenceEntity;
 
 /**
  * Yes, I really like hacky stuff.
@@ -27,7 +27,7 @@ import io.lerk.lrkFM.consts.Preference;
  * with <pre>new PrefUtils&lt;Boolean;&gt;(MY_PREFERENCE).setValue(false);</pre>
  *
  * @author Lukas Fülling (lukas@k40s.net)
- * @see Preference
+ * @see PreferenceEntity
  */
 public class PrefUtils<T> {
 
@@ -36,7 +36,7 @@ public class PrefUtils<T> {
     /**
      * The preference.
      */
-    private final Preference preference;
+    private final PreferenceEntity preference;
 
     /**
      * The preference key.
@@ -65,7 +65,7 @@ public class PrefUtils<T> {
      *
      * @param preference the preference to use
      */
-    public PrefUtils(Preference preference) {
+    public PrefUtils(PreferenceEntity preference) {
         this.preference = preference;
         type = preference.getType();
         key = preference.getKey();
@@ -102,9 +102,9 @@ public class PrefUtils<T> {
      */
     private Boolean returnBooleanValueCheckForDebug() {
         if (BuildConfig.DEBUG) {
-            if(preference.equals(Preference.PERFORMANCE_REPORTING)) {
+            if(preference.equals(PreferenceEntity.PERFORMANCE_REPORTING)) {
                 return Boolean.FALSE; // Disable performance monitoring in debug mode
-            } else if(preference.equals(Preference.FIRST_START)) {
+            } else if(preference.equals(PreferenceEntity.FIRST_START)) {
                 return Boolean.TRUE; // In debug, every start is a firstStart
             }
         }

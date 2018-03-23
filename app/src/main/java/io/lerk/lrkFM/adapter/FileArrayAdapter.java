@@ -20,14 +20,15 @@ import java.util.List;
 import java.util.Objects;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.util.ContextMenuUtil;
 import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;
-import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
-import static io.lerk.lrkFM.consts.Preference.ZIPS_EXPLORABLE;
+import static io.lerk.lrkFM.consts.PreferenceEntity.FILENAME_LENGTH;
+import static io.lerk.lrkFM.consts.PreferenceEntity.PERFORMANCE_REPORTING;
+import static io.lerk.lrkFM.consts.PreferenceEntity.ZIPS_EXPLORABLE;
 
 /**
  * Heavily abused ArrayAdapter that also adds menus and listeners.
@@ -54,23 +55,30 @@ public class FileArrayAdapter extends BaseArrayAdapter {
             trace = FirebasePerformance.getInstance().newTrace("open_file");
             trace.start();
         }
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        String mimeType = f.getFileType().getMimeType();
-        if (trace != null) {
-            trace.putAttribute("mime_type", mimeType != null ? mimeType : "null");
-        }
-        i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            getContext().startActivity(i);
+        if (new PrefUtils<Boolean>(ZIPS_EXPLORABLE).getValue() && f.isArchive() && !(f instanceof FMArchive)) {
+            activity.loadPath(f.getAbsolutePath());
             if (trace != null) {
-                trace.putAttribute("unknown", "false");
+                trace.putAttribute("mime_type", f.getFileType().getMimeType());
             }
-        } catch (ActivityNotFoundException e) {
+        } else {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            String mimeType = f.getFileType().getMimeType();
             if (trace != null) {
-                trace.putAttribute("unknown", "true");
+                trace.putAttribute("mime_type", mimeType != null ? mimeType : "null");
             }
-            Toast.makeText(getContext(), R.string.no_app_to_handle_file, LENGTH_SHORT).show();
+            i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                getContext().startActivity(i);
+                if (trace != null) {
+                    trace.putAttribute("unknown", "false");
+                }
+            } catch (ActivityNotFoundException e) {
+                if (trace != null) {
+                    trace.putAttribute("unknown", "true");
+                }
+                Toast.makeText(getContext(), R.string.no_app_to_handle_file, LENGTH_SHORT).show();
+            }
         }
         if (trace != null) {
             trace.stop();

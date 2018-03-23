@@ -8,7 +8,7 @@ import java.io.File;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 
-import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
+import static io.lerk.lrkFM.consts.PreferenceEntity.PERFORMANCE_REPORTING;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)

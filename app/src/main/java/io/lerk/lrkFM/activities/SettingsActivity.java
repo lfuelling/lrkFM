@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -13,9 +15,13 @@ import android.view.MenuItem;
 
 import org.jraf.android.alibglitch.GlitchEffect;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.consts.PreferenceEntity;
+import io.lerk.lrkFM.util.PrefUtils;
 
 /**
  */
@@ -64,7 +70,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         private static final String TAG = GeneralPreferenceFragment.class.getCanonicalName();
 
-        private static int c=0;
+        private static int c = 0;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +78,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
 
-            try{Preference app_version=findPreference("app_version");app_version.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);app_version.setOnPreferenceClickListener(preference->{c++;if(c%8==0){GlitchEffect.showGlitch(getActivity());}return true;});}catch(PackageManager.NameNotFoundException e){Log.e(TAG,"Unable to get App version!",e);}
+            try {
+                Preference app_version = findPreference("app_version");
+                app_version.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
+                app_version.setOnPreferenceClickListener(preference -> {
+                    c++;
+                    if (c % 8 == 0) {
+                        GlitchEffect.showGlitch(getActivity());
+                    }
+                    return true;
+                });
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, "Unable to get App version!", e);
+            }
 
             Preference context_for_ops_toast = findPreference("context_for_ops_toast");
             SwitchPreference context_for_ops = (SwitchPreference) findPreference("context_for_ops");
@@ -82,6 +100,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 context_for_ops_toast.setEnabled((Boolean) newValue);
                 return true;
             });
+
+            addOnPreferenceChangeListeners(this.getPreferenceScreen());
         }
 
         @Override
@@ -101,6 +121,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_analytics);
             setHasOptionsMenu(true);
+            addOnPreferenceChangeListeners(this.getPreferenceScreen());
         }
 
         @Override
@@ -120,7 +141,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_data_ui);
             setHasOptionsMenu(true);
-
+            addOnPreferenceChangeListeners(this.getPreferenceScreen());
         }
 
         @Override
@@ -132,5 +153,42 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences with {@link PrefUtils}. It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}
+     * This is what you get, when customizing too much stuff.
+     *
+     * @param preferenceGroup the current {@link PreferenceGroup}
+     */
+    private static void addOnPreferenceChangeListeners(PreferenceGroup preferenceGroup) {
+        for (int i = 0; i < preferenceGroup.getPreferenceCount(); i++) {
+            Preference p = preferenceGroup.getPreference(i);
+            if (p instanceof PreferenceCategory) {
+                addOnPreferenceChangeListeners((PreferenceCategory) p);
+            } else {
+                setOnPreferenceChangeListener(p);
+            }
+        }
+    }
+
+    /**
+     * This actually adds the listener. This is called by {@link #addOnPreferenceChangeListeners(PreferenceGroup)}
+     * @param p the {@link Preference}
+     */
+    private static void setOnPreferenceChangeListener(Preference p) {
+        p.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue instanceof Boolean) {
+                new PrefUtils<Boolean>(Objects.requireNonNull(PreferenceEntity.determineByKey(preference.getKey()))).setValue((Boolean) newValue);
+                return true;
+            } else if (newValue instanceof String) {
+                new PrefUtils<String>(Objects.requireNonNull(PreferenceEntity.determineByKey(preference.getKey()))).setValue((String) newValue);
+                return true;
+            } else if (newValue instanceof HashSet) {
+                new PrefUtils<HashSet>(Objects.requireNonNull(PreferenceEntity.determineByKey(preference.getKey()))).setValue((HashSet) newValue);
+                return true;
+            }
+            return false;
+        });
     }
 }

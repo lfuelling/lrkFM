@@ -17,12 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 
-import io.lerk.lrkFM.consts.Preference;
+import io.lerk.lrkFM.consts.PreferenceEntity;
 import io.lerk.lrkFM.util.PrefUtils;
 
 /**
@@ -94,7 +91,7 @@ public class FMArchive extends FMFile {
         HashMap<String, ArrayList<FMFile>> res = new HashMap<>();
         Trace trace = null;
 
-        if (new PrefUtils<Boolean>(Preference.PERFORMANCE_REPORTING).getValue()) {
+        if (new PrefUtils<Boolean>(PreferenceEntity.PERFORMANCE_REPORTING).getValue()) {
             trace = FirebasePerformance.getInstance().newTrace("calc_archive_contents");
             trace.start();
         }

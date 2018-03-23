@@ -1,5 +1,7 @@
 package io.lerk.lrkFM.consts;
 
+import android.support.annotation.Nullable;
+
 import java.util.HashSet;
 
 import io.lerk.lrkFM.LrkFMApp;
@@ -10,7 +12,7 @@ import io.lerk.lrkFM.R;
 /**
  * Preferences.
  */
-public enum Preference {
+public enum PreferenceEntity {
 
     // Locally stored
 
@@ -118,7 +120,7 @@ public enum Preference {
      * @param key the key
      * @param defaultValue the default value
      */
-    Preference(Store store, String key, Object defaultValue) {
+    PreferenceEntity(Store store, String key, Object defaultValue) {
         this.key = key;
         this.store = store;
         this.defaultValue = defaultValue;
@@ -156,6 +158,16 @@ public enum Preference {
      */
     public Object getDefaultValue() {
         return defaultValue;
+    }
+
+    @Nullable
+    public static PreferenceEntity determineByKey(String key) {
+        for (PreferenceEntity preference : PreferenceEntity.values()) {
+            if(preference.getKey().equals(key)) {
+                return preference;
+            }
+        }
+        return null;
     }
 
     /**

@@ -31,7 +31,7 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
+import static io.lerk.lrkFM.consts.PreferenceEntity.PERFORMANCE_REPORTING;
 import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 
 public class ArchiveUtil {

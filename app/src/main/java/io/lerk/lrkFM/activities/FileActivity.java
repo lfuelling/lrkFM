@@ -75,15 +75,15 @@ import static io.lerk.lrkFM.consts.Operation.CREATE_ZIP;
 import static io.lerk.lrkFM.consts.Operation.EXTRACT;
 import static io.lerk.lrkFM.consts.Operation.MOVE;
 import static io.lerk.lrkFM.consts.Operation.NONE;
-import static io.lerk.lrkFM.consts.Preference.BOOKMARKS;
-import static io.lerk.lrkFM.consts.Preference.BOOKMARK_CURRENT_FOLDER;
-import static io.lerk.lrkFM.consts.Preference.BOOKMARK_EDIT_MODE;
-import static io.lerk.lrkFM.consts.Preference.FIRST_START;
-import static io.lerk.lrkFM.consts.Preference.HEADER_PATH_LENGTH;
-import static io.lerk.lrkFM.consts.Preference.HOME_DIR;
-import static io.lerk.lrkFM.consts.Preference.SHOW_TOAST;
-import static io.lerk.lrkFM.consts.Preference.SORT_FILES_BY;
-import static io.lerk.lrkFM.consts.Preference.USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARKS;
+import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_CURRENT_FOLDER;
+import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_EDIT_MODE;
+import static io.lerk.lrkFM.consts.PreferenceEntity.FIRST_START;
+import static io.lerk.lrkFM.consts.PreferenceEntity.HEADER_PATH_LENGTH;
+import static io.lerk.lrkFM.consts.PreferenceEntity.HOME_DIR;
+import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
+import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
+import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -281,7 +281,7 @@ public class FileActivity extends AppCompatActivity
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener((v) -> {
-            if (historyMap.size() > 1) {
+            if (historyCounter > 0 && !historyMap.isEmpty()) {
                 removeFromHistoryAndGoBack();
             } else {
                 FileActivity.this.loadPath(new File(currentDirectory).getParent());

@@ -19,7 +19,6 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
-import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.op.OperationUtil;
 
@@ -28,9 +27,9 @@ import static io.lerk.lrkFM.consts.Operation.COPY;
 import static io.lerk.lrkFM.consts.Operation.CREATE_ZIP;
 import static io.lerk.lrkFM.consts.Operation.EXTRACT;
 import static io.lerk.lrkFM.consts.Operation.MOVE;
-import static io.lerk.lrkFM.consts.Preference.ALWAYS_EXTRACT_IN_CURRENT_DIR;
-import static io.lerk.lrkFM.consts.Preference.USE_CONTEXT_FOR_OPS;
-import static io.lerk.lrkFM.consts.Preference.USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.consts.PreferenceEntity.ALWAYS_EXTRACT_IN_CURRENT_DIR;
+import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS;
+import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
