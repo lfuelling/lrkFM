@@ -16,7 +16,6 @@ public class ArchiveParentFinder {
     private String path;
     private boolean archive;
     private FMFile archiveFile;
-    int i = 1024;
 
     public ArchiveParentFinder(String path) {
         this.path = path;
@@ -38,7 +37,7 @@ public class ArchiveParentFinder {
         if(new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()){
             trace = FirebasePerformance.startTrace("check_if_parent_is_archive");
         }
-        while (!"/".equals(tPath) || !archive || i <= 0) {
+        while (!"/".equals(tPath)) {
             if(tPath.endsWith("/")) {
                 tPath = tPath.substring(0, tPath.length() -1);
             }
@@ -51,7 +50,9 @@ public class ArchiveParentFinder {
             if(trace != null) {
                 trace.incrementCounter("parent_depth");
             }
-            i--; //failsafe
+            if(archive || tPath.isEmpty()) {
+                break;
+            }
         }
         if(trace!=null){
             trace.putAttribute("archive", String.valueOf(archive));
