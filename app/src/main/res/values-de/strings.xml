@@ -115,5 +115,6 @@
     <string name="pref_performance_reporting_desc">Protokolliert die Dauer mancher Vorgänge (z.B. Archive erstellen oder entpacken, etc.)</string>
     <string name="pref_zips_explorable">Archivinhalt standardmäßig anzeigen</string>
     <string name="pref_zips_explorable_desc">Behandelt Archive wie Ordner. (Inhalt anzeigen wenn angeklickt)</string>
-    <string name="explore">Explore</string>
+    <string name="explore">Inhalt anzeigen</string>
+    <string name="only_browsing_in_archives">Innerhalb eines Archivs können nur Ordner angezeigt werden.</string>
 </resources>
