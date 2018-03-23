@@ -1,23 +1,12 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM.adapter;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,10 +19,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
-import io.lerk.lrkFM.activities.FileActivity;
-import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.util.ContextMenuUtil;
+import io.lerk.lrkFM.util.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Preference.FILENAME_LENGTH;
@@ -45,25 +34,12 @@ import static io.lerk.lrkFM.consts.Preference.ZIPS_EXPLORABLE;
  *
  * @author Lukas Fülling (lukas@k40s.net)
  */
-public class FileArrayAdapter extends ArrayAdapter<FMFile> {
+public class FileArrayAdapter extends BaseArrayAdapter {
 
     private static final String TAG = FileArrayAdapter.class.getCanonicalName();
 
-    private FileActivity activity;
-
     public FileArrayAdapter(Context context, int resource, List<FMFile> items) {
         super(context, resource, items);
-        if (context instanceof FileActivity) {
-            this.activity = (FileActivity) context;
-        } else {
-            Log.d(TAG, "Context is no FileActivity: " + context.getClass().getName());
-        }
-    }
-
-    @NonNull
-    @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        return initUI(getItem(position));
     }
 
     /**
@@ -71,7 +47,8 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
      *
      * @param f the file
      */
-    private void openFile(FMFile f) {
+    @Override
+    protected void openFile(FMFile f) {
         Trace trace = null;
         if (new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()) {
             trace = FirebasePerformance.getInstance().newTrace("open_file");
@@ -101,33 +78,6 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     }
 
     /**
-     * Sets file name in the text field of a dialog.
-     *
-     * @param alertDialog     the dialog
-     * @param destinationName the id of the EditText
-     * @param name            the name
-     */
-    void presetNameForDialog(AlertDialog alertDialog, @IdRes int destinationName, String name) {
-        EditText editText = alertDialog.findViewById(destinationName);
-        if (editText != null) {
-            editText.setText(name);
-        } else {
-            Log.w(TAG, "Unable to find view, can not set file title.");
-        }
-    }
-
-    /**
-     * Adds the path of a file to a dialog.
-     *
-     * @param f           the file
-     * @param alertDialog the dialog
-     * @see #presetNameForDialog(AlertDialog, int, String)
-     */
-    void presetPathForDialog(FMFile f, AlertDialog alertDialog) {
-        presetNameForDialog(alertDialog, R.id.destinationPath, f.getFile().getAbsolutePath());
-    }
-
-    /**
      * Gets the size of a file as formatted string.
      *
      * @param f the file
@@ -147,62 +97,13 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
     }
 
     /**
-     * Utility method to create an AlertDialog.
-     *
-     * @param positiveBtnText  the text of the positive button
-     * @param title            the title
-     * @param icon             the icon
-     * @param view             the content view
-     * @param positiveCallBack the positive callback
-     * @param negativeCallBack the negative callback
-     * @return the dialog
-     */
-    public AlertDialog getGenericFileOpDialog(@StringRes int positiveBtnText,
-                                              @StringRes int title,
-                                              @DrawableRes int icon,
-                                              @LayoutRes int view,
-                                              Handler<AlertDialog> positiveCallBack,
-                                              Handler<AlertDialog> negativeCallBack) {
-        AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setView(view)
-                .setTitle(title)
-                .setIcon(icon)
-                .setCancelable(true).create();
-
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(positiveBtnText), (d, i) -> positiveCallBack.handle(dialog));
-        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (d, i) -> negativeCallBack.handle(dialog));
-        dialog.setOnShowListener(dialog1 -> {
-            EditText inputField;
-            if (view == R.layout.layout_name_prompt) {
-                inputField = dialog.findViewById(R.id.destinationName);
-                if (inputField != null) {
-                    String name = activity.getTitleFromPath(activity.getCurrentDirectory());
-                    inputField.setText(name);
-                    Log.d(TAG, "Destination set to: " + name);
-                } else {
-                    Log.w(TAG, "Unable to preset current name, text field is null!");
-                }
-            } else if (view == R.layout.layout_path_prompt) {
-                inputField = dialog.findViewById(R.id.destinationPath);
-                if (inputField != null) {
-                    String directory = activity.getCurrentDirectory();
-                    inputField.setText(directory);
-                    Log.d(TAG, "Destination set to: " + directory);
-                } else {
-                    Log.w(TAG, "Unable to preset current path, text field is null!");
-                }
-            }
-        });
-        return dialog;
-    }
-
-    /**
      * Initializes the UI for each file.
      *
      * @param f the file
      * @return the initialized UI
      */
-    private View initUI(FMFile f) {
+    @Override
+    protected View initUI(FMFile f) {
         assert activity != null;
 
         @SuppressLint("InflateParams") View v = LayoutInflater.from(activity).inflate(R.layout.layout_file, null); // works.
@@ -247,7 +148,7 @@ public class FileArrayAdapter extends ArrayAdapter<FMFile> {
                 }
             }
             if (f.isDirectory() || (f.isArchive() && new PrefUtils<Boolean>(ZIPS_EXPLORABLE).getValue())) {
-                v.setOnClickListener(v1 -> activity.loadPath(f.getFile().getAbsolutePath() + ((f.isArchive()) ? "/" : "")));
+                v.setOnClickListener(v1 -> activity.loadPath(f.getFile().getAbsolutePath()));
             } else {
                 v.setOnClickListener(v1 -> openFile(f));
             }

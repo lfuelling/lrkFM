@@ -15,7 +15,6 @@ public class LrkFMApp extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         context = new WeakReference<>(this);
-        FirebaseCrash.setCrashCollectionEnabled(!BuildConfig.DEBUG);
     }
 
     public static Context getContext() {

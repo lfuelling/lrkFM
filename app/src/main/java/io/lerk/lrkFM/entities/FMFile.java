@@ -20,7 +20,7 @@ public class FMFile {
     private String name, permissions;
     private Date lastModified;
     private File file;
-    private Boolean directory;
+    Boolean directory;
 
     /**
      * Constructor.

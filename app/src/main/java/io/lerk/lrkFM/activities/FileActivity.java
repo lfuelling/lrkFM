@@ -36,8 +36,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -50,10 +48,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
 import io.lerk.lrkFM.exceptions.NoAccessException;
 import io.lerk.lrkFM.op.ArchiveUtil;
 import io.lerk.lrkFM.entities.Bookmark;
+import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
 import io.lerk.lrkFM.util.ArchiveLoader;
 import io.lerk.lrkFM.util.ArchiveParentFinder;
 import io.lerk.lrkFM.util.DiskUtil;
@@ -63,7 +63,7 @@ import io.lerk.lrkFM.op.OperationUtil;
 import io.lerk.lrkFM.util.PrefUtils;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.util.FileArrayAdapter;
+import io.lerk.lrkFM.adapter.FileArrayAdapter;
 import io.lerk.lrkFM.util.FileLoader;
 
 import static android.view.View.GONE;
@@ -79,7 +79,6 @@ import static io.lerk.lrkFM.consts.Preference.BOOKMARK_EDIT_MODE;
 import static io.lerk.lrkFM.consts.Preference.FIRST_START;
 import static io.lerk.lrkFM.consts.Preference.HEADER_PATH_LENGTH;
 import static io.lerk.lrkFM.consts.Preference.HOME_DIR;
-import static io.lerk.lrkFM.consts.Preference.PERFORMANCE_REPORTING;
 import static io.lerk.lrkFM.consts.Preference.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.Preference.SORT_FILES_BY;
 import static io.lerk.lrkFM.consts.Preference.USE_CONTEXT_FOR_OPS_TOAST;
@@ -175,7 +174,7 @@ public class FileActivity extends AppCompatActivity
     /**
      * The {@link android.widget.ArrayAdapter} implementation used in the {@link #fileListView}.
      */
-    private FileArrayAdapter arrayAdapter;
+    private BaseArrayAdapter arrayAdapter;
 
     /**
      * The file operation context containing the {@link Operation} to do and a list of {@link FMFile} objects.
@@ -531,7 +530,7 @@ public class FileActivity extends AppCompatActivity
         errorText.setVisibility(GONE);
         emptyText.setVisibility(GONE);
 
-        arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
+        arrayAdapter = new ArchiveArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
         fileListView.setAdapter(arrayAdapter);
 
         currentDirectory = path;

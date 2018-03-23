@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 
 import io.lerk.lrkFM.consts.Preference;
@@ -30,6 +33,7 @@ public class FMArchive extends FMFile {
     public final static String TAG = FMArchive.class.getCanonicalName();
 
     private final HashMap<String, ArrayList<FMFile>> contents;
+    private static final String ROOT_DIR = "/";
 
     /**
      * Constructor.
@@ -53,7 +57,24 @@ public class FMArchive extends FMFile {
      * @return the contents
      */
     public ArrayList<FMFile> getContentForPath(String path) {
-        return new ArrayList<>(contents.get(path));
+        String rPath;
+        try {
+            rPath = path.split(getName())[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            rPath = ROOT_DIR;
+        }
+        ArrayList<FMFile> pathContents = contents.get(rPath);
+        if (pathContents == null && rPath.equals(ROOT_DIR)) {
+            pathContents = new ArrayList<>();
+            for (String s : contents.keySet()) {
+                String[] split = s.split("/");
+                if (split.length == 2) {
+                    pathContents.add(new FMFile(new File(split[1])));
+                }
+            }
+        }
+
+        return new ArrayList<>(pathContents);
     }
 
     /**
@@ -76,20 +97,20 @@ public class FMArchive extends FMFile {
             ZipEntry entry;
             while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
                 String filePath;
-                if (!entry.isDirectory()) {
-                    String[] split = entry.getName().split("/");
-                    filePath = split[split.length - 2];
-                } else {
-                    filePath = entry.getName();
-                }
-                FMFile outFile = new FMFile(new File(entry.getName()));
 
-                ArrayList<FMFile> pathContents = res.get(filePath);
+                filePath = entry.getName();
+
+                FMArchiveFile outFile = new FMArchiveFile(new File(entry.getName()));
+                outFile.setDirectory(entry.isDirectory());
+
+                String fileParent = new File(filePath).getParent();
+                String parent = "/" + ((fileParent != null) ? fileParent : "");
+                ArrayList<FMFile> pathContents = res.get(parent);
                 if (pathContents == null) {
                     pathContents = new ArrayList<>();
                 }
                 pathContents.add(outFile);
-                res.put(filePath, pathContents);
+                res.put(parent, pathContents);
             }
             if (trace != null) {
                 trace.putAttribute("success", String.valueOf(true));

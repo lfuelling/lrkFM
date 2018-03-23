@@ -17,6 +17,7 @@ import java.util.Objects;
 import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.op.OperationUtil;
@@ -33,7 +34,7 @@ import static io.lerk.lrkFM.consts.Preference.USE_CONTEXT_FOR_OPS_TOAST;
 /**
  * @author Lukas Fülling (lukas@k40s.net)
  */
-class ContextMenuUtil {
+public class ContextMenuUtil {
 
     private static final int ID_COPY = 0;
     private static final int ID_MOVE = 1;
@@ -48,9 +49,9 @@ class ContextMenuUtil {
 
     private static final String TAG = ContextMenuUtil.class.getCanonicalName();
     private final FileActivity activity;
-    private final FileArrayAdapter arrayAdapter;
+    private final BaseArrayAdapter arrayAdapter;
 
-    ContextMenuUtil(FileActivity activity, FileArrayAdapter arrayAdapter) {
+    public ContextMenuUtil(FileActivity activity, BaseArrayAdapter arrayAdapter) {
         this.activity = activity;
         this.arrayAdapter = arrayAdapter;
     }
@@ -62,7 +63,7 @@ class ContextMenuUtil {
      * @param fileName the file name for the title
      * @param menu     the context menu to fill
      */
-    void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {
+    public void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {
         menu.setHeaderTitle(fileName);
         addCopyToMenu(f, menu);
         addMoveToMenu(f, menu);
@@ -301,7 +302,7 @@ class ContextMenuUtil {
 
     private void addExploreToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_EXPLORE, 0, activity.getString(R.string.explore)).setOnMenuItemClickListener(item -> {
-            activity.loadPath(f.getFile().getAbsolutePath() + "/");
+            activity.loadPath(f.getFile().getAbsolutePath());
             return true;
         }).setVisible(f.isArchive());
     }
