@@ -31,4 +31,5 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
+  - sed "-i" "" "-e" 's/\/\/signingConfig signingConfigs.release/signingConfig signingConfigs.release/g' "app/build.gradle"
   - ./gradlew connectedAndroidTest -PdisablePreDex
