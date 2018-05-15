@@ -1,8 +1,5 @@
 package io.lerk.lrkFM.util;
 
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
-
 import java.io.File;
 
 import io.lerk.lrkFM.entities.FMArchive;
@@ -34,10 +31,7 @@ public class ArchiveParentFinder {
         archive = false;
         archiveFile = null;
         String tPath = path;
-        Trace trace = null;
-        if(new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()){
-            trace = FirebasePerformance.startTrace("check_if_parent_is_archive");
-        }
+
         while (!"/".equals(tPath)) {
             FMFile f = new FMFile(new File(tPath));
             if (f.isArchive()) {
@@ -45,17 +39,12 @@ public class ArchiveParentFinder {
                 archiveFile = new FMArchive(new File(tPath));
             }
             tPath = new File(tPath).getParent();
-            if(trace != null) {
-                trace.incrementCounter("parent_depth");
-            }
+
             if(archive || tPath == null || tPath.isEmpty()) {
                 break;
             }
         }
-        if(trace!=null){
-            trace.putAttribute("archive", String.valueOf(archive));
-            trace.stop();
-        }
+
         return this;
     }
 }

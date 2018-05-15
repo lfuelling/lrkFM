@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
-
 import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
 
@@ -147,6 +145,5 @@ public class PrefUtils<T> {
         Bundle bundle = new Bundle();
         bundle.putString("preference_key", key);
         bundle.putString("preference_type", type.getCanonicalName());
-        FirebaseAnalytics.getInstance(context).logEvent("unable_to_cast_preference", bundle);
     }
 }

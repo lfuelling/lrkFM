@@ -5,10 +5,6 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
-
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -131,11 +127,6 @@ public class ArchiveUtil {
     }
 
     private boolean doCreateZipNoValidation(ArrayList<FMFile> files, File destination) {
-        Trace trace = null;
-        if(new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()) {
-            trace = FirebasePerformance.getInstance().newTrace("create_zip");
-            trace.start();
-        }
         try {
             FileOutputStream fos = new FileOutputStream(destination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
@@ -144,18 +135,9 @@ public class ArchiveUtil {
             }
             zipOut.close();
             fos.close();
-            if(trace != null) {
-                trace.putAttribute("success", "true");
-                trace.stop();
-            }
             return true;
         } catch (IOException e) {
             Toast.makeText(context, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
-            FirebaseCrash.report(e);
-            if(trace != null) {
-                trace.putAttribute("success", "false");
-                trace.stop();
-            }
         }
         return false;
     }
@@ -215,7 +197,6 @@ public class ArchiveUtil {
                 }
             } catch (IOException | ArchiveException e) {
                 Log.e(TAG, "Error extracting " + fileType.getExtension());
-                FirebaseCrash.report(e);
             }
         }).handle(archive);
         return res;

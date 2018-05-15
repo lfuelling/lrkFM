@@ -2,10 +2,6 @@ package io.lerk.lrkFM.entities;
 
 import android.util.Log;
 
-import com.google.firebase.crash.FirebaseCrash;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
-
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -89,12 +85,6 @@ public class FMArchive extends FMFile {
      */
     private HashMap<String, ArrayList<FMFile>> calculateArchiveContents() {
         HashMap<String, ArrayList<FMFile>> res = new HashMap<>();
-        Trace trace = null;
-
-        if (new PrefUtils<Boolean>(PreferenceEntity.PERFORMANCE_REPORTING).getValue()) {
-            trace = FirebasePerformance.getInstance().newTrace("calc_archive_contents");
-            trace.start();
-        }
 
         try {
             InputStream is = new FileInputStream(getFile());
@@ -121,15 +111,8 @@ public class FMArchive extends FMFile {
             }
             ais.close();
             is.close();
-            if (trace != null) {
-                trace.putAttribute("success", String.valueOf(true));
-            }
         } catch (IOException | ArchiveException e) {
             Log.e(TAG, "Error extracting " + getFileType().getExtension());
-            if (trace != null) {
-                trace.putAttribute("success", String.valueOf(false));
-            }
-            FirebaseCrash.report(e);
         }
 
         return res;

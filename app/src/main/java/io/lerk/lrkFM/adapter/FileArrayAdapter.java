@@ -12,9 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
@@ -50,38 +47,19 @@ public class FileArrayAdapter extends BaseArrayAdapter {
      */
     @Override
     protected void openFile(FMFile f) {
-        Trace trace = null;
-        if (new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()) {
-            trace = FirebasePerformance.getInstance().newTrace("open_file");
-            trace.start();
-        }
         if (new PrefUtils<Boolean>(ZIPS_EXPLORABLE).getValue() && f.isArchive() && !(f instanceof FMArchive)) {
             activity.loadPath(f.getAbsolutePath());
-            if (trace != null) {
-                trace.putAttribute("mime_type", f.getFileType().getMimeType());
-            }
         } else {
             Intent i = new Intent(Intent.ACTION_VIEW);
             String mimeType = f.getFileType().getMimeType();
-            if (trace != null) {
-                trace.putAttribute("mime_type", mimeType != null ? mimeType : "null");
-            }
+
             i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
                 getContext().startActivity(i);
-                if (trace != null) {
-                    trace.putAttribute("unknown", "false");
-                }
             } catch (ActivityNotFoundException e) {
-                if (trace != null) {
-                    trace.putAttribute("unknown", "true");
-                }
                 Toast.makeText(getContext(), R.string.no_app_to_handle_file, LENGTH_SHORT).show();
             }
-        }
-        if (trace != null) {
-            trace.stop();
         }
     }
 

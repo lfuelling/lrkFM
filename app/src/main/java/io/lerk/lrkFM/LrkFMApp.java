@@ -3,8 +3,6 @@ package io.lerk.lrkFM;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import java.lang.ref.WeakReference;
 
 public class LrkFMApp extends MultiDexApplication {
