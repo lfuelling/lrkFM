@@ -174,21 +174,29 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     /**
      * This actually adds the listener. This is called by {@link #addOnPreferenceChangeListeners(PreferenceGroup)}
+     *
      * @param p the {@link Preference}
      */
     private static void setOnPreferenceChangeListener(Preference p) {
         p.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (newValue instanceof Boolean) {
-                new PrefUtils<Boolean>(Objects.requireNonNull(PreferenceEntity.determineByKey(preference.getKey()))).setValue((Boolean) newValue);
-                return true;
-            } else if (newValue instanceof String) {
-                new PrefUtils<String>(Objects.requireNonNull(PreferenceEntity.determineByKey(preference.getKey()))).setValue((String) newValue);
-                return true;
-            } else if (newValue instanceof HashSet) {
-                new PrefUtils<HashSet>(Objects.requireNonNull(PreferenceEntity.determineByKey(preference.getKey()))).setValue((HashSet) newValue);
-                return true;
+
+            PreferenceEntity preferenceEntity = PreferenceEntity.determineByKey(preference.getKey());
+            if (preferenceEntity != null) {
+                if (newValue instanceof Boolean) {
+                    new PrefUtils<Boolean>(preferenceEntity).setValue((Boolean) newValue);
+                    return true;
+                } else if (newValue instanceof String) {
+                    new PrefUtils<String>(preferenceEntity).setValue((String) newValue);
+                    return true;
+                } else if (newValue instanceof HashSet) {
+                    new PrefUtils<HashSet>(preferenceEntity).setValue((HashSet) newValue);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
             }
-            return false;
         });
     }
 }

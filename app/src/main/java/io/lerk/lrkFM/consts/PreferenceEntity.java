@@ -91,7 +91,12 @@ public enum PreferenceEntity {
     /**
      * If archives should always be extracted in the current directory.
      */
-    ALWAYS_EXTRACT_IN_CURRENT_DIR(Store.CLOUD_BACKED, "always_extract_in_current_folder", false);
+    ALWAYS_EXTRACT_IN_CURRENT_DIR(Store.CLOUD_BACKED, "always_extract_in_current_folder", false),
+
+    /**
+     * Unit to use in the nav drawer header.
+     */
+    NAV_HEADER_UNIT(Store.CLOUD_BACKED, "nav_header_unit", "m");
 
     /**
      * The preference's key.
