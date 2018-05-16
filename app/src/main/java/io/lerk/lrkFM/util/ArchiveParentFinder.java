@@ -38,7 +38,7 @@ public class ArchiveParentFinder {
         if(new PrefUtils<Boolean>(PERFORMANCE_REPORTING).getValue()){
             trace = FirebasePerformance.startTrace("check_if_parent_is_archive");
         }
-        while (!"/".equals(tPath)) {
+        while (!"/".equals(tPath) && tPath != null) {
             FMFile f = new FMFile(new File(tPath));
             if (f.isArchive()) {
                 archive = true;
