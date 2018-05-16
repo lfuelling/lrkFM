@@ -21,7 +21,7 @@ File manager for Android. It has the following features:
 When building for the first time, gradle will probably complain about a missing `google-services.json` file. 
 To solve this, simply go to https://console.firebase.google.com and create a new Android project there to download the needed file.
 
-Alternatively you can try to build the `noogle`-branch where I removed all teh Google stuff. But please note that the branch is based on 1.6.2 and probably won't be updated.
+Alternatively you can try to build the `noogle`-branch where I removed all the Google stuff. But please note that the branch is based on 1.6.2 and probably won't be updated.
 
 ## Usage
 
