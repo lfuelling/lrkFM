@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
@@ -17,7 +16,6 @@ import org.jraf.android.alibglitch.GlitchEffect;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.consts.PreferenceEntity;
@@ -108,7 +106,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity().getApplicationContext(), FileActivity.class));
+                startActivity(new Intent(getActivity().getApplicationContext(), SettingsActivity.class));
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -128,7 +126,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), PreferenceActivity.class));
+                startActivity(new Intent(getActivity().getApplicationContext(), SettingsActivity.class));
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -148,7 +146,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), PreferenceActivity.class));
+                startActivity(new Intent(getActivity().getApplicationContext(), SettingsActivity.class));
                 return true;
             }
             return super.onOptionsItemSelected(item);
