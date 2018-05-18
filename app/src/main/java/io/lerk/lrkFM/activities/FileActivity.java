@@ -284,7 +284,13 @@ public class FileActivity extends AppCompatActivity
             if (historyCounter > 0 && !historyMap.isEmpty()) {
                 removeFromHistoryAndGoBack();
             } else {
-                FileActivity.this.loadPath(new File(currentDirectory).getParent());
+                if(currentDirectory != null && currentDirectory.startsWith("/") && !currentDirectory.equals("/")) {
+                    FileActivity.this.loadPath(new File(currentDirectory).getParent());
+                } else if(currentDirectory != null) {
+                    Toast.makeText(getApplicationContext(), R.string.err_already_at_file_root, Toast.LENGTH_LONG).show();
+                } else {
+                    Log.wtf(TAG, "currentDirectory is null!");
+                }
             }
         });
 
