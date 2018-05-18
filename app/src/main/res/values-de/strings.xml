@@ -117,4 +117,10 @@
     <string name="pref_zips_explorable_desc">Behandelt Archive wie Ordner. (Inhalt anzeigen wenn angeklickt)</string>
     <string name="explore">Inhalt anzeigen</string>
     <string name="only_browsing_in_archives">Innerhalb eines Archivs können nur Ordner angezeigt werden.</string>
+    <string name="err_already_at_file_root">Weiter nach oben ist nicht möglich. Das ist bereits das Rootverzeichnis.</string>
+    <string name="notif_update_title">lrkFM: Neues Update Verfügbar!</string>
+    <string name="notif_update_content">Neue version verfügbar: </string>
+    <string name="pref_cat_notifications">Benachrichtigungen</string>
+    <string name="pref_update_notification_desc">Zeigt eine Benachrichtigung an, wenn ein neues Update im PlayStore verfügbar ist.</string>
+    <string name="pref_update_notification_title">Updatebenachrichtigung</string>
 </resources>

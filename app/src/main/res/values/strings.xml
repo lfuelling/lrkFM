@@ -131,4 +131,9 @@
     <string name="explore">Explore</string>
     <string name="only_browsing_in_archives">Only directories can be accessed when inside an archive.</string>
     <string name="err_already_at_file_root">You are already in the root directory. Can\'t go up any further.</string>
+    <string name="notif_update_title">lrkFM: New Update Available!</string>
+    <string name="notif_update_content">New version available: </string>
+    <string name="pref_cat_notifications">Notification</string>
+    <string name="pref_update_notification_desc">Shows a notification when a new version is available on the PlayStore.</string>
+    <string name="pref_update_notification_title">Update Notification</string>
 </resources>

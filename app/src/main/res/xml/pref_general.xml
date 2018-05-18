@@ -1,5 +1,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="@string/pref_cat_notifications">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="update_notification"
+            android:summary="@string/pref_update_notification_desc"
+            android:title="@string/pref_update_notification_title" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_cat_toasts">
         <SwitchPreference
             android:defaultValue="false"

@@ -51,6 +51,11 @@ public enum PreferenceEntity {
      */
     ZIPS_EXPLORABLE(Store.LOCAL, "zips_explorable", false),
 
+    /**
+     * If there should be a notification when there is a new version available.
+     */
+    UPDATE_NOTIFICATION(Store.LOCAL, "update_notification", false),
+
     // Backed up to cloud
 
     /**

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,8 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -48,6 +51,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.HistoryEntry;
@@ -67,9 +71,11 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.adapter.FileArrayAdapter;
 import io.lerk.lrkFM.util.FileLoader;
+import io.lerk.lrkFM.util.VersionCheckTask;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static io.lerk.lrkFM.LrkFMApp.CHANNEL_ID;
 import static io.lerk.lrkFM.consts.Operation.COPY;
 import static io.lerk.lrkFM.consts.Operation.CREATE_ZIP;
 import static io.lerk.lrkFM.consts.Operation.EXTRACT;
@@ -83,7 +89,9 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.HEADER_PATH_LENGTH;
 import static io.lerk.lrkFM.consts.PreferenceEntity.HOME_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
+import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.util.VersionCheckTask.NEW_VERSION_NOTIF;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -284,9 +292,9 @@ public class FileActivity extends AppCompatActivity
             if (historyCounter > 0 && !historyMap.isEmpty()) {
                 removeFromHistoryAndGoBack();
             } else {
-                if(currentDirectory != null && currentDirectory.startsWith("/") && !currentDirectory.equals("/")) {
+                if (currentDirectory != null && currentDirectory.startsWith("/") && !currentDirectory.equals("/")) {
                     FileActivity.this.loadPath(new File(currentDirectory).getParent());
-                } else if(currentDirectory != null) {
+                } else if (currentDirectory != null) {
                     Toast.makeText(getApplicationContext(), R.string.err_already_at_file_root, Toast.LENGTH_LONG).show();
                 } else {
                     Log.wtf(TAG, "currentDirectory is null!");
@@ -310,6 +318,35 @@ public class FileActivity extends AppCompatActivity
         //noinspection deprecation
         drawer.setDrawerListener(toggle); // I ned dis
         toggle.syncState();
+
+        if (new PrefUtils<Boolean>(UPDATE_NOTIFICATION).getValue()) {
+            new VersionCheckTask(result -> {
+                String currentVersion = null;
+                try {
+                    currentVersion = FileActivity.this.getPackageManager().getPackageInfo(FileActivity.this.getPackageName(), 0).versionName;
+                    if (result != null && !result.isEmpty()) {
+                        Log.d(TAG, "Current version: '" + currentVersion + "' PlayStore version: '" + result + "'");
+                        Integer currentVersionInt = Integer.valueOf(currentVersion.replaceAll("\\.", ""));
+                        Integer onlineVersionInt = Integer.valueOf(result.replaceAll("\\.", ""));
+                        if (currentVersionInt < onlineVersionInt) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.lerk.lrkfm"));
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(FileActivity.this.getApplicationContext(), 0, intent, 0);
+                            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(FileActivity.this, CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.ic_launcher)
+                                    .setContentTitle(FileActivity.this.getText(R.string.notif_update_title))
+                                    .setContentText(FileActivity.this.getText(R.string.notif_update_content) + result)
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                    .setContentIntent(pendingIntent)
+                                    .setAutoCancel(true);
+                            NotificationManagerCompat.from(FileActivity.this.getApplicationContext()).notify(NEW_VERSION_NOTIF, notificationBuilder.build());
+                        }
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.e(TAG, "Unable to get package name!", e);
+                }
+            }).execute();
+        }
     }
 
     /**
