@@ -152,8 +152,12 @@ public class OperationUtil {
 
     public static boolean deleteNoValidation(FMFile f) {
         if(f.isDirectory()){
-            for (File file : f.getFile().listFiles()) {
-                deleteNoValidation(new FMFile(file));
+            try {
+                for (File file : f.getFile().listFiles()) {
+                    deleteNoValidation(new FMFile(file));
+                }
+            } catch (NullPointerException e) {
+                Log.e(TAG, "No permission for this file.", e);
             }
         }
         return f.getFile().exists() && f.getFile().delete();
@@ -170,7 +174,6 @@ public class OperationUtil {
 
     private static boolean doCopyNoValidation(FMFile f, File d) {
         try {
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
