@@ -10,6 +10,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
+import java.util.Set;
 
 import io.lerk.lrkFM.BuildConfig;
 import io.lerk.lrkFM.LrkFMApp;
@@ -126,7 +127,7 @@ public class PrefUtils<T> {
                 } else if (type.equals(String.class)) {
                     preferences.edit().putString(key, (String) value).apply();
                 } else if (type.equals(HashSet.class)) {
-                    preferences.edit().putStringSet(key, (HashSet<String>) value).apply();
+                    preferences.edit().putStringSet(key, (Set<String>) value).apply();
                 }
             } catch (ClassCastException e) {
                 handleError(e);
@@ -141,9 +142,7 @@ public class PrefUtils<T> {
      */
     private void handleError(ClassCastException e) {
         Log.e(TAG, "Unable to cast preference '" +
-                key + "' from " +
-                ((Class) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).getCanonicalName() +
-                " to " + type.getCanonicalName(), e);
+                key + "' to " + type.getCanonicalName(), e);
         Bundle bundle = new Bundle();
         bundle.putString("preference_key", key);
         bundle.putString("preference_type", type.getCanonicalName());
