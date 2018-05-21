@@ -3,6 +3,7 @@ package io.lerk.lrkFM.activities;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
@@ -11,6 +12,7 @@ import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.jraf.android.alibglitch.GlitchEffect;
 
@@ -177,7 +179,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     private static void setOnPreferenceChangeListener(Preference p) {
         p.setOnPreferenceChangeListener((preference, newValue) -> {
-
+            if(preference.getKey().equals("filename_length")) {
+                if (Integer.parseInt(String.valueOf(newValue)) >= 4) {
+                    return true;
+                } else {
+                    Toast.makeText(preference.getContext(), R.string.err_filename_length_lower_than_four, Toast.LENGTH_LONG).show();
+                    ((EditTextPreference) preference).setText("4");
+                    return true;
+                }
+            }
             PreferenceEntity preferenceEntity = PreferenceEntity.determineByKey(preference.getKey());
             if (preferenceEntity != null) {
                 if (newValue instanceof Boolean) {

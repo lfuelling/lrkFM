@@ -136,4 +136,5 @@
     <string name="pref_cat_notifications">Notification</string>
     <string name="pref_update_notification_desc">Shows a notification when a new version is available on the PlayStore.</string>
     <string name="pref_update_notification_title">Update Notification</string>
+    <string name="err_filename_length_lower_than_four">Error: Maximum filename length must be higher than four characters. It was set to this value.</string>
 </resources>

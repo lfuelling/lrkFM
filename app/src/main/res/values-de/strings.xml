@@ -110,7 +110,7 @@
     <string name="pref_header_analytics">Analytics</string>
     <string name="pref_cat_toasts">Toasts</string>
     <string name="pref_crash_reporting_toast">Crashreports</string>
-    <string name="pref_crash_reporting_desc">Nur zur Kenntnisnahme. (kann für keine Google Play app abgeschaltet werden)</string>
+    <string name="pref_crash_reporting_desc">Nur zur Kenntnisnahme. (Kann für keine Google Play App abgeschaltet werden)</string>
     <string name="pref_performance_reporting_title">Performancereports</string>
     <string name="pref_performance_reporting_desc">Protokolliert die Dauer mancher Vorgänge (z.B. Archive erstellen oder entpacken, etc.)</string>
     <string name="pref_zips_explorable">Archivinhalt standardmäßig anzeigen</string>
@@ -123,4 +123,5 @@
     <string name="pref_cat_notifications">Benachrichtigungen</string>
     <string name="pref_update_notification_desc">Zeigt eine Benachrichtigung an, wenn ein neues Update im PlayStore verfügbar ist.</string>
     <string name="pref_update_notification_title">Updatebenachrichtigung</string>
+    <string name="err_filename_length_lower_than_four">Fehler: Die maximale Länge der Dateinamen muss größer als vier sein. Der Wert wurde auf diese Zahl gesetzt.</string>
 </resources>
