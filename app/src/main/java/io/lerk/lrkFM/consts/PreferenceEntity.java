@@ -44,7 +44,7 @@ public enum PreferenceEntity {
     /**
      * If performance monitoring is allowed.
      */
-    PERFORMANCE_REPORTING(Store.LOCAL, "performance_reporting", true),
+    PERFORMANCE_REPORTING(Store.LOCAL, "performance_reporting", false),
 
     /**
      * If zip files should be explorable
