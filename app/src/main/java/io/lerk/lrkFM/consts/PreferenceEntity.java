@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import java.util.HashSet;
 
 import io.lerk.lrkFM.LrkFMApp;
-import io.lerk.lrkFM.LrkFMBackupAgent;
 import io.lerk.lrkFM.util.PrefUtils;
 import io.lerk.lrkFM.R;
 
@@ -40,11 +39,6 @@ public enum PreferenceEntity {
      * If the backup quota is exceeded.
      */
     BACKUP_QUOTA_EXCEEDED(Store.LOCAL, "backup_quota_exceeded", false),
-
-    /**
-     * If performance monitoring is allowed.
-     */
-    PERFORMANCE_REPORTING(Store.LOCAL, "performance_reporting", false),
 
     /**
      * If zip files should be explorable

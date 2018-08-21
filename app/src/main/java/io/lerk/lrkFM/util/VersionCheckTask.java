@@ -28,8 +28,8 @@ public class VersionCheckTask extends AsyncTask<Void, String, String> {
         try {
             Document document = Jsoup.connect("https://play.google.com/store/apps/details?id=io.lerk.lrkFM&hl=en")
                     .timeout(30000)
-                    .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                    .referrer("https://www.google.com")
+                    .userAgent("Mozilla/5.0 (Linux; Android;) JSoup/1.8.3")
+                    .referrer("https://play.google.com/store/apps/details?id=io.lerk.lrkFM")
                     .get();
             if (document != null) {
                 Elements element = document.getElementsContainingOwnText("Current Version");

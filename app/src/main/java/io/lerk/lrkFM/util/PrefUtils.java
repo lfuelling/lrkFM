@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
-
-import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -103,9 +100,7 @@ public class PrefUtils<T> {
      */
     private Boolean returnBooleanValueCheckForDebug() {
         if (BuildConfig.DEBUG) {
-            if(preference.equals(PreferenceEntity.PERFORMANCE_REPORTING)) {
-                return Boolean.FALSE; // Disable performance monitoring in debug mode
-            } else if(preference.equals(PreferenceEntity.FIRST_START)) {
+            if(preference.equals(PreferenceEntity.FIRST_START)) {
                 return Boolean.TRUE; // In debug, every start is a firstStart
             }
         }
@@ -136,16 +131,12 @@ public class PrefUtils<T> {
     }
 
     /**
-     * Does logging and analytics.
+     * Does logging.
      *
      * @param e The {@link ClassCastException}
      */
     private void handleError(ClassCastException e) {
         Log.e(TAG, "Unable to cast preference '" +
                 key + "' to " + type.getCanonicalName(), e);
-        Bundle bundle = new Bundle();
-        bundle.putString("preference_key", key);
-        bundle.putString("preference_type", type.getCanonicalName());
-        FirebaseAnalytics.getInstance(context).logEvent("unable_to_cast_preference", bundle);
     }
 }

@@ -9,17 +9,21 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
 
 public enum FileType {
+    // known archives
     ARCHIVE_RAR(R.string.type_rar, "rar"),
     ARCHIVE_ZIP(R.string.type_zip, "zip"),
     ARCHIVE_TAR(R.string.type_tar, "tar"),
     ARCHIVE_P7Z(R.string.type_p7z, "7z"),
     ARCHIVE_TGZ(R.string.type_tgz, "gz"),
+    //
+
     UNKNOWN(R.string.type_unknown, "");
 
     public static  final String TAG = FileType.class.getName();
 
     private final String extension;
     private final int i18n;
+    private String fileExtension = null;
 
     private Handler<FMFile> handler = new Handler<FMFile>() {
         @Override
@@ -51,6 +55,24 @@ public enum FileType {
     }
 
     public String getMimeType() {
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(this.getExtension());
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(this.getFileExtension());
+    }
+
+    public String getFileExtension() {
+            return fileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
+    }
+
+    /**
+     * Setter for fileExtension that returns this.
+     * @param fileExtension {@link #fileExtension}
+     * @return this
+     */
+    public FileType withExtension(String fileExtension) {
+        setFileExtension(fileExtension);
+        return this;
     }
 }

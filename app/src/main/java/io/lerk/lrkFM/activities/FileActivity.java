@@ -38,8 +38,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
-
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -51,7 +49,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.HistoryEntry;
@@ -192,11 +189,6 @@ public class FileActivity extends AppCompatActivity
     private EditablePair<Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
 
     /**
-     * Analytics n'such.
-     */
-    private FirebaseAnalytics analytics;
-
-    /**
      * The {@link ArchiveUtil}.
      */
     public ArchiveUtil archiveUtil;
@@ -250,14 +242,12 @@ public class FileActivity extends AppCompatActivity
 
         context = new WeakReference<>(this);
 
-        analytics = FirebaseAnalytics.getInstance(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         PrefUtils<Boolean> firstStartPref = new PrefUtils<>(FIRST_START);
         if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
             firstStartPref.setValue(false);
         } else if (firstStartPref.getValue()) {
-            analytics.logEvent("first_start", new Bundle());
             startActivity(new Intent(this, IntroActivity.class));
             finish();
         }
@@ -418,7 +408,6 @@ public class FileActivity extends AppCompatActivity
      * @param bookmarks the bookmarks
      */
     private void addBookmarkToMenu(Menu menu, String s, Set<String> bookmarks) {
-        FirebaseAnalytics.getInstance(this).logEvent("bookmark_created", new Bundle());
         String title = getTitleFromPath(s);
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
         item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
@@ -963,7 +952,6 @@ public class FileActivity extends AppCompatActivity
      * Opens the bug report page.
      */
     private void launchBugReportTab() {
-        logEvent("report_bug", new Bundle());
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setToolbarColor(getColor(R.color.primary));
         CustomTabsIntent build = builder.build();
@@ -975,7 +963,6 @@ public class FileActivity extends AppCompatActivity
      */
     @SuppressLint("ApplySharedPref")
     private void promptAndAddBookmark() {
-        logEvent("add_bookmark", new Bundle());
         Set<String> stringSet = new PrefUtils<HashSet<String>>(BOOKMARKS).getValue();
         if (new PrefUtils<Boolean>(BOOKMARK_CURRENT_FOLDER).getValue()) {
             stringSet.add(currentDirectory);
@@ -1004,7 +991,6 @@ public class FileActivity extends AppCompatActivity
      * @see #loadDirectory(String)
      */
     private void promptAndLoadPath() {
-        logEvent("open_path_prompt", new Bundle());
         AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
         bookmarkDialogBuilder
                 .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Cancel pressed!"))
@@ -1045,16 +1031,6 @@ public class FileActivity extends AppCompatActivity
 
     public EditablePair<Operation, ArrayList<FMFile>> getFileOpContext() {
         return fileOpContext;
-    }
-
-    /**
-     * Logs event with Firebase.
-     *
-     * @param label  the label
-     * @param bundle the event content
-     */
-    public void logEvent(String label, Bundle bundle) {
-        analytics.logEvent(label, bundle);
     }
 
     public static FileActivity get() {

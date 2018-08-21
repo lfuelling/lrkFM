@@ -6,8 +6,6 @@ import android.content.Context;
 import android.os.Build;
 import android.support.multidex.MultiDexApplication;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 

@@ -157,7 +157,7 @@ public class ContextMenuUtil {
     private void addShareToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_SHARE, 0, activity.getString(R.string.share)).setOnMenuItemClickListener(i -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("*/*");
+            intent.setType(f.getFileType().getMimeType());
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f.getFile()));
             activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.share_file)));
             return true;

@@ -88,12 +88,13 @@ public class FMFile {
     }
 
     public FileType getFileType() {
-        for (FileType fileType : Arrays.asList(FileType.values())) {
-            if (fileType.getExtension().equals(getExtension())) {
-                return fileType;
+        String extension = getExtension();
+        for (FileType fileType : FileType.values()) {
+            if (fileType.getExtension().equals(extension)) {
+                return fileType.withExtension(extension);
             }
         }
-        return FileType.UNKNOWN;
+        return FileType.UNKNOWN.withExtension(extension);
     }
 
     public boolean isArchive() {
