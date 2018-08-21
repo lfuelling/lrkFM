@@ -10,9 +10,6 @@ android:
   - addon-google_apis-google-27
   - addon-google_apis-google-24
   - sys-img-armeabi-v7a-android-24
-before_install:
-- openssl aes-256-cbc -K $encrypted_54b4757d8d03_key -iv $encrypted_54b4757d8d03_iv
-  -in google-services.json.enc -out app/google-services.json -d
 env:
   global:
   - secure: HVxNEYS6IGjmjrTpcAyODGUPjlpDN1QOWTkB26MPIzZf9LICifWyRircrYmb4LzRc6FQrRK2qi8v9r+NlNdkMLCnFC2bZNDfROsGB6E/qDoAJ10EsxiZS+LNJ3pUcJETnoesP9R45lhv0NKwkFqf9UaIRiJ+8h6d7AMhMNRdRU+iLVJHRcIzlTev88ueLT7cLat4UYXCBPDAfjdQ1ldIL+ELKPoAdper7Yy0GEv5kNHWi8x8BwJw9rsNpNJVUER099hFsz4SverwmLl+5FaNjKTLHf+2qGqYgpRl9Yz7Jn0sFTSFBNLepDgqJi/8DzpP3VvTbQYxEqVGhp2HMSb2OLlc0hYGjR0T8l0K+4Zw8O7uT77GueGXzTW0aPpAFO+j6uK8VAl/P33YaEXAevwe/GQnQh5HBBEuE0CW62mWQeCGMl7XCMjmRwUEMp0/dnhYaztOwch367kh5ATUfw14PrN3adQm+1Jig6OFk/WSNdjGF6bmtMhFTZWs+D5KvcgxTPoidJXaSHQ3L2uud6m3JcSwW4goyOTaqdbrWcPBFr/yuD6YYohuqP42BP4qqdcn3/v+P45nAZ5aq6BFwIzIaEXhad+8NSzHVVzAvCuEm5cKE3xuZaUlIXcSMI8wnL3Ejky+mMj1MkWO1GDQlr7aBn0lSrPp2v/YILhI4DdOAz8=
