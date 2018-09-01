@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -257,12 +258,12 @@ public class FileActivity extends AppCompatActivity
                     FMFile file = new FMFile(iFile);
                     ArchiveParentFinder parentFinder = new ArchiveParentFinder(file.getFile().getAbsolutePath()).invoke();
                     FMArchive archiveToExtract = null;
-                    if(!file.isArchive() && parentFinder.isArchive()) {
+                    if (!file.isArchive() && parentFinder.isArchive()) {
                         archiveToExtract = parentFinder.getArchiveFile();
-                    } else if(file.isArchive()) {
+                    } else if (file.isArchive()) {
                         archiveToExtract = new FMArchive(file.getFile());
                     }
-                    if(archiveToExtract != null) {
+                    if (archiveToExtract != null) {
                         if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS).getValue()) {
                             addFileToOpContext(EXTRACT, archiveToExtract);
                             if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
@@ -270,7 +271,7 @@ public class FileActivity extends AppCompatActivity
                             }
 
                             PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
-                            if(alwaysExtractInCurrentPref.getValue()) {
+                            if (alwaysExtractInCurrentPref.getValue()) {
                                 finishFileOperation();
                             } else {
                                 new AlertDialog.Builder(this)
@@ -289,7 +290,7 @@ public class FileActivity extends AppCompatActivity
                                     (d) -> new ArchiveExtractionTask(this, ((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), finalArchiveToExtract, success -> {
                                         clearFileOpCache();
                                         reloadCurrentDirectory();
-                                        if(!success) {
+                                        if (!success) {
                                             Toast.makeText(FileActivity.this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
                                         }
                                     }).execute(),
@@ -612,8 +613,16 @@ public class FileActivity extends AppCompatActivity
             errorText.setVisibility(GONE);
             emptyText.setVisibility(GONE);
 
-            arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
-            fileListView.setAdapter(arrayAdapter);
+
+
+            if (arrayAdapter == null || !currentDirectory.equals(path)) { // only keep scroll position when refreshing current folder
+                arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
+                fileListView.setAdapter(arrayAdapter);
+            } else {
+                ((BaseArrayAdapter) fileListView.getAdapter()).clear();
+                ((BaseArrayAdapter) fileListView.getAdapter()).addAll(files);
+                ((BaseArrayAdapter) fileListView.getAdapter()).notifyDataSetChanged();
+            }
         } catch (NoAccessException e) {
             Log.w(TAG, "Can't read '" + path + "': Permission denied!");
             fileListView.setVisibility(GONE);
@@ -893,7 +902,7 @@ public class FileActivity extends AppCompatActivity
                     files.forEach((f) -> new ArchiveExtractionTask(this, currentDirectory, f, success -> {
                         clearFileOpCache();
                         reloadCurrentDirectory();
-                        if(!success) {
+                        if (!success) {
                             Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
                         }
                     }).execute());
@@ -902,7 +911,7 @@ public class FileActivity extends AppCompatActivity
                         new ArchiveExtractionTask(this, currentDirectory, f, success -> {
                             clearFileOpCache();
                             reloadCurrentDirectory();
-                            if(!success) {
+                            if (!success) {
                                 Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
                             }
                         }).execute();
@@ -931,7 +940,7 @@ public class FileActivity extends AppCompatActivity
                                 builder.setOnDismissListener(dialogInterface -> new ArchiveCreationTask(this, files, destination, success -> {
                                     clearFileOpCache();
                                     reloadCurrentDirectory();
-                                    if(!success) {
+                                    if (!success) {
                                         Toast.makeText(this, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
                                     }
                                 }).execute()).show();
@@ -939,7 +948,7 @@ public class FileActivity extends AppCompatActivity
                                 new ArchiveCreationTask(this, files, destination, success -> {
                                     clearFileOpCache();
                                     reloadCurrentDirectory();
-                                    if(!success) {
+                                    if (!success) {
                                         Toast.makeText(this, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
                                     }
                                 }).execute();
