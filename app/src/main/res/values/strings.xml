@@ -141,5 +141,5 @@
     <string name="extracting_detail">Extracting:</string>
     <string name="creating">Creating…</string>
     <string name="creating_detail">Creating:</string>
-    <string name="unable_to_extract_archive">Unable to extract archive!</string>
+    <string name="unable_to_extract_archive">Unable to extract archive! Is (one of) the destination(s) already existing?</string>
 </resources>

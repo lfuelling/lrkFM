@@ -80,6 +80,7 @@ import static io.lerk.lrkFM.consts.Operation.CREATE_ZIP;
 import static io.lerk.lrkFM.consts.Operation.EXTRACT;
 import static io.lerk.lrkFM.consts.Operation.MOVE;
 import static io.lerk.lrkFM.consts.Operation.NONE;
+import static io.lerk.lrkFM.consts.PreferenceEntity.ALWAYS_EXTRACT_IN_CURRENT_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARKS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_CURRENT_FOLDER;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_EDIT_MODE;
@@ -89,6 +90,7 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.HOME_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
 import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
+import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
 import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 import static io.lerk.lrkFM.util.VersionCheckTask.NEW_VERSION_NOTIF;
@@ -236,17 +238,69 @@ public class FileActivity extends AppCompatActivity
         loadHomeDir();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
         if (intent.getDataString() != null) {
             if (!intent.getDataString().isEmpty()) {
-                File file = new File(intent.getDataString());
-                if (file.exists()) {
-                    //TODO: handle archive detection and extraction dialog
-                    //TODO: maybe turn extracting into an activity?
-                    //TODO: https://stackoverflow.com/a/2700683/1979736
+                File iFile;
+                try {
+                    iFile = new File(Uri.decode(intent.getDataString().split("://")[1]));
+                } catch (IndexOutOfBoundsException e) {
+                    iFile = new File(Uri.decode(intent.getDataString()));
+                }
+                if (iFile.exists()) {
+                    FMFile file = new FMFile(iFile);
+                    ArchiveParentFinder parentFinder = new ArchiveParentFinder(file.getFile().getAbsolutePath()).invoke();
+                    FMArchive archiveToExtract = null;
+                    if(!file.isArchive() && parentFinder.isArchive()) {
+                        archiveToExtract = parentFinder.getArchiveFile();
+                    } else if(file.isArchive()) {
+                        archiveToExtract = new FMArchive(file.getFile());
+                    }
+                    if(archiveToExtract != null) {
+                        if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS).getValue()) {
+                            addFileToOpContext(EXTRACT, archiveToExtract);
+                            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+                                Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
+                            }
+
+                            PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
+                            if(alwaysExtractInCurrentPref.getValue()) {
+                                finishFileOperation();
+                            } else {
+                                new AlertDialog.Builder(this)
+                                        .setView(R.layout.layout_extract_now_prompt)
+                                        .setPositiveButton(R.string.yes, (dialog, which) -> finishFileOperation())
+                                        .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
+                                        .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                            }
+                        } else {
+                            final FMFile finalArchiveToExtract = archiveToExtract; // 👀
+                            AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
+                                    R.string.extract,
+                                    R.string.op_destination,
+                                    R.drawable.ic_present_to_all_black_24dp,
+                                    R.layout.layout_path_prompt,
+                                    (d) -> new ArchiveExtractionTask(this, ((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), finalArchiveToExtract, success -> {
+                                        clearFileOpCache();
+                                        reloadCurrentDirectory();
+                                        if(!success) {
+                                            Toast.makeText(FileActivity.this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
+                                        }
+                                    }).execute(),
+                                    (d) -> Log.d(TAG, "Cancelled."));
+                            alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(finalArchiveToExtract, alertDialog));
+                            alertDialog.show();
+                        }
+                    } else {
+                        Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
+                    }
+                    reloadCurrentDirectory();
                 }
             }
         }

@@ -124,4 +124,9 @@
     <string name="pref_update_notification_desc">Zeigt eine Benachrichtigung an, wenn ein neues Update im PlayStore verfügbar ist.</string>
     <string name="pref_update_notification_title">Updatebenachrichtigung</string>
     <string name="err_filename_length_lower_than_four">Fehler: Die maximale Länge der Dateinamen muss größer als vier sein. Der Wert wurde auf diese Zahl gesetzt.</string>
+    <string name="extracting">Entpacken…</string>
+    <string name="extracting_detail">Entpacke:</string>
+    <string name="creating">Erstellen…</string>s
+    <string name="creating_detail">Erstelle:</string>
+    <string name="unable_to_extract_archive">Konnte Archiv nicht entpacken! Existiert das Ziel bereits?</string>
 </resources>
