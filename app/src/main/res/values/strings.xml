@@ -142,4 +142,7 @@
     <string name="creating">Creating…</string>
     <string name="creating_detail">Creating:</string>
     <string name="unable_to_extract_archive">Unable to extract archive! Is (one of) the destination(s) already existing?</string>
+    <string name="open_with">Open With…</string>
+    <string name="choose_application">Choose Application…</string>
+    <string name="only_one_app_to_handle_file">Only one app to handle this file found!</string>
 </resources>

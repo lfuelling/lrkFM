@@ -129,4 +129,7 @@
     <string name="creating">Erstellen…</string>s
     <string name="creating_detail">Erstelle:</string>
     <string name="unable_to_extract_archive">Konnte Archiv nicht entpacken! Existiert das Ziel bereits?</string>
+    <string name="open_with">Öffnen mit…</string>
+    <string name="choose_application">Anwendung auswählen…</string>
+    <string name="only_one_app_to_handle_file">Es konnte nur eine Anwendung gefunden werden, die diesen Dateityp unterstützt!</string>
 </resources>

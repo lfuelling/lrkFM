@@ -1,10 +1,12 @@
 package io.lerk.lrkFM.util;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import io.lerk.lrkFM.EditablePair;
@@ -20,6 +23,7 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
+import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.tasks.ArchiveCreationTask;
 import io.lerk.lrkFM.tasks.ArchiveExtractionTask;
@@ -33,6 +37,7 @@ import static io.lerk.lrkFM.consts.Operation.MOVE;
 import static io.lerk.lrkFM.consts.PreferenceEntity.ALWAYS_EXTRACT_IN_CURRENT_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.consts.PreferenceEntity.ZIPS_EXPLORABLE;
 import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 
 /**
@@ -50,6 +55,7 @@ public class ContextMenuUtil {
     private static final int ID_ADD_TO_ZIP = 7;
     private static final int ID_CREATE_ZIP = 8;
     private static final int ID_EXPLORE = 9;
+    private static final int ID_OPEN_WITH = 10;
 
     private static final String TAG = ContextMenuUtil.class.getCanonicalName();
     private final FileActivity activity;
@@ -78,6 +84,7 @@ public class ContextMenuUtil {
         addCopyPathToMenu(f, menu);
         addCreateZipToMenu(f, menu);
         addExploreToMenu(f, menu);
+        addOpenWithToMenu(f, menu);
     }
 
     /**
@@ -345,5 +352,27 @@ public class ContextMenuUtil {
             activity.loadPath(f.getAbsolutePath());
             return true;
         }).setVisible(f.isArchive());
+    }
+
+    private void addOpenWithToMenu(FMFile f, ContextMenu menu) {
+        menu.add(0, ID_OPEN_WITH, 0, activity.getString(R.string.open_with)).setOnMenuItemClickListener(item -> {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            String mimeType = f.getFileType().getMimeType();
+            i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            Intent chooser = Intent.createChooser(i, activity.getString(R.string.choose_application));
+
+            if (i.resolveActivity(activity.getPackageManager()) != null) {
+                if(activity.getPackageManager().queryIntentActivities(i, 0).size() == 1) {
+                    Toast.makeText(activity, R.string.only_one_app_to_handle_file, LENGTH_SHORT).show();
+                }
+                activity.startActivity(chooser);
+            } else {
+                Toast.makeText(activity, R.string.no_app_to_handle_file, LENGTH_SHORT).show();
+            }
+
+            return true;
+        }).setVisible(!f.isDirectory());
     }
 }
