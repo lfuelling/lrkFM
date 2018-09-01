@@ -24,7 +24,7 @@ public class ArchiveUtil {
 
     private static final String TAG = ArchiveUtil.class.getCanonicalName();
 
-    boolean doExtractArchive(String path, FMFile f) {
+    public boolean doExtractArchive(String path, FMFile f) {
         AtomicBoolean result = new AtomicBoolean(false);
 
         FileType fileType = f.getFileType();
@@ -81,7 +81,7 @@ public class ArchiveUtil {
         return result.get();
     }
 
-    boolean doCreateZip(ArrayList<FMFile> files, File destination) {
+    public boolean doCreateZip(ArrayList<FMFile> files, File destination) {
         try {
             FileOutputStream fos = new FileOutputStream(destination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);

@@ -21,8 +21,8 @@ import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.op.ArchiveCreationTask;
-import io.lerk.lrkFM.op.ArchiveExtractionTask;
+import io.lerk.lrkFM.tasks.ArchiveCreationTask;
+import io.lerk.lrkFM.tasks.ArchiveExtractionTask;
 import io.lerk.lrkFM.op.OperationUtil;
 
 import static android.widget.Toast.LENGTH_SHORT;
