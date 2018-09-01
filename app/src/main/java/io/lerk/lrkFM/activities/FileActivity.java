@@ -54,6 +54,8 @@ import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.HistoryEntry;
 import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
 import io.lerk.lrkFM.exceptions.NoAccessException;
+import io.lerk.lrkFM.op.ArchiveCreationTask;
+import io.lerk.lrkFM.op.ArchiveExtractionTask;
 import io.lerk.lrkFM.op.ArchiveUtil;
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
@@ -72,6 +74,7 @@ import io.lerk.lrkFM.util.VersionCheckTask;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.LrkFMApp.CHANNEL_ID;
 import static io.lerk.lrkFM.consts.Operation.COPY;
 import static io.lerk.lrkFM.consts.Operation.CREATE_ZIP;
@@ -88,6 +91,7 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
 import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 import static io.lerk.lrkFM.util.VersionCheckTask.NEW_VERSION_NOTIF;
 
 public class FileActivity extends AppCompatActivity
@@ -189,11 +193,6 @@ public class FileActivity extends AppCompatActivity
     private EditablePair<Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
 
     /**
-     * The {@link ArchiveUtil}.
-     */
-    public ArchiveUtil archiveUtil;
-
-    /**
      * The {@link OperationUtil}.
      */
     public OperationUtil operationUtil;
@@ -204,6 +203,11 @@ public class FileActivity extends AppCompatActivity
      * @see Intent#hasExtra(String)
      */
     public static final String FIRST_START_EXTRA = "firstStartDone";
+
+    /**
+     * 👀
+     */
+    public static final String WHITESPACE = " ";
 
     /**
      * Getter for the fileListView.
@@ -231,6 +235,22 @@ public class FileActivity extends AppCompatActivity
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         loadHomeDir();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getDataString() != null) {
+            if (!intent.getDataString().isEmpty()) {
+                File file = new File(intent.getDataString());
+                if (file.exists()) {
+                    //TODO: handle archive detection and extraction dialog
+                    //TODO: maybe turn extracting into an activity?
+                    //TODO: https://stackoverflow.com/a/2700683/1979736
+                }
+            }
+        }
     }
 
     /**
@@ -265,7 +285,6 @@ public class FileActivity extends AppCompatActivity
             builder.detectCleartextNetwork();
         }
 
-        archiveUtil = new ArchiveUtil(this);
         operationUtil = new OperationUtil(this);
 
         StrictMode.setVmPolicy(builder.build());
@@ -661,7 +680,7 @@ public class FileActivity extends AppCompatActivity
             }
         }
         if (new PrefUtils<Boolean>(SHOW_TOAST).getValue()) {
-            Toast.makeText(this, getText(R.string.toast_cd_new_dir) + " " + currentDirectory, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.toast_cd_new_dir) + WHITESPACE + currentDirectory, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -818,10 +837,22 @@ public class FileActivity extends AppCompatActivity
                 }
             } else if (operation.equals(EXTRACT)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    files.forEach((f) -> archiveUtil.extractArchive(currentDirectory, f));
+                    files.forEach((f) -> new ArchiveExtractionTask(this, currentDirectory, f, success -> {
+                        clearFileOpCache();
+                        reloadCurrentDirectory();
+                        if(!success) {
+                            Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
+                        }
+                    }).execute());
                 } else { // -_-
                     for (FMFile f : files) {
-                        archiveUtil.extractArchive(currentDirectory, f);
+                        new ArchiveExtractionTask(this, currentDirectory, f, success -> {
+                            clearFileOpCache();
+                            reloadCurrentDirectory();
+                            if(!success) {
+                                Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
+                            }
+                        }).execute();
                     }
                 }
             } else if (operation.equals(CREATE_ZIP)) {
@@ -830,7 +861,37 @@ public class FileActivity extends AppCompatActivity
                         R.string.op_destination,
                         R.drawable.ic_archive_black_24dp,
                         R.layout.layout_name_prompt,
-                        (d) -> archiveUtil.createZipFile(files, d),
+                        (d) -> {
+                            String tmpName;
+                            EditText editText = d.findViewById(R.id.destinationName);
+                            tmpName = editText.getText().toString();
+                            if (tmpName.isEmpty() || tmpName.startsWith("/")) {
+                                Toast.makeText(this, R.string.err_invalid_input_zip, LENGTH_SHORT).show();
+                                tmpName = null;
+                            } else if (!tmpName.endsWith(".zip")) {
+                                tmpName = tmpName + ".zip";
+                            }
+
+                            File destination = new File(currentDirectory + "/" + tmpName);
+                            if (destination.exists()) {
+                                AlertDialog.Builder builder = getFileExistsDialogBuilder(this);
+                                builder.setOnDismissListener(dialogInterface -> new ArchiveCreationTask(this, files, destination, success -> {
+                                    clearFileOpCache();
+                                    reloadCurrentDirectory();
+                                    if(!success) {
+                                        Toast.makeText(this, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
+                                    }
+                                }).execute()).show();
+                            } else {
+                                new ArchiveCreationTask(this, files, destination, success -> {
+                                    clearFileOpCache();
+                                    reloadCurrentDirectory();
+                                    if(!success) {
+                                        Toast.makeText(this, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
+                                    }
+                                }).execute();
+                            }
+                        },
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.show();
             } else {

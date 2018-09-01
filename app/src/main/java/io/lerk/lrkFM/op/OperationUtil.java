@@ -163,7 +163,7 @@ public class OperationUtil {
         return f.getFile().exists() && f.getFile().delete();
     }
 
-    static AlertDialog.Builder getFileExistsDialogBuilder(FileActivity context) {
+    public static AlertDialog.Builder getFileExistsDialogBuilder(FileActivity context) {
         return new AlertDialog.Builder(context)
                 .setCancelable(true)
                 .setTitle(R.string.warn_file_exists_title)

@@ -1,9 +1,6 @@
 package io.lerk.lrkFM.op;
 
-import android.app.AlertDialog;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -20,25 +17,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.consts.FileType;
 import io.lerk.lrkFM.entities.FMFile;
-
-import static android.widget.Toast.LENGTH_SHORT;
-import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 
 public class ArchiveUtil {
 
     private static final String TAG = ArchiveUtil.class.getCanonicalName();
 
-    private FileActivity context;
-
-    public ArchiveUtil(FileActivity context) {
-        this.context = context;
-    }
-
-    public boolean extractArchive(String path, FMFile f) {
+    boolean doExtractArchive(String path, FMFile f) {
         AtomicBoolean result = new AtomicBoolean(false);
 
         FileType fileType = f.getFileType();
@@ -46,7 +32,7 @@ public class ArchiveUtil {
             try {
                 InputStream is = new FileInputStream(fi.getFile());
                 ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
-                ZipEntry entry = null;
+                ZipEntry entry;
 
                 while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
 
@@ -92,39 +78,10 @@ public class ArchiveUtil {
 
         }).handle(f);
 
-        context.clearFileOpCache();
-        context.reloadCurrentDirectory();
         return result.get();
     }
 
-    public boolean createZipFile(ArrayList<FMFile> files, AlertDialog d) {
-        Log.d(TAG, "Creating ZIP...");
-
-        EditText editText = d.findViewById(R.id.destinationName);
-        String fileName = editText.getText().toString();
-        if (fileName.isEmpty() || fileName.startsWith("/")) {
-            Toast.makeText(context, R.string.err_invalid_input_zip, LENGTH_SHORT).show();
-            return false;
-        } else if (!fileName.endsWith(".zip")) {
-            fileName = fileName + ".zip";
-        }
-
-        File destination = new File(context.getCurrentDirectory() + "/" + fileName);
-        final boolean[] success = {false};
-        if (destination.exists()) {
-            AlertDialog.Builder builder = getFileExistsDialogBuilder(context);
-            final File tdest = destination; //for lambda
-            builder.setOnDismissListener(dialogInterface -> success[0] = doCreateZipNoValidation(files, tdest))
-                    .setOnCancelListener(dialogInterface -> success[0] = false).show();
-        } else {
-            success[0] = doCreateZipNoValidation(files, destination);
-        }
-        context.clearFileOpCache();
-        context.reloadCurrentDirectory();
-        return success[0];
-    }
-
-    private boolean doCreateZipNoValidation(ArrayList<FMFile> files, File destination) {
+    boolean doCreateZip(ArrayList<FMFile> files, File destination) {
         try {
             FileOutputStream fos = new FileOutputStream(destination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
@@ -135,7 +92,7 @@ public class ArchiveUtil {
             fos.close();
             return true;
         } catch (IOException e) {
-            Toast.makeText(context, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
+            Log.e(TAG, "unable to create zip file!", e);
         }
         return false;
     }

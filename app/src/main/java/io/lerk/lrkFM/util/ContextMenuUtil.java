@@ -11,6 +11,7 @@ import android.view.ContextMenu;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -20,6 +21,8 @@ import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.op.ArchiveCreationTask;
+import io.lerk.lrkFM.op.ArchiveExtractionTask;
 import io.lerk.lrkFM.op.OperationUtil;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -30,6 +33,7 @@ import static io.lerk.lrkFM.consts.Operation.MOVE;
 import static io.lerk.lrkFM.consts.PreferenceEntity.ALWAYS_EXTRACT_IN_CURRENT_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
+import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
@@ -86,7 +90,7 @@ public class ContextMenuUtil {
         menu.add(0, ID_DELETE, 0, activity.getString(R.string.delete)).setOnMenuItemClickListener(item -> {
             new AlertDialog.Builder(activity)
                     .setTitle(R.string.delete)
-                    .setMessage(activity.getString(R.string.warn_delete_msg) + f.getName() + "?")
+                    .setMessage(activity.getString(R.string.warn_delete_msg) + FileActivity.WHITESPACE + f.getName() + "?")
                     .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                     .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
                         if (!OperationUtil.deleteNoValidation(f)) {
@@ -137,7 +141,13 @@ public class ContextMenuUtil {
                                 R.string.op_destination,
                                 R.drawable.ic_present_to_all_black_24dp,
                                 R.layout.layout_path_prompt,
-                                (d) -> activity.archiveUtil.extractArchive(((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), finalArchiveToExtract),
+                                (d) -> new ArchiveExtractionTask(activity, ((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), finalArchiveToExtract, success -> {
+                                    activity.clearFileOpCache();
+                                    activity.reloadCurrentDirectory();
+                                    if(!success) {
+                                        Toast.makeText(activity, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
+                                    }
+                                }).execute(),
                                 (d) -> Log.d(TAG, "Cancelled."));
                         alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(finalArchiveToExtract, alertDialog));
                         alertDialog.show();
@@ -286,7 +296,37 @@ public class ContextMenuUtil {
                             R.string.op_destination,
                             R.drawable.ic_archive_black_24dp,
                             R.layout.layout_name_prompt,
-                            (d) -> activity.archiveUtil.createZipFile(fileOpContext.getSecond(), d),
+                            (d) -> {
+                                String tmpName;
+                                EditText editText = d.findViewById(R.id.destinationName);
+                                tmpName = editText.getText().toString();
+                                if (tmpName.isEmpty() || tmpName.startsWith("/")) {
+                                    Toast.makeText(activity, R.string.err_invalid_input_zip, LENGTH_SHORT).show();
+                                    tmpName = null;
+                                } else if (!tmpName.endsWith(".zip")) {
+                                    tmpName = tmpName + ".zip";
+                                }
+
+                                File destination = new File(activity.getCurrentDirectory() + "/" + tmpName);
+                                if (destination.exists()) {
+                                    AlertDialog.Builder builder = getFileExistsDialogBuilder(activity);
+                                    builder.setOnDismissListener(dialogInterface -> new ArchiveCreationTask(activity, fileOpContext.getSecond(), destination, success -> {
+                                        activity.clearFileOpCache();
+                                        activity.reloadCurrentDirectory();
+                                        if(!success) {
+                                            Toast.makeText(activity, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
+                                        }
+                                    }).execute()).show();
+                                } else {
+                                    new ArchiveCreationTask(activity, fileOpContext.getSecond(), destination, success -> {
+                                        activity.clearFileOpCache();
+                                        activity.reloadCurrentDirectory();
+                                        if(!success) {
+                                            Toast.makeText(activity, R.string.unable_to_create_zip_file, Toast.LENGTH_LONG).show();
+                                        }
+                                    }).execute();
+                                }
+                            },
                             (d) -> Log.d(TAG, "Cancelled."));
                     alertDialog.show();
                     activity.reloadCurrentDirectory();
