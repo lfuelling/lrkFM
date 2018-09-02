@@ -23,6 +23,8 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.consts.PreferenceEntity;
 import io.lerk.lrkFM.util.PrefUtils;
 
+import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
+
 /**
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -30,6 +32,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme((new PrefUtils<String>(THEME).getValue().equals(getString(R.string.pref_themes_value_default))) ? R.style.AppTheme : R.style.AppTheme_Dark);
         super.onCreate(savedInstanceState);
         setupActionBar();
     }

@@ -1,21 +1,7 @@
 package io.lerk.lrkFM.activities;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.test.mock.MockContext;
-import android.widget.TextView;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import io.lerk.lrkFM.R;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by lfuelling on 31.03.17.

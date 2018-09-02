@@ -95,7 +95,12 @@ public enum PreferenceEntity {
     /**
      * Unit to use in the nav drawer header.
      */
-    NAV_HEADER_UNIT(Store.CLOUD_BACKED, "nav_header_unit", "m");
+    NAV_HEADER_UNIT(Store.CLOUD_BACKED, "nav_header_unit", "m"),
+
+    /**
+     * App Theme.
+     */
+    THEME(Store.CLOUD_BACKED, "theme", "default");
 
     /**
      * The preference's key.

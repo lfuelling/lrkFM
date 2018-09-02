@@ -126,10 +126,14 @@
     <string name="err_filename_length_lower_than_four">Fehler: Die maximale Länge der Dateinamen muss größer als vier sein. Der Wert wurde auf diese Zahl gesetzt.</string>
     <string name="extracting">Entpacken…</string>
     <string name="extracting_detail">Entpacke:</string>
-    <string name="creating">Erstellen…</string>s
+    <string name="creating">Erstellen…</string>
     <string name="creating_detail">Erstelle:</string>
     <string name="unable_to_extract_archive">Konnte Archiv nicht entpacken! Existiert das Ziel bereits?</string>
     <string name="open_with">Öffnen mit…</string>
     <string name="choose_application">Anwendung auswählen…</string>
     <string name="only_one_app_to_handle_file">Es konnte nur eine Anwendung gefunden werden, die diesen Dateityp unterstützt!</string>
+    <string name="pref_themes_text_default">Standard</string>
+    <string name="pref_themes_text_dark">Dunkel</string>
+    <string name="pref_themes_desc">Ändere das Design der App.</string>
+    <string name="pref_themes_title">Farbschema</string>
 </resources>

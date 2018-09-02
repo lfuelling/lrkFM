@@ -17,4 +17,13 @@
         <item>@string/pref_sortby_value_name</item>
         <item>@string/pref_sortby_value_date</item>
     </string-array>
+
+    <string-array name="themes_texts">
+        <item>@string/pref_themes_text_default</item>
+        <item>@string/pref_themes_text_dark</item>
+    </string-array>
+    <string-array name="themes_values">
+        <item>@string/pref_themes_value_default</item>
+        <item>@string/pref_themes_value_dark</item>
+    </string-array>
 </resources>

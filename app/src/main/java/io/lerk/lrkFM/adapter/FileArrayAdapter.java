@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Objects;
 
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.consts.FileType;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.util.ContextMenuUtil;
@@ -141,7 +140,7 @@ public class FileArrayAdapter extends BaseArrayAdapter {
 
             for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
                 if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
-                    v.setBackgroundColor(activity.getColor(R.color.primary));
+                    v.setBackgroundColor(activity.getColor(R.color.default_primary));
                 }
             }
         }

@@ -1,6 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <PreferenceCategory android:title="@string/pref_cat_ui">
+        <ListPreference
+            android:defaultValue="@string/pref_themes_value_default"
+            android:entries="@array/themes_texts"
+            android:entryValues="@array/themes_values"
+            android:key="theme"
+            android:summary="@string/pref_themes_desc"
+            android:title="@string/pref_themes_title" />
         <ListPreference
             android:defaultValue="@string/pref_header_unit_default_value"
             android:entries="@array/header_units"

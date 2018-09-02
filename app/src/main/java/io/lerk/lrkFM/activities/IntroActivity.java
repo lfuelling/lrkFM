@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.util.PrefUtils;
+
+import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
 
 /**
  * Intro.
@@ -22,6 +25,7 @@ public class IntroActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme((new PrefUtils<String>(THEME).getValue().equals(getString(R.string.pref_themes_value_default))) ? R.style.AppTheme : R.style.AppTheme_Dark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
         Toolbar toolbar = findViewById(R.id.toolbar);

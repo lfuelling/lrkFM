@@ -11,7 +11,8 @@
         android:layout_marginEnd="@dimen/prompt_margin"
         android:layout_marginStart="@dimen/prompt_margin"
         android:layout_marginTop="@dimen/file_view_margin"
-        android:text="@string/path_input_hint" />
+        android:text="@string/path_input_hint"
+        android:layout_toEndOf="@id/dialogIcon"/>
 
     <EditText
         android:id="@+id/destinationPath"
@@ -22,4 +23,12 @@
         android:layout_marginEnd="@dimen/prompt_margin"
         android:layout_marginStart="@dimen/prompt_margin"
         android:inputType="textNoSuggestions"/>
+    <ImageView
+        android:id="@+id/dialogIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:tint="?android:attr/textColorPrimary"
+        android:layout_marginTop="@dimen/file_view_margin"
+        android:layout_marginStart="@dimen/file_view_margin"
+        android:contentDescription="@string/dialog_icon_desc" />
 </RelativeLayout>

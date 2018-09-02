@@ -98,7 +98,7 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
 
             for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
                 if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
-                    v.setBackgroundColor(activity.getColor(R.color.primary));
+                    v.setBackgroundColor(activity.getColor(R.color.default_primary));
                 }
             }
         }

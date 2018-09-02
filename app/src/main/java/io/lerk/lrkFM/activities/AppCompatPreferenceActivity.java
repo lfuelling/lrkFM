@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.MenuInflater;
@@ -35,6 +36,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
         return getDelegate().getSupportActionBar();
     }
 
+    @NonNull
     @Override
     public MenuInflater getMenuInflater() {
         return getDelegate().getMenuInflater();

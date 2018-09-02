@@ -145,4 +145,11 @@
     <string name="open_with">Open With…</string>
     <string name="choose_application">Choose Application…</string>
     <string name="only_one_app_to_handle_file">Only one app to handle this file found!</string>
+    <string name="pref_themes_text_default">Default</string>
+    <string name="pref_themes_text_dark">Dark</string>
+    <string translatable="false" name="pref_themes_value_default">default</string>
+    <string translatable="false" name="pref_themes_value_dark">dark</string>
+    <string name="pref_themes_desc">Set the app\'s color scheme.</string>
+    <string name="pref_themes_title">Theme</string>
+    <string name="dialog_icon_desc">Dialog icon.</string>
 </resources>

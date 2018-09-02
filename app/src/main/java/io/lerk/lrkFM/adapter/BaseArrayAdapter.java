@@ -3,6 +3,7 @@ package io.lerk.lrkFM.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import java.util.List;
 
@@ -46,6 +48,7 @@ public abstract class BaseArrayAdapter extends ArrayAdapter<FMFile> {
     }
 
     protected abstract View initUI(FMFile f);
+
     protected abstract void openFile(FMFile f);
 
     /**
@@ -97,12 +100,15 @@ public abstract class BaseArrayAdapter extends ArrayAdapter<FMFile> {
         AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(title)
-                .setIcon(icon)
                 .setCancelable(true).create();
 
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, activity.getString(positiveBtnText), (d, i) -> positiveCallBack.handle(dialog));
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (d, i) -> negativeCallBack.handle(dialog));
         dialog.setOnShowListener(dialog1 -> {
+
+            ImageView dialogIcon = dialog.findViewById(R.id.dialogIcon);
+            dialogIcon.setImageDrawable(getContext().getDrawable(icon));
+
             EditText inputField;
             if (view == R.layout.layout_name_prompt) {
                 inputField = dialog.findViewById(R.id.destinationName);

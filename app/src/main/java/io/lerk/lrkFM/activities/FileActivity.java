@@ -32,7 +32,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -90,6 +89,7 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.HEADER_PATH_LENGTH;
 import static io.lerk.lrkFM.consts.PreferenceEntity.HOME_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
+import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
 import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
@@ -312,6 +312,10 @@ public class FileActivity extends AppCompatActivity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String currentTheme = new PrefUtils<String>(THEME).getValue();
+        String defaultVal = getString(R.string.pref_themes_value_default);
+        boolean defaultOrDark = currentTheme.equals(defaultVal);
+        setTheme(defaultOrDark ? R.style.AppTheme : R.style.AppTheme_Dark);
         super.onCreate(savedInstanceState);
 
         context = new WeakReference<>(this);
@@ -325,7 +329,6 @@ public class FileActivity extends AppCompatActivity
             startActivity(new Intent(this, IntroActivity.class));
             finish();
         }
-
 
         setContentView(R.layout.activity_main);
 
@@ -612,7 +615,6 @@ public class FileActivity extends AppCompatActivity
             fileListView.setVisibility(VISIBLE);
             errorText.setVisibility(GONE);
             emptyText.setVisibility(GONE);
-
 
 
             if (arrayAdapter == null || !currentDirectory.equals(path)) { // only keep scroll position when refreshing current folder
@@ -1076,7 +1078,7 @@ public class FileActivity extends AppCompatActivity
      */
     private void launchBugReportTab() {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setToolbarColor(getColor(R.color.primary));
+        builder.setToolbarColor(getColor(R.color.default_primary));
         CustomTabsIntent build = builder.build();
         build.launchUrl(this, Uri.parse("https://github.com/lfuelling/lrkFM/issues/new"));
     }
