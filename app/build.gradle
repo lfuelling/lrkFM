@@ -12,8 +12,8 @@ android {
         applicationId "io.lerk.lrkFM"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 38
-        versionName '2.0b'
+        versionCode 40
+        versionName '2.0b2'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         dexOptions {
