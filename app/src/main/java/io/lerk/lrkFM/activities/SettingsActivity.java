@@ -9,15 +9,16 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.SwitchPreference;
-import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.jraf.android.alibglitch.GlitchEffect;
 
 import java.util.HashSet;
-import java.util.List;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.consts.PreferenceEntity;
@@ -29,11 +30,11 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme((new PrefUtils<String>(THEME).getValue().equals(getString(R.string.pref_themes_value_default))) ? R.style.AppTheme : R.style.AppTheme_Dark);
         super.onCreate(savedInstanceState);
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new GeneralPreferenceFragment()).commit();
         setupActionBar();
     }
 
@@ -41,20 +42,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
+        LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar_settings, root, false);
+        root.addView(bar, 0); // insert at top
+        bar.setNavigationOnClickListener(v -> finish());
     }
 
     /**
@@ -63,10 +54,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || UIPreferenceFragment.class.getName().equals(fragmentName);
+                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
     }
-
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
@@ -77,7 +66,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
+            addPreferencesFromResource(R.xml.preferences);
             setHasOptionsMenu(true);
 
             try {
@@ -117,26 +106,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    public static class UIPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_ui);
-            setHasOptionsMenu(true);
-            addOnPreferenceChangeListeners(this.getPreferenceScreen());
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity().getApplicationContext(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
     /**
      * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences with {@link PrefUtils}. It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}
      * This is what you get, when customizing too much stuff.
@@ -160,8 +129,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * @param p the {@link Preference}
      */
     private static void setOnPreferenceChangeListener(Preference p) {
+        if(p.getKey() != null && p.getKey().equals("mt")) {
+            p.setEnabled(false);
+            p.setOnPreferenceClickListener(null);
+        }
         p.setOnPreferenceChangeListener((preference, newValue) -> {
-            if(preference.getKey().equals("filename_length")) {
+            if (preference.getKey().equals("filename_length")) {
                 if (Integer.parseInt(String.valueOf(newValue)) >= 4) {
                     return true;
                 } else {

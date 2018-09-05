@@ -2,12 +2,6 @@
 
     <header
         android:fragment="io.lerk.lrkFM.activities.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/pref_header_general" />
-
-    <header
-        android:fragment="io.lerk.lrkFM.activities.SettingsActivity$UIPreferenceFragment"
-        android:icon="@drawable/ic_colorize_black_24dp"
-        android:title="@string/pref_header_ui" />
 
 </preference-headers>

@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM.tasks;
 
 import android.os.AsyncTask;
 
@@ -52,4 +52,6 @@ public class VersionCheckTask extends AsyncTask<Void, String, String> {
     protected void onPostExecute(String onlineVersion) {
         handler.handle(onlineVersion);
     }
+
+
 }

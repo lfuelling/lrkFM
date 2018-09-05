@@ -69,7 +69,8 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.adapter.FileArrayAdapter;
 import io.lerk.lrkFM.util.FileLoader;
-import io.lerk.lrkFM.util.VersionCheckTask;
+import io.lerk.lrkFM.tasks.VersionCheckTask;
+import io.lerk.lrkFM.util.version.VersionInfo;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -94,7 +95,7 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
 import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
-import static io.lerk.lrkFM.util.VersionCheckTask.NEW_VERSION_NOTIF;
+import static io.lerk.lrkFM.tasks.VersionCheckTask.NEW_VERSION_NOTIF;
 
 public class FileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -387,33 +388,35 @@ public class FileActivity extends AppCompatActivity
 
         if (new PrefUtils<Boolean>(UPDATE_NOTIFICATION).getValue()) {
             new VersionCheckTask(result -> {
-                String currentVersion = null;
                 try {
-                    currentVersion = FileActivity.this.getPackageManager().getPackageInfo(FileActivity.this.getPackageName(), 0).versionName;
-                    if (result != null && !result.isEmpty()) {
-                        Log.d(TAG, "Current version: '" + currentVersion + "' PlayStore version: '" + result + "'");
-                        Integer currentVersionInt = Integer.valueOf(currentVersion.replaceAll("\\.", ""));
-                        Integer onlineVersionInt = Integer.valueOf(result.replaceAll("\\.", ""));
-                        if (currentVersionInt < onlineVersionInt) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.lerk.lrkfm"));
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            PendingIntent pendingIntent = PendingIntent.getActivity(FileActivity.this.getApplicationContext(), 0, intent, 0);
-                            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(FileActivity.this, CHANNEL_ID)
-                                    .setSmallIcon(R.drawable.ic_launcher)
-                                    .setContentTitle(FileActivity.this.getText(R.string.notif_update_title))
-                                    .setContentText(FileActivity.this.getText(R.string.notif_update_content) + result)
-                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                    .setContentIntent(pendingIntent)
-                                    .setAutoCancel(true);
-                            NotificationManagerCompat.from(FileActivity.this.getApplicationContext()).notify(NEW_VERSION_NOTIF, notificationBuilder.build());
-                        }
+                    if(result != null && !result.isEmpty()) {
+                        VersionInfo.parse(v -> {
+                            if (v.getLatest().newerThan(v.getCurrent())) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.lerk.lrkfm"));
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(FileActivity.this.getApplicationContext(), 0, intent, 0);
+                                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(FileActivity.this, CHANNEL_ID)
+                                        .setSmallIcon(R.drawable.ic_launcher)
+                                        .setContentTitle(FileActivity.this.getText(R.string.notif_update_title))
+                                        .setContentText(FileActivity.this.getText(R.string.notif_update_content) + result)
+                                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                        .setContentIntent(pendingIntent)
+                                        .setAutoCancel(true);
+                                NotificationManagerCompat.from(FileActivity.this.getApplicationContext()).notify(NEW_VERSION_NOTIF, notificationBuilder.build());
+                            }
+                            Log.i(TAG, "Running version: '" + v.getCurrent() + "', latest: '" + v.getCurrent() + "'");
+                        }, FileActivity.this.getPackageManager().getPackageInfo(FileActivity.this.getPackageName(), 0).versionName, result);
+                    } else {
+                        Log.e(TAG, "Unable to fetch version!");
                     }
                 } catch (PackageManager.NameNotFoundException e) {
-                    Log.e(TAG, "Unable to get package name!", e);
+                    Log.wtf(TAG, "Unable to get package name!", e);
                 }
             }).execute();
         }
     }
+
+
 
     /**
      * Initializes the navigation drawer and it's header.
