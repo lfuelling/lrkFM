@@ -1,6 +1,7 @@
 package io.lerk.lrkFM.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import io.lerk.lrkFM.Handler;
 
 public class VersionCheckTask extends AsyncTask<Void, String, String> {
+
+    public static final String TAG = VersionCheckTask.class.getCanonicalName();
 
     public static final int NEW_VERSION_NOTIF = 42;
 
@@ -43,7 +46,7 @@ public class VersionCheckTask extends AsyncTask<Void, String, String> {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Network error while fetching version!", e);
         }
         return newVersion;
     }

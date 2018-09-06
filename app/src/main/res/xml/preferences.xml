@@ -1,5 +1,4 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <Preference android:key="mt"/> <!-- This is how you add margins/do layout shit 👀 -->
     <PreferenceCategory android:title="@string/pref_cat_ui">
         <ListPreference
             android:defaultValue="@string/pref_themes_value_default"
