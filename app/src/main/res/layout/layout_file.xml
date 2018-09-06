@@ -31,13 +31,6 @@
         android:layout_marginStart="@dimen/file_view_margin"
         android:layout_marginEnd="@dimen/file_view_margin"/>
     <TextView
-        android:id="@+id/fileSize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/fileIcon"
-        android:layout_marginTop="@dimen/file_size_margin"
-        android:text="1 MB"/>
-    <TextView
         android:layout_width="wrap_content"
         android:id="@+id/filePermissions"
         android:layout_height="wrap_content"
@@ -46,6 +39,13 @@
         android:layout_marginStart="@dimen/file_view_margin"
         android:layout_marginBottom="@dimen/file_view_margin"
         android:text="drwx"/>
+    <TextView
+        android:id="@+id/fileSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/fileIcon"
+        android:layout_alignBottom="@id/fileIcon"
+        android:text="1 MB"/>
     <ImageView
         android:id="@+id/fileIcon"
         android:layout_width="wrap_content"

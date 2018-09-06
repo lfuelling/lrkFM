@@ -389,7 +389,7 @@ public class FileActivity extends AppCompatActivity
         if (new PrefUtils<Boolean>(UPDATE_NOTIFICATION).getValue()) {
             new VersionCheckTask(result -> {
                 try {
-                    if(result != null && !result.isEmpty()) {
+                    if (result != null && !result.isEmpty()) {
                         VersionInfo.parse(v -> {
                             if (v.getLatest().newerThan(v.getCurrent())) {
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.lerk.lrkfm"));
@@ -415,7 +415,6 @@ public class FileActivity extends AppCompatActivity
             }).execute();
         }
     }
-
 
 
     /**
@@ -620,7 +619,7 @@ public class FileActivity extends AppCompatActivity
             emptyText.setVisibility(GONE);
 
 
-            if (arrayAdapter == null || !currentDirectory.equals(path)) { // only keep scroll position when refreshing current folder
+            if (arrayAdapter == null ) {
                 arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
                 fileListView.setAdapter(arrayAdapter);
             } else {
