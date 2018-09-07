@@ -11,7 +11,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -88,8 +87,8 @@ public class FMArchive extends FMFile {
     private HashMap<String, ArrayList<FMFile>> calculateArchiveContents() {
         HashMap<String, ArrayList<FMFile>> res = new HashMap<>();
         if(getFileType() != FileType.ARCHIVE_P7Z) {
-            try {
-                InputStream is = new FileInputStream(getFile());
+            try(InputStream is = new FileInputStream(getFile())) {
+
                 ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(getFileType().getExtension(), is);
                 ZipEntry entry;
                 while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
@@ -112,7 +111,6 @@ public class FMArchive extends FMFile {
                     res.put(parent, pathContents);
                 }
                 ais.close();
-                is.close();
             } catch (IOException | ArchiveException e) {
                 Log.e(TAG, "Error reading " + getFileType().getExtension());
             }

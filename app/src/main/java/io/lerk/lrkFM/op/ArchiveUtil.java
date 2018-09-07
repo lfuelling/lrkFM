@@ -32,8 +32,8 @@ public class ArchiveUtil {
         FileType fileType = f.getFileType();
         if (fileType != FileType.ARCHIVE_P7Z) {
             fileType.newHandler(fi -> {
-                try {
-                    InputStream is = new FileInputStream(fi.getFile());
+                try(InputStream is = new FileInputStream(fi.getFile())) {
+
                     ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
                     ZipEntry entry;
 
@@ -58,8 +58,7 @@ public class ArchiveUtil {
                             continue;
                         }
 
-                        FileOutputStream out = new FileOutputStream(outFile);
-                        try {
+                        try(FileOutputStream out = new FileOutputStream(outFile)) {
                             byte[] buffer = new byte[1024];
                             //noinspection UnusedAssignment
                             int length = 0;
@@ -67,9 +66,6 @@ public class ArchiveUtil {
                                 out.write(buffer, 0, length);
                                 out.flush();
                             }
-                            out.close();
-                        } catch (IOException e) {
-                            out.close();
                         }
 
                         result.set(true);
@@ -173,8 +169,7 @@ public class ArchiveUtil {
         FileType fileType = archive.getFileType();
         final String finalPath = path;
         fileType.newHandler(fi -> {
-            try {
-                InputStream is = new FileInputStream(fi.getFile());
+            try (InputStream is = new FileInputStream(fi.getFile())) {
                 ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
                 ZipEntry entry;
                 while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
