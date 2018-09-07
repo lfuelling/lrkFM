@@ -9,11 +9,28 @@ import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.op.ArchiveUtil;
 
+/**
+ * {@link android.os.AsyncTask} to be run when creating an archive.
+ */
 public class ArchiveCreationTask extends ProgressDialogBooleanCallbackTask {
 
+    /**
+     * The files to be added to the archive.
+     */
     private final ArrayList<FMFile> targets;
+
+    /**
+     * The destination archive file.
+     */
     private final File destination;
 
+    /**
+     * Constructor.
+     * @param context the current {@link FileActivity} instance.
+     * @param targets the target files
+     * @param destination the destination archive file
+     * @param callback the callback {@link Handler}
+     */
     public ArchiveCreationTask(FileActivity context, ArrayList<FMFile> targets, File destination, Handler<Boolean> callback) {
         super(context, callback);
         this.dialog.setTitle(R.string.creating);
@@ -24,6 +41,12 @@ public class ArchiveCreationTask extends ProgressDialogBooleanCallbackTask {
         this.destination = destination;
     }
 
+    /**
+     * Creates the archive.
+     * @param voids the unused params
+     * @return true if successful
+     * @see ArchiveUtil#doCreateZip(ArrayList, File)
+     */
     @Override
     protected Boolean doInBackground(Void... voids) {
         return new ArchiveUtil().doCreateZip(targets, destination);

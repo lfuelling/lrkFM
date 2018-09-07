@@ -12,18 +12,35 @@ import java.io.IOException;
 
 import io.lerk.lrkFM.Handler;
 
+/**
+ * {@link AsyncTask} that is called when the app checks for a new version.
+ */
 public class VersionCheckTask extends AsyncTask<Void, String, String> {
 
+    /**
+     * Tag for logging.
+     */
     public static final String TAG = VersionCheckTask.class.getCanonicalName();
 
+    /**
+     * Notification id.
+     */
     public static final int NEW_VERSION_NOTIF = 42;
 
+    /**
+     * The callback {@link Handler}.
+     */
     private final Handler<String> handler;
 
     public VersionCheckTask(Handler<String> handler) {
         this.handler = handler;
     }
 
+    /**
+     * Parses the version from the lrkFM PlayStore page.
+     * @param voids the void params (unused)
+     * @return the new version as string.
+     */
     @Override
     protected String doInBackground(Void... voids) {
         String newVersion = null;
@@ -51,6 +68,10 @@ public class VersionCheckTask extends AsyncTask<Void, String, String> {
         return newVersion;
     }
 
+    /**
+     * Calls the {@link Handler}.
+     * @param onlineVersion the current version.
+     */
     @Override
     protected void onPostExecute(String onlineVersion) {
         handler.handle(onlineVersion);

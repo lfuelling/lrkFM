@@ -6,11 +6,28 @@ import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.op.ArchiveUtil;
 
+/**
+ * {@link android.os.AsyncTask} that is called when there's an archive to extract.
+ */
 public class ArchiveExtractionTask extends ProgressDialogBooleanCallbackTask {
 
+    /**
+     * The destination path to extract to.
+     */
     private final String destinationPath;
+
+    /**
+     * The archive to extract.
+     */
     private final FMFile archive;
 
+    /**
+     * Constructor.
+     * @param context the current {@link FileActivity} instance
+     * @param destinationPath the destination path to extract to
+     * @param archive the archive to extract
+     * @param callback the callback {@link Handler}
+     */
     public ArchiveExtractionTask(FileActivity context, String destinationPath, FMFile archive, Handler<Boolean> callback) {
         super(context, callback);
         this.dialog.setTitle(R.string.extracting);
@@ -21,6 +38,12 @@ public class ArchiveExtractionTask extends ProgressDialogBooleanCallbackTask {
         this.archive = archive;
     }
 
+    /**
+     * Extracts the archive.
+     * @param args the void args (unused)
+     * @return true if successful.
+     * @see ArchiveUtil#doExtractArchive(String, FMFile)
+     */
     @Override
     protected Boolean doInBackground(final Void... args) {
         return new ArchiveUtil().doExtractArchive(destinationPath, archive);
