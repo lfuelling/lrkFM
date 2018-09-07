@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 
 import io.lerk.lrkFM.consts.FileType;
@@ -76,7 +77,7 @@ public class FMArchive extends FMFile {
             }
         }
 
-        return new ArrayList<>(pathContents);
+        return new ArrayList<>(Objects.requireNonNull(pathContents));
     }
 
     /**
