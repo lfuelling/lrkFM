@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,8 +49,7 @@ public class FileArrayAdapter extends BaseArrayAdapter {
             activity.loadPath(f.getAbsolutePath());
         } else {
             Intent i = new Intent(Intent.ACTION_VIEW);
-            String mimeType = f.getFileType().getMimeType();
-            i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
+            i.setDataAndType(Uri.fromFile(f.getFile()), FMFile.getMimeTypeFromFile(f));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
                 getContext().startActivity(i);

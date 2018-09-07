@@ -5,6 +5,8 @@ import android.util.Log;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 import java.io.File;
@@ -28,56 +30,88 @@ public class ArchiveUtil {
         AtomicBoolean result = new AtomicBoolean(false);
 
         FileType fileType = f.getFileType();
-        fileType.newHandler(fi -> {
-            try {
-                InputStream is = new FileInputStream(fi.getFile());
-                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
-                ZipEntry entry;
+        if (fileType != FileType.ARCHIVE_P7Z) {
+            fileType.newHandler(fi -> {
+                try {
+                    InputStream is = new FileInputStream(fi.getFile());
+                    ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
+                    ZipEntry entry;
 
-                while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
+                    while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
 
-                    if (entry.getName().endsWith("/")) {
-                        File dir = new File(path + File.separator + entry.getName());
-                        if (!dir.exists()) {
-                            //noinspection ResultOfMethodCallIgnored
-                            dir.mkdirs();
+                        if (entry.getName().endsWith("/")) {
+                            File dir = new File(path + File.separator + entry.getName());
+                            if (!dir.exists()) {
+                                //noinspection ResultOfMethodCallIgnored
+                                dir.mkdirs();
+                            }
+                            continue;
                         }
-                        continue;
-                    }
 
-                    File outFile = new File(path + File.separator + entry.getName());
+                        File outFile = new File(path + File.separator + entry.getName());
 
-                    if (outFile.isDirectory()) {
-                        continue;
-                    }
-
-                    if (outFile.exists()) {
-                        continue;
-                    }
-
-                    FileOutputStream out = new FileOutputStream(outFile);
-                    try {
-                        byte[] buffer = new byte[1024];
-                        //noinspection UnusedAssignment
-                        int length = 0;
-                        while ((length = ais.read(buffer)) > 0) {
-                            out.write(buffer, 0, length);
-                            out.flush();
+                        if (outFile.isDirectory()) {
+                            continue;
                         }
-                        out.close();
-                    } catch (IOException e){
-                        out.close();
-                    }
 
-                    result.set(true);
+                        if (outFile.exists()) {
+                            continue;
+                        }
+
+                        FileOutputStream out = new FileOutputStream(outFile);
+                        try {
+                            byte[] buffer = new byte[1024];
+                            //noinspection UnusedAssignment
+                            int length = 0;
+                            while ((length = ais.read(buffer)) > 0) {
+                                out.write(buffer, 0, length);
+                                out.flush();
+                            }
+                            out.close();
+                        } catch (IOException e) {
+                            out.close();
+                        }
+
+                        result.set(true);
+                    }
+                } catch (IOException | ArchiveException e) {
+                    Log.e(TAG, "Error extracting " + fileType.getExtension());
+                    result.set(false);
                 }
-            } catch (IOException | ArchiveException e) {
-                Log.e(TAG, "Error extracting " + fileType.getExtension());
-                result.set(false);
-            }
 
-        }).handle(f);
-
+            }).handle(f);
+        } else {
+            fileType.newHandler(fi -> {
+                SevenZFile sevenZFile;
+                try {
+                    sevenZFile = new SevenZFile(fi.getFile());
+                    SevenZArchiveEntry entry;
+                    while ((entry = sevenZFile.getNextEntry()) != null) {
+                        if (entry.isDirectory()) {
+                            continue;
+                        }
+                        File curfile = new File(path, entry.getName());
+                        File parent = curfile.getParentFile();
+                        if (!parent.exists()) {
+                            if(parent.mkdirs()) {
+                                Log.i(TAG, "Folder created: '" + parent.getAbsolutePath() + "'");
+                            } else {
+                                Log.w(TAG, "Unable to create folder: '" + parent.getAbsolutePath() + "'");
+                            }
+                        }
+                        FileOutputStream out = new FileOutputStream(curfile);
+                        byte[] content = new byte[(int) entry.getSize()];
+                        sevenZFile.read(content, 0, content.length);
+                        out.write(content);
+                        out.close();
+                    }
+                    result.set(true);
+                } catch (IOException e) {
+                    Log.e(TAG, "Error extracting " + fileType.getExtension());
+                    result.set(false);
+                }
+            }).handle(f);
+        }
         return result.get();
     }
 
@@ -126,13 +160,13 @@ public class ArchiveUtil {
 
     /**
      * @param archive the archive
-     * @param path the path (can be inside the archive)
+     * @param path    the path (can be inside the archive)
      * @return path contents
      * @deprecated use {@link io.lerk.lrkFM.entities.FMArchive}
      */
-    public ArrayList<FMFile> loadArchiveContents(FMFile archive, String path){
+    public ArrayList<FMFile> loadArchiveContents(FMFile archive, String path) {
 
-        if(path == null || path.isEmpty()) {
+        if (path == null || path.isEmpty()) {
             path = "/";
         }
         ArrayList<FMFile> res = new ArrayList<>();
@@ -145,7 +179,7 @@ public class ArchiveUtil {
                 ZipEntry entry;
                 while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
                     File outFile = new File(entry.getName());
-                    if(!entry.getName().contains(finalPath)) {
+                    if (!entry.getName().contains(finalPath)) {
                         continue;
                     }
                     res.add(new FMFile(outFile));

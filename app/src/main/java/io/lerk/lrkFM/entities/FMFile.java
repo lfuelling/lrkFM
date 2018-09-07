@@ -2,6 +2,7 @@ package io.lerk.lrkFM.entities;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.Arrays;
@@ -80,7 +81,7 @@ public class FMFile {
      */
     private String getExtension() {
         try {
-            return name.substring(name.indexOf('.') + 1, name.length());
+            return name.substring(name.indexOf('.') + 1);
         } catch (StringIndexOutOfBoundsException | ArrayIndexOutOfBoundsException e) {
             Log.e(TAG, "Unable to get file extension.", e);
             return "";
@@ -104,5 +105,16 @@ public class FMFile {
                 type.equals(FileType.ARCHIVE_TAR) ||
                 type.equals(FileType.ARCHIVE_TGZ) ||
                 type.equals(FileType.ARCHIVE_P7Z);
+    }
+
+    public static String getMimeTypeFromFile(FMFile f) {
+        String fileExtension;
+        try {
+            String[] split = f.getName().split("\\.");
+            fileExtension = split[split.length - 1];
+        } catch (IndexOutOfBoundsException e) {
+            fileExtension = "";
+        }
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
     }
 }

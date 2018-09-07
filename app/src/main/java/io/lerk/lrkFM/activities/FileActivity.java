@@ -213,6 +213,11 @@ public class FileActivity extends AppCompatActivity
     public static final String WHITESPACE = " ";
 
     /**
+     * If we currently are inside an archive.
+     */
+    private boolean exploringArchive;
+
+    /**
      * Getter for the fileListView.
      *
      * @return fileListView
@@ -619,7 +624,10 @@ public class FileActivity extends AppCompatActivity
             emptyText.setVisibility(GONE);
 
 
-            if (arrayAdapter == null ) {
+            if (arrayAdapter == null || exploringArchive) {
+                if(exploringArchive) {
+                    exploringArchive = false;
+                }
                 arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
                 fileListView.setAdapter(arrayAdapter);
             } else {
@@ -660,6 +668,7 @@ public class FileActivity extends AppCompatActivity
         ArchiveLoader loader = new ArchiveLoader(archive, path);
         View errorText = findViewById(R.id.unableToLoadText);
         View emptyText = findViewById(R.id.emptyDirText);
+        exploringArchive = true;
 
         files = loader.loadLocationFiles();
         fileListView.setVisibility(VISIBLE);

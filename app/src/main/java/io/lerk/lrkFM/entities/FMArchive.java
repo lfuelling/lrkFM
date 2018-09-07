@@ -5,15 +5,20 @@ import android.util.Log;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
+
+import io.lerk.lrkFM.consts.FileType;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
@@ -82,36 +87,63 @@ public class FMArchive extends FMFile {
      */
     private HashMap<String, ArrayList<FMFile>> calculateArchiveContents() {
         HashMap<String, ArrayList<FMFile>> res = new HashMap<>();
+        if(getFileType() != FileType.ARCHIVE_P7Z) {
+            try {
+                InputStream is = new FileInputStream(getFile());
+                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(getFileType().getExtension(), is);
+                ZipEntry entry;
+                while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
+                    String filePath;
 
-        try {
-            InputStream is = new FileInputStream(getFile());
-            ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(getFileType().getExtension(), is);
-            ZipEntry entry;
-            while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
-                String filePath;
+                    filePath = entry.getName();
 
-                filePath = entry.getName();
+                    FMArchiveFile outFile = new FMArchiveFile(new File(entry.getName()));
+                    outFile.setDirectory(entry.isDirectory());
+                    outFile.setAbsolutePath(entry.getName());
 
-                FMArchiveFile outFile = new FMArchiveFile(new File(entry.getName()));
-                outFile.setDirectory(entry.isDirectory());
-                outFile.setAbsolutePath(entry.getName());
+                    String fileParent = new File(filePath).getParent();
+                    String parent = ROOT_DIR + ((fileParent != null) ? fileParent : "");
+                    ArrayList<FMFile> pathContents = res.get(parent);
+                    if (pathContents == null) {
+                        pathContents = new ArrayList<>();
+                    }
 
-                String fileParent = new File(filePath).getParent();
-                String parent = ROOT_DIR + ((fileParent != null) ? fileParent : "");
-                ArrayList<FMFile> pathContents = res.get(parent);
-                if (pathContents == null) {
-                    pathContents = new ArrayList<>();
+                    pathContents.add(outFile);
+                    res.put(parent, pathContents);
                 }
-
-                pathContents.add(outFile);
-                res.put(parent, pathContents);
+                ais.close();
+                is.close();
+            } catch (IOException | ArchiveException e) {
+                Log.e(TAG, "Error reading " + getFileType().getExtension());
             }
-            ais.close();
-            is.close();
-        } catch (IOException | ArchiveException e) {
-            Log.e(TAG, "Error extracting " + getFileType().getExtension());
-        }
+        } else {
+            SevenZFile sevenZFile;
+            try {
+                sevenZFile = new SevenZFile(getFile());
+                SevenZArchiveEntry entry;
+                while ((entry = sevenZFile.getNextEntry()) != null) {
+                    String filePath;
 
+                    filePath = entry.getName();
+
+                    FMArchiveFile outFile = new FMArchiveFile(new File(entry.getName()));
+                    outFile.setDirectory(entry.isDirectory());
+                    outFile.setAbsolutePath(entry.getName());
+
+                    String fileParent = new File(filePath).getParent();
+                    String parent = ROOT_DIR + ((fileParent != null) ? fileParent : "");
+                    ArrayList<FMFile> pathContents = res.get(parent);
+                    if (pathContents == null) {
+                        pathContents = new ArrayList<>();
+                    }
+
+                    pathContents.add(outFile);
+                    res.put(parent, pathContents);
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Error reading " + getFileType().getExtension());
+            }
+        }
         return res;
     }
 }

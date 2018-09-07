@@ -174,7 +174,7 @@ public class ContextMenuUtil {
     private void addShareToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_SHARE, 0, activity.getString(R.string.share)).setOnMenuItemClickListener(i -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType(f.getFileType().getMimeType());
+            intent.setType(FMFile.getMimeTypeFromFile(f));
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f.getFile()));
             activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.share_file)));
             return true;
@@ -357,7 +357,7 @@ public class ContextMenuUtil {
     private void addOpenWithToMenu(FMFile f, ContextMenu menu) {
         menu.add(0, ID_OPEN_WITH, 0, activity.getString(R.string.open_with)).setOnMenuItemClickListener(item -> {
             Intent i = new Intent(Intent.ACTION_VIEW);
-            String mimeType = f.getFileType().getMimeType();
+            String mimeType = FMFile.getMimeTypeFromFile(f);
             i.setDataAndType(Uri.fromFile(f.getFile()), mimeType);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

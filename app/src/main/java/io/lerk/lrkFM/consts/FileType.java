@@ -1,5 +1,6 @@
 package io.lerk.lrkFM.consts;
 
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -32,7 +33,7 @@ public enum FileType {
         }
     };
 
-    FileType(@StringRes int i18n, String extension) {
+    FileType(@StringRes int i18n, @Nullable String extension) {
         this.i18n = i18n;
         this.extension = extension;
     }
@@ -52,10 +53,6 @@ public enum FileType {
     public FileType newHandler(Handler<FMFile> h){
         this.handler = h;
         return this;
-    }
-
-    public String getMimeType() {
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(this.getFileExtension());
     }
 
     public String getFileExtension() {
