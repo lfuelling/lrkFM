@@ -10,4 +10,5 @@
     android:background="?attr/colorPrimary"
     app:navigationIcon="@drawable/ic_close_white_24dp"
     app:title="@string/action_settings"
+    app:titleTextColor="?attr/titleTextColor"
     />
