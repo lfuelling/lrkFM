@@ -27,7 +27,7 @@ public abstract class ProgressDialogBooleanCallbackTask extends AsyncTask<Void, 
      * @param context the current {@link FileActivity} instance.
      * @param callback the callback to use.
      */
-    ProgressDialogBooleanCallbackTask(FileActivity context, Handler<Boolean> callback) {
+    public ProgressDialogBooleanCallbackTask(FileActivity context, Handler<Boolean> callback) {
         this.dialog = new ProgressDialog(context);
         this.callback = callback;
     }

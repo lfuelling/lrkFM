@@ -39,7 +39,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -54,16 +56,18 @@ import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.HistoryEntry;
 import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
 import io.lerk.lrkFM.exceptions.NoAccessException;
-import io.lerk.lrkFM.tasks.ArchiveCreationTask;
-import io.lerk.lrkFM.tasks.ArchiveExtractionTask;
+import io.lerk.lrkFM.tasks.archive.ArchiveCreationTask;
+import io.lerk.lrkFM.tasks.archive.ArchiveExtractionTask;
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
+import io.lerk.lrkFM.tasks.operation.FileCopyTask;
+import io.lerk.lrkFM.tasks.operation.FileMoveTask;
+import io.lerk.lrkFM.tasks.operation.FileOperationTask;
 import io.lerk.lrkFM.util.ArchiveLoader;
 import io.lerk.lrkFM.util.ArchiveParentFinder;
 import io.lerk.lrkFM.util.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.consts.Operation;
-import io.lerk.lrkFM.op.OperationUtil;
 import io.lerk.lrkFM.util.PrefUtils;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
@@ -93,9 +97,7 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
 import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
 import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
-import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
-import static io.lerk.lrkFM.op.OperationUtil.getFileExistsDialogBuilder;
 import static io.lerk.lrkFM.tasks.VersionCheckTask.NEW_VERSION_NOTIF;
 
 public class FileActivity extends AppCompatActivity
@@ -197,11 +199,6 @@ public class FileActivity extends AppCompatActivity
     private EditablePair<Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
 
     /**
-     * The {@link OperationUtil}.
-     */
-    public OperationUtil operationUtil;
-
-    /**
      * Extra used in {@link IntroActivity}.
      *
      * @see Intent#hasExtra(String)
@@ -271,7 +268,6 @@ public class FileActivity extends AppCompatActivity
                         archiveToExtract = new FMArchive(file.getFile());
                     }
                     if (archiveToExtract != null) {
-                        if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS).getValue()) {
                             addFileToOpContext(EXTRACT, archiveToExtract);
                             if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                                 Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
@@ -287,24 +283,6 @@ public class FileActivity extends AppCompatActivity
                                         .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
                                         .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
                             }
-                        } else {
-                            final FMFile finalArchiveToExtract = archiveToExtract; // 👀
-                            AlertDialog alertDialog = arrayAdapter.getGenericFileOpDialog(
-                                    R.string.extract,
-                                    R.string.op_destination,
-                                    R.drawable.ic_present_to_all_black_24dp,
-                                    R.layout.layout_path_prompt,
-                                    (d) -> new ArchiveExtractionTask(this, ((EditText) d.findViewById(R.id.destinationPath)).getText().toString(), finalArchiveToExtract, success -> {
-                                        clearFileOpCache();
-                                        reloadCurrentDirectory();
-                                        if (!success) {
-                                            Toast.makeText(FileActivity.this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
-                                        }
-                                    }).execute(),
-                                    (d) -> Log.d(TAG, "Cancelled."));
-                            alertDialog.setOnShowListener(d -> arrayAdapter.presetPathForDialog(finalArchiveToExtract, alertDialog));
-                            alertDialog.show();
-                        }
                     } else {
                         Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
                     }
@@ -348,8 +326,6 @@ public class FileActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             builder.detectCleartextNetwork();
         }
-
-        operationUtil = new OperationUtil(this);
 
         StrictMode.setVmPolicy(builder.build());
 
@@ -897,18 +873,18 @@ public class FileActivity extends AppCompatActivity
         if (!operation.equals(NONE) && !files.isEmpty()) {
             if (operation.equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    files.forEach((f) -> operationUtil.copy(f, null));
+                    files.forEach((f) -> new FileCopyTask(this, s -> {}, f, null).execute());
                 } else { // -_-
                     for (FMFile f : files) {
-                        operationUtil.copy(f, null);
+                        new FileCopyTask(this, s -> {}, f, null).execute();
                     }
                 }
             } else if (operation.equals(MOVE)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    files.forEach((f) -> operationUtil.move(f, null));
+                    files.forEach((f) -> new FileMoveTask(this, s -> {}, f, null).execute());
                 } else { // -_-
                     for (FMFile f : files) {
-                        operationUtil.move(f, null);
+                        new FileMoveTask(this, s -> {}, f, null).execute();
                     }
                 }
             } else if (operation.equals(EXTRACT)) {
@@ -950,7 +926,7 @@ public class FileActivity extends AppCompatActivity
 
                             File destination = new File(currentDirectory + "/" + tmpName);
                             if (destination.exists()) {
-                                AlertDialog.Builder builder = getFileExistsDialogBuilder(this);
+                                AlertDialog.Builder builder = FileOperationTask.getFileExistsDialogBuilder(this);
                                 builder.setOnDismissListener(dialogInterface -> new ArchiveCreationTask(this, files, destination, success -> {
                                     clearFileOpCache();
                                     reloadCurrentDirectory();
@@ -998,10 +974,28 @@ public class FileActivity extends AppCompatActivity
                 .create();
         newDirDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (d, i) -> {
             String newDirName = currentDirectory + File.separator + ((EditText) newDirDialog.findViewById(R.id.destinationName)).getText().toString();
-            operationUtil.newDir(new File(newDirName));
+            newDir(new File(newDirName));
             reloadCurrentDirectory();
         });
         newDirDialog.show();
+    }
+
+    void newDir(File d) {
+        if (!d.exists()) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Files.createDirectory(d.toPath());
+                } else {
+                    if (!d.mkdirs()) {
+                        Toast.makeText(this, R.string.err_unable_to_mkdir, Toast.LENGTH_LONG).show();
+                    }
+                }
+            } catch (IOException e) {
+                Log.e(TAG, getString(R.string.err_unable_to_mkdir), e);
+            }
+        } else {
+            Toast.makeText(this, R.string.err_file_exists, Toast.LENGTH_LONG).show();
+        }
     }
 
     /**

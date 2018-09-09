@@ -1,5 +1,6 @@
-package io.lerk.lrkFM.op;
+package io.lerk.lrkFM.tasks.archive;
 
+import android.os.Looper;
 import android.util.Log;
 
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -21,18 +22,22 @@ import java.util.zip.ZipOutputStream;
 
 import io.lerk.lrkFM.consts.FileType;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
-public class ArchiveUtil {
+class ArchiveUtil {
 
     private static final String TAG = ArchiveUtil.class.getCanonicalName();
 
-    public boolean doExtractArchive(String path, FMFile f) {
+    boolean doExtractArchive(String path, FMFile f) throws BlockingStuffOnMainThreadException {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw new BlockingStuffOnMainThreadException();
+        }
         AtomicBoolean result = new AtomicBoolean(false);
 
         FileType fileType = f.getFileType();
         if (fileType != FileType.ARCHIVE_P7Z) {
             fileType.newHandler(fi -> {
-                try(InputStream is = new FileInputStream(fi.getFile())) {
+                try (InputStream is = new FileInputStream(fi.getFile())) {
 
                     ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
                     ZipEntry entry;
@@ -58,7 +63,7 @@ public class ArchiveUtil {
                             continue;
                         }
 
-                        try(FileOutputStream out = new FileOutputStream(outFile)) {
+                        try (FileOutputStream out = new FileOutputStream(outFile)) {
                             byte[] buffer = new byte[1024];
                             //noinspection UnusedAssignment
                             int length = 0;
@@ -89,7 +94,7 @@ public class ArchiveUtil {
                         File curfile = new File(path, entry.getName());
                         File parent = curfile.getParentFile();
                         if (!parent.exists()) {
-                            if(parent.mkdirs()) {
+                            if (parent.mkdirs()) {
                                 Log.i(TAG, "Folder created: '" + parent.getAbsolutePath() + "'");
                             } else {
                                 Log.w(TAG, "Unable to create folder: '" + parent.getAbsolutePath() + "'");
@@ -111,7 +116,10 @@ public class ArchiveUtil {
         return result.get();
     }
 
-    public boolean doCreateZip(ArrayList<FMFile> files, File destination) {
+    boolean doCreateZip(ArrayList<FMFile> files, File destination) throws BlockingStuffOnMainThreadException {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw new BlockingStuffOnMainThreadException();
+        }
         try {
             FileOutputStream fos = new FileOutputStream(destination);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
@@ -152,37 +160,5 @@ public class ArchiveUtil {
             zos.write(bytes, 0, length);
         }
         fis.close();
-    }
-
-    /**
-     * @param archive the archive
-     * @param path    the path (can be inside the archive)
-     * @return path contents
-     * @deprecated use {@link io.lerk.lrkFM.entities.FMArchive}
-     */
-    public ArrayList<FMFile> loadArchiveContents(FMFile archive, String path) {
-
-        if (path == null || path.isEmpty()) {
-            path = "/";
-        }
-        ArrayList<FMFile> res = new ArrayList<>();
-        FileType fileType = archive.getFileType();
-        final String finalPath = path;
-        fileType.newHandler(fi -> {
-            try (InputStream is = new FileInputStream(fi.getFile())) {
-                ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
-                ZipEntry entry;
-                while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
-                    File outFile = new File(entry.getName());
-                    if (!entry.getName().contains(finalPath)) {
-                        continue;
-                    }
-                    res.add(new FMFile(outFile));
-                }
-            } catch (IOException | ArchiveException e) {
-                Log.e(TAG, "Error extracting " + fileType.getExtension());
-            }
-        }).handle(archive);
-        return res;
     }
 }

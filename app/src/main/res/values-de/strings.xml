@@ -136,4 +136,13 @@
     <string name="pref_themes_text_dark">Dunkel</string>
     <string name="pref_themes_desc">Ändere das Design der App.</string>
     <string name="pref_themes_title">Farbschema</string>
+    <string name="dialog_icon_desc">Dialog icon.</string>
+    <string name="pref_context_toasts_vibrating">Vibrierende Toasts</string>
+    <string name="pref_context_toasts_vibrating_desc">Aktiviert Vibration bei einigen Toasts.</string>
+    <string name="moving">Verschiebe…</string>
+    <string name="moving_detail">Verschiebe:</string>
+    <string name="deleting">Lösche…</string>
+    <string name="deleting_detail">Lösche:</string>
+    <string name="copying">Kopiere…</string>
+    <string name="copying_detail">Kopiere:</string>
 </resources>

@@ -1,16 +1,21 @@
-package io.lerk.lrkFM.tasks;
+package io.lerk.lrkFM.tasks.archive;
+
+import android.util.Log;
 
 import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.op.ArchiveUtil;
+import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
+import io.lerk.lrkFM.tasks.ProgressDialogBooleanCallbackTask;
+import io.lerk.lrkFM.tasks.archive.ArchiveUtil;
 
 /**
  * {@link android.os.AsyncTask} that is called when there's an archive to extract.
  */
 public class ArchiveExtractionTask extends ProgressDialogBooleanCallbackTask {
 
+    private static final String TAG = ArchiveExtractionTask.class.getCanonicalName();
     /**
      * The destination path to extract to.
      */
@@ -46,6 +51,11 @@ public class ArchiveExtractionTask extends ProgressDialogBooleanCallbackTask {
      */
     @Override
     protected Boolean doInBackground(final Void... args) {
-        return new ArchiveUtil().doExtractArchive(destinationPath, archive);
+        try {
+            return new ArchiveUtil().doExtractArchive(destinationPath, archive);
+        } catch (BlockingStuffOnMainThreadException e) {
+            Log.wtf(TAG, "This should not happen here!", e);
+            return false;
+        }
     }
 }

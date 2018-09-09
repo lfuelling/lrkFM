@@ -78,11 +78,6 @@ public enum PreferenceEntity {
     HEADER_PATH_LENGTH(Store.CLOUD_BACKED, "header_path_length", (LrkFMApp.getContext() != null) ? LrkFMApp.getContext().getString(R.string.pref_header_path_length_default) : "27"),
 
     /**
-     * If the context should be used for file ops. (Choose target by navigating)
-     */
-    USE_CONTEXT_FOR_OPS(Store.CLOUD_BACKED, "context_for_ops", true),
-
-    /**
      * If a Toast should be shown on file operation context change.
      */
     USE_CONTEXT_FOR_OPS_TOAST(Store.CLOUD_BACKED, "context_for_ops_toast", true),
