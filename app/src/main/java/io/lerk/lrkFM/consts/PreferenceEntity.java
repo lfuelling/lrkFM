@@ -100,7 +100,12 @@ public enum PreferenceEntity {
     /**
      * App Theme.
      */
-    THEME(Store.CLOUD_BACKED, "theme", "default");
+    THEME(Store.CLOUD_BACKED, "theme", "default"),
+
+    /**
+     * Vibration on some Toasts.
+     */
+    VIBRATING_TOASTS(Store.CLOUD_BACKED, "context_toasts_vibrating", true);
 
     /**
      * The preference's key.

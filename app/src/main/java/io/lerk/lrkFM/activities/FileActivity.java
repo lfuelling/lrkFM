@@ -70,6 +70,7 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.adapter.FileArrayAdapter;
 import io.lerk.lrkFM.util.FileLoader;
 import io.lerk.lrkFM.tasks.VersionCheckTask;
+import io.lerk.lrkFM.util.VibratingToast;
 import io.lerk.lrkFM.util.version.VersionInfo;
 
 import static android.view.View.GONE;
@@ -1157,7 +1158,7 @@ public class FileActivity extends AppCompatActivity
     public void addFileToOpContext(Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
             if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
-                Toast.makeText(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT).show();
+                new VibratingToast(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT);
             }
             fileOpContext.setFirst(op);
             fileOpContext.setSecond(new ArrayList<>());

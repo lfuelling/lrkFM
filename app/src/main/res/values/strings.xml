@@ -152,4 +152,6 @@
     <string name="pref_themes_desc">Set the app\'s color scheme.</string>
     <string name="pref_themes_title">Theme</string>
     <string name="dialog_icon_desc">Dialog icon.</string>
+    <string name="pref_context_toasts_vibrating">Vibrating Toasts</string>
+    <string name="pref_context_toasts_vibrating_desc">Allow vibration for some Toasts.</string>
 </resources>

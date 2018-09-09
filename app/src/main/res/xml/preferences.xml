@@ -51,6 +51,12 @@
             android:key="context_for_ops_toast"
             android:summary="@string/pref_context_for_ops_toast_desc"
             android:title="@string/pref_context_for_ops_toast" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="context_toasts_vibrating"
+            android:dependency="context_for_ops_toast"
+            android:summary="@string/pref_context_toasts_vibrating_desc"
+            android:title="@string/pref_context_toasts_vibrating" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cat_app">

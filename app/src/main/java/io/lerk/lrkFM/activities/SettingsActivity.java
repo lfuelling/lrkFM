@@ -24,7 +24,7 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.consts.PreferenceEntity;
 import io.lerk.lrkFM.util.PrefUtils;
 
-import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
+import static io.lerk.lrkFM.consts.PreferenceEntity.*;
 
 /**
  */
@@ -129,10 +129,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * @param p the {@link Preference}
      */
     private static void setOnPreferenceChangeListener(Preference p) {
-        if(p.getKey() != null && p.getKey().equals("mt")) {
-            p.setEnabled(false);
-            p.setOnPreferenceClickListener(null);
-        }
         p.setOnPreferenceChangeListener((preference, newValue) -> {
             if (preference.getKey().equals("filename_length")) {
                 if (Integer.parseInt(String.valueOf(newValue)) >= 4) {
