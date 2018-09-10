@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.entities.FMArchive;
@@ -119,9 +120,24 @@ public class FileActivity extends AppCompatActivity
     private static final String ROOT_DIR = "/";
 
     /**
-     * Keyword for {@link SharedPreferences}
+     * Keyword for {@link SharedPreferences}.
      */
     private static final String CURRENT_DIR_CACHE = "current_dir_cached";
+
+    /**
+     * Keyword for {@link Activity#onSaveInstanceState(Bundle)}.
+     */
+    private static final String STATE_KEY_CURRENT_DIR = "state_current_dir";
+
+    /**
+     * Keyword for {@link Activity#onSaveInstanceState(Bundle)}.
+     */
+    private static final String STATE_KEY_OP_CONTEXT_OP = "state_current_op";
+
+    /**
+     * Keyword for {@link Activity#onSaveInstanceState(Bundle)}.
+     */
+    private static final String STATE_KEY_OP_CONTEXT_FILES = "state_current_op_files";
 
     /**
      * The permissions we need to do our job.
@@ -223,6 +239,24 @@ public class FileActivity extends AppCompatActivity
      */
     public ListView getFileListView() {
         return fileListView;
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_KEY_CURRENT_DIR, currentDirectory);
+        outState.putString(STATE_KEY_OP_CONTEXT_OP, fileOpContext.getFirst().name());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            outState.putStringArray(STATE_KEY_OP_CONTEXT_FILES, fileOpContext.getSecond().stream()
+                    .map(FMFile::getAbsolutePath).toArray(String[]::new));
+        } else {
+            ArrayList<String> fileList = new ArrayList<>();
+            for (int i = 0; i < fileOpContext.getSecond().size(); i++) {
+                fileList.add(fileOpContext.getSecond().get(i).getAbsolutePath());
+            }
+            outState.putStringArray(STATE_KEY_OP_CONTEXT_FILES, fileList.toArray(new String[0]));
+        }
     }
 
     /**

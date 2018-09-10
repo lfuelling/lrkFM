@@ -5,7 +5,6 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Date;
 
 import io.lerk.lrkFM.consts.FileType;
