@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.MenuInflater;
 import android.view.View;
@@ -30,10 +29,6 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         getDelegate().onPostCreate(savedInstanceState);
-    }
-
-    public ActionBar getSupportActionBar() {
-        return getDelegate().getSupportActionBar();
     }
 
     @NonNull

@@ -3,7 +3,6 @@ package io.lerk.lrkFM.consts;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;

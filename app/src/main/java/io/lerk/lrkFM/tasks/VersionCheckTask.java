@@ -61,6 +61,8 @@ public class VersionCheckTask extends AsyncTask<Void, String, String> {
                         }
                     }
                 }
+            } else {
+                Log.e(TAG, "Unable to read version, document is null!");
             }
         } catch (IOException e) {
             Log.e(TAG, "Network error while fetching version!", e);

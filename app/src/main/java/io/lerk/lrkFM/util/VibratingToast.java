@@ -2,7 +2,8 @@ package io.lerk.lrkFM.util;
 
 import android.content.Context;
 import android.os.Vibrator;
-import android.widget.Toast;;import io.lerk.lrkFM.consts.PreferenceEntity;
+import android.widget.Toast;
+import io.lerk.lrkFM.consts.PreferenceEntity;
 
 /**
  * Vibrating Toast.

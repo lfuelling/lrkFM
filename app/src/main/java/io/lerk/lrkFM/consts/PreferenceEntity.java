@@ -202,7 +202,6 @@ public enum PreferenceEntity {
         /**
          * Name of the preferences.
          *
-         * @see LrkFMBackupAgent
          * @see PrefUtils
          */
         private final String name;

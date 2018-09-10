@@ -160,4 +160,5 @@
     <string name="deleting_detail">Deleting:</string>
     <string name="copying">Copying…</string>
     <string name="copying_detail">Copying:</string>
+    <string name="archive">Archive</string>
 </resources>

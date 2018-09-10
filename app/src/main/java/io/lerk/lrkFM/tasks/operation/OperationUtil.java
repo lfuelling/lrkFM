@@ -1,11 +1,9 @@
 package io.lerk.lrkFM.tasks.operation;
 
-import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 
@@ -16,8 +14,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
@@ -31,12 +27,12 @@ class OperationUtil {
     private static final String TAG = OperationUtil.class.getCanonicalName();
 
     static boolean doCopy(FMFile f, File destination) throws BlockingStuffOnMainThreadException {
-        Log.d(TAG, "Starting copy...");
+        Log.i(TAG, "Starting copy...");
         return doCopyNoValidation(f, destination);
     }
 
     static boolean doMove(FMFile f, File destination) throws BlockingStuffOnMainThreadException {
-        Log.d(TAG, "Starting move...");
+        Log.i(TAG, "Starting move...");
         return doMoveNoValidation(f, destination);
     }
 

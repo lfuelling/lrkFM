@@ -303,6 +303,8 @@ public class FileActivity extends AppCompatActivity
                     reloadCurrentDirectory();
                 }
             }
+        } else {
+            Log.e(TAG, "Unable to handle archive: intent data is null!");
         }
     }
 
@@ -718,14 +720,14 @@ public class FileActivity extends AppCompatActivity
                 files.sort(Comparator.comparing(FMFile::getName));
             } else { // FUCKING OUT OF DATE USERS >.<
                 //noinspection ComparatorCombinators,RedundantCast
-                Arrays.sort((FMFile[]) files.toArray(new FMFile[files.size()]), (o1, o2) -> o1.getName().compareTo(o2.getName()));
+                Arrays.sort((FMFile[]) files.toArray(new FMFile[0]), (o1, o2) -> o1.getName().compareTo(o2.getName()));
             }
         } else if (pref.equals(getString(R.string.pref_sortby_value_date))) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 files.sort(Comparator.comparing(FMFile::getLastModified));
             } else { // you see how beautiful the code above is?
                 //noinspection ComparatorCombinators,RedundantCast
-                Arrays.sort((FMFile[]) files.toArray(new FMFile[files.size()]), (o1, o2) -> o1.getLastModified().compareTo(o2.getLastModified()));
+                Arrays.sort((FMFile[]) files.toArray(new FMFile[0]), (o1, o2) -> o1.getLastModified().compareTo(o2.getLastModified()));
             }
         } else {
             Log.d(TAG, "This sort method is not implemented, skipping file sort!");
@@ -759,7 +761,12 @@ public class FileActivity extends AppCompatActivity
             if (!Objects.equals(currentDirectory, ROOT_DIR)) {
                 HistoryEntry entry = historyMap.get(historyCounter - 1);
                 if (entry != null && entry.isInArchive()) {
-                    toolbar.setTitle(getTitleFromPath(entry.getArchive().getAbsolutePath()));
+                    if (entry.getArchive() != null) {
+                        toolbar.setTitle(getTitleFromPath(entry.getArchive().getAbsolutePath()));
+                    } else {
+                        Log.e(TAG, "Unable to get archive path from entry: '" + entry.getPath() + "'");
+                        toolbar.setTitle(R.string.archive);
+                    }
                 }
                 toolbar.setTitle(getTitleFromPath(currentDirectory));
             } else {

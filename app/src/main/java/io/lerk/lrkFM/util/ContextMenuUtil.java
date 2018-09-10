@@ -174,7 +174,7 @@ public class ContextMenuUtil {
                     R.drawable.ic_mode_edit_black_24dp,
                     R.layout.layout_name_prompt,
                     (d) -> new FileMoveTask(activity, b -> {}, f, d).execute(),
-                    (d) -> Log.d(TAG, "Cancelled."));
+                    (d) -> Log.i(TAG, "Cancelled."));
             alertDialog.setOnShowListener(d -> arrayAdapter.presetNameForDialog(alertDialog, R.id.destinationName, f.getName()));
             alertDialog.show();
             activity.reloadCurrentDirectory();
@@ -293,12 +293,12 @@ public class ContextMenuUtil {
                                     }).execute();
                                 }
                             },
-                            (d) -> Log.d(TAG, "Cancelled."));
+                            (d) -> Log.i(TAG, "Cancelled."));
                     alertDialog.show();
                     activity.reloadCurrentDirectory();
                     return true;
                 } else {
-                    Log.w(TAG, "Illegal operation mode. Expected " + CREATE_ZIP + " but was: " + fileOpContext.getFirst());
+                    Log.e(TAG, "Illegal operation mode. Expected " + CREATE_ZIP + " but was: " + fileOpContext.getFirst());
                 }
                 return false;
             }).setVisible(fileOpContext.getFirst().equals(CREATE_ZIP));

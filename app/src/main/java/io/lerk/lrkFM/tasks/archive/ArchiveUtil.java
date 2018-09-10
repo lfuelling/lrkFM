@@ -97,7 +97,7 @@ class ArchiveUtil {
                             if (parent.mkdirs()) {
                                 Log.i(TAG, "Folder created: '" + parent.getAbsolutePath() + "'");
                             } else {
-                                Log.w(TAG, "Unable to create folder: '" + parent.getAbsolutePath() + "'");
+                                Log.e(TAG, "Unable to create folder: '" + parent.getAbsolutePath() + "'");
                             }
                         }
                         FileOutputStream out = new FileOutputStream(curfile);

@@ -3,7 +3,6 @@ package io.lerk.lrkFM.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -74,6 +73,7 @@ public abstract class BaseArrayAdapter extends ArrayAdapter<FMFile> {
      * @param alertDialog the dialog
      * @see #presetNameForDialog(AlertDialog, int, String)
      */
+    @SuppressWarnings("unused")
     public void presetPathForDialog(FMFile f, AlertDialog alertDialog) {
         presetNameForDialog(alertDialog, R.id.destinationPath, f.getFile().getAbsolutePath());
     }

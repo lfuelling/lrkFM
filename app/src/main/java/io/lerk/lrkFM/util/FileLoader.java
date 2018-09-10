@@ -92,14 +92,14 @@ public class FileLoader extends AbstractLoader {
                                 result.add(file);
                             }
                         }
-                        Log.d(TAG, "Loaded " + String.valueOf(result.size()) + " files");
+                        Log.i(TAG, "Loaded " + String.valueOf(result.size()) + " files");
                     } else {
-                        Log.d(TAG, "Directory content is null!");
+                        Log.w(TAG, "Directory content is null!");
                         throw new EmptyDirectoryException(location);
                     }
                     return result;
                 } else {
-                    Log.d(TAG, "fileList is null");
+                    Log.w(TAG, "fileList is null");
                 }
             } else {
                 throw new NoAccessException("Unable to read specified file!");
@@ -112,10 +112,10 @@ public class FileLoader extends AbstractLoader {
                 if (fmFiles != null) {
                     return fmFiles;
                 } else {
-                    Log.d(TAG, "Parent files are null.");
+                    Log.w(TAG, "Parent files are null.");
                 }
             } else {
-                Log.d(TAG, "Parent is null");
+                Log.w(TAG, "Parent is null");
             }
         }
         Log.w(TAG, "Unable to load files");

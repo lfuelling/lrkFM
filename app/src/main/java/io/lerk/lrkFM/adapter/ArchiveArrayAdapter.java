@@ -3,6 +3,7 @@ package io.lerk.lrkFM.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,6 +81,8 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
                 } else {
                     fileNameView.setText(fileName);
                 }
+            } else {
+                Log.e(TAG, "TextView fileName is null!");
             }
             if (fileImage != null) {
                 if (!f.isDirectory()) {
@@ -89,6 +92,8 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
                         fileImage.setImageDrawable(getContext().getDrawable(R.drawable.ic_insert_drive_file_black_24dp));
                     }
                 }
+            } else {
+                Log.e(TAG, "ImageView fileImage is null!");
             }
 
             v.setOnClickListener(v1 -> openFile(f));
@@ -101,6 +106,8 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
                     v.setBackgroundColor(activity.getColor(R.color.default_primary));
                 }
             }
+        } else {
+            Log.e(TAG, "File is null!");
         }
         return v;
     }

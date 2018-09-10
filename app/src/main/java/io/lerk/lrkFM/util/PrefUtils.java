@@ -2,7 +2,6 @@ package io.lerk.lrkFM.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -90,6 +89,8 @@ public class PrefUtils<T> {
             } catch (ClassCastException e) {
                 handleError(e);
             }
+        } else {
+            Log.e(TAG, "Unable to get preference: context is null!");
         }
         return null;
     }
@@ -127,6 +128,8 @@ public class PrefUtils<T> {
             } catch (ClassCastException e) {
                 handleError(e);
             }
+        } else {
+            Log.e(TAG, "Unable to get preference: context is null!");
         }
     }
 

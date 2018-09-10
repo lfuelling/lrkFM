@@ -11,7 +11,6 @@ import io.lerk.lrkFM.activities.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 import io.lerk.lrkFM.tasks.ProgressDialogBooleanCallbackTask;
-import io.lerk.lrkFM.tasks.archive.ArchiveUtil;
 
 /**
  * {@link android.os.AsyncTask} to be run when creating an archive.
