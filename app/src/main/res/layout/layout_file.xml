@@ -15,7 +15,7 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/context_menu_margin"
-        android:layout_marginEnd="@dimen/context_menu_margin"
+        android:layout_marginEnd="@dimen/context_menu_margin_end"
         android:contentDescription="@string/context_btn_desc" />
     <TextView
         android:id="@+id/fileTitle"
@@ -28,7 +28,7 @@
         android:layout_alignParentTop="true"
         android:textSize="@dimen/file_title_fs"
         android:layout_marginTop="@dimen/file_view_margin"
-        android:layout_marginStart="@dimen/file_view_margin"
+        android:layout_marginStart="@dimen/context_menu_margin_end"
         android:layout_marginEnd="@dimen/file_view_margin"/>
     <TextView
         android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/contextMenuButton"
         android:layout_below="@id/fileTitle"
-        android:layout_marginStart="@dimen/file_view_margin"
+        android:layout_marginStart="@dimen/context_menu_margin_end"
         android:layout_marginBottom="@dimen/file_view_margin"
         android:text="drwx"/>
     <TextView

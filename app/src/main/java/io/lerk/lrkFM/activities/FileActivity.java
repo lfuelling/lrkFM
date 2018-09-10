@@ -47,10 +47,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.entities.FMArchive;
@@ -274,7 +274,20 @@ public class FileActivity extends AppCompatActivity
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        loadHomeDir();
+        if(savedInstanceState != null) {
+            loadPath(savedInstanceState.getString(STATE_KEY_CURRENT_DIR));
+            Operation savedOperation = Operation.valueOf(savedInstanceState.getString(STATE_KEY_OP_CONTEXT_OP));
+            List<String> savedFilePaths = Arrays.asList(savedInstanceState.getStringArray(STATE_KEY_OP_CONTEXT_FILES));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                savedFilePaths.forEach(s -> addFileToOpContext(savedOperation, new FMFile(new File(s))));
+            } else {
+                for (int i = 0; i < savedFilePaths.size(); i++) {
+                    addFileToOpContext(savedOperation, new FMFile(new File(savedFilePaths.get(i))));
+                }
+            }
+        } else {
+            loadHomeDir();
+        }
     }
 
     /**
