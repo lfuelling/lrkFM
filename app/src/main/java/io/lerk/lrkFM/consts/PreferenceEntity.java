@@ -50,6 +50,11 @@ public enum PreferenceEntity {
      */
     UPDATE_NOTIFICATION(Store.LOCAL, "update_notification", false),
 
+    /**
+     * Cache for "multitasking".
+     */
+    CURRENT_DIR_CACHE(Store.LOCAL, "current_dir_cached", ""),
+
     // Backed up to cloud
 
     /**

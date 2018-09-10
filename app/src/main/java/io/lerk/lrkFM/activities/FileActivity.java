@@ -7,16 +7,13 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -91,9 +88,11 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.ALWAYS_EXTRACT_IN_CURRENT_DI
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARKS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_CURRENT_FOLDER;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_EDIT_MODE;
+import static io.lerk.lrkFM.consts.PreferenceEntity.CURRENT_DIR_CACHE;
 import static io.lerk.lrkFM.consts.PreferenceEntity.FIRST_START;
 import static io.lerk.lrkFM.consts.PreferenceEntity.HEADER_PATH_LENGTH;
 import static io.lerk.lrkFM.consts.PreferenceEntity.HOME_DIR;
+import static io.lerk.lrkFM.consts.PreferenceEntity.NAV_HEADER_UNIT;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
 import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
@@ -118,11 +117,6 @@ public class FileActivity extends AppCompatActivity
      * The rootfs path ('/').
      */
     private static final String ROOT_DIR = "/";
-
-    /**
-     * Keyword for {@link SharedPreferences}.
-     */
-    private static final String CURRENT_DIR_CACHE = "current_dir_cached";
 
     /**
      * Keyword for {@link Activity#onSaveInstanceState(Bundle)}.
@@ -156,11 +150,6 @@ public class FileActivity extends AppCompatActivity
      * {@link ListView} that contains the files inside the current directory.
      */
     private ListView fileListView;
-
-    /**
-     * The {@link SharedPreferences} of this app.
-     */
-    private SharedPreferences preferences;
 
     /**
      * Bookmarks.
@@ -272,28 +261,6 @@ public class FileActivity extends AppCompatActivity
      * {@inheritDoc}
      */
     @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        if(savedInstanceState != null) {
-            loadPath(savedInstanceState.getString(STATE_KEY_CURRENT_DIR));
-            Operation savedOperation = Operation.valueOf(savedInstanceState.getString(STATE_KEY_OP_CONTEXT_OP));
-            List<String> savedFilePaths = Arrays.asList(savedInstanceState.getStringArray(STATE_KEY_OP_CONTEXT_FILES));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                savedFilePaths.forEach(s -> addFileToOpContext(savedOperation, new FMFile(new File(s))));
-            } else {
-                for (int i = 0; i < savedFilePaths.size(); i++) {
-                    addFileToOpContext(savedOperation, new FMFile(new File(savedFilePaths.get(i))));
-                }
-            }
-        } else {
-            loadHomeDir();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
@@ -344,15 +311,9 @@ public class FileActivity extends AppCompatActivity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String currentTheme = new PrefUtils<String>(THEME).getValue();
-        String defaultVal = getString(R.string.pref_themes_value_default);
-        boolean defaultOrDark = currentTheme.equals(defaultVal);
-        setTheme(defaultOrDark ? R.style.AppTheme : R.style.AppTheme_Dark);
+        setThemeFromPreferences();
         super.onCreate(savedInstanceState);
-
         context = new WeakReference<>(this);
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         PrefUtils<Boolean> firstStartPref = new PrefUtils<>(FIRST_START);
         if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
@@ -378,6 +339,84 @@ public class FileActivity extends AppCompatActivity
 
         FileActivity.verifyStoragePermissions(FileActivity.this);
 
+        initUi();
+
+        if (new PrefUtils<Boolean>(UPDATE_NOTIFICATION).getValue()) {
+            checkForUpdate();
+        }
+
+        if(savedInstanceState != null) {
+            restoreFromInstanceState(savedInstanceState);
+        } else {
+            loadHomeDir();
+        }
+    }
+
+    /**
+     * Reads the current theme using {@link PrefUtils} and sets it.
+     */
+    private void setThemeFromPreferences() {
+        String currentTheme = new PrefUtils<String>(THEME).getValue();
+        String defaultVal = getString(R.string.pref_themes_value_default);
+        boolean defaultOrDark = currentTheme.equals(defaultVal);
+        setTheme(defaultOrDark ? R.style.AppTheme : R.style.AppTheme_Dark);
+    }
+
+    /**
+     * Starts a {@link VersionCheckTask} to show a notification once a new version is out.
+     */
+    private void checkForUpdate() {
+        new VersionCheckTask(result -> {
+            try {
+                if (result != null && !result.isEmpty()) {
+                    VersionInfo.parse(v -> {
+                        if (v.getLatest().newerThan(v.getCurrent())) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.lerk.lrkfm"));
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(FileActivity.this.getApplicationContext(), 0, intent, 0);
+                            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(FileActivity.this, CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.ic_launcher)
+                                    .setContentTitle(FileActivity.this.getText(R.string.notif_update_title))
+                                    .setContentText(FileActivity.this.getText(R.string.notif_update_content) + result)
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                    .setContentIntent(pendingIntent)
+                                    .setAutoCancel(true);
+                            NotificationManagerCompat.from(FileActivity.this.getApplicationContext()).notify(NEW_VERSION_NOTIF, notificationBuilder.build());
+                        }
+                        Log.i(TAG, "Running version: '" + v.getCurrent() + "', latest: '" + v.getCurrent() + "'");
+                    }, FileActivity.this.getPackageManager().getPackageInfo(FileActivity.this.getPackageName(), 0).versionName, result);
+                } else {
+                    Log.e(TAG, "Unable to fetch version!");
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.wtf(TAG, "Unable to get package name!", e);
+            }
+        }).execute();
+    }
+
+    /**
+     * Restores {@link #currentDirectory} and {@link #fileOpContext} from a {@link Bundle} created in {@link #onSaveInstanceState(Bundle)}.
+     *
+     * @param savedInstanceState the previusly saved instance state.
+     */
+    private void restoreFromInstanceState(@NonNull Bundle savedInstanceState) {
+        loadPath(savedInstanceState.getString(STATE_KEY_CURRENT_DIR));
+        Operation savedOperation = Operation.valueOf(savedInstanceState.getString(STATE_KEY_OP_CONTEXT_OP));
+        List<String> savedFilePaths = Arrays.asList(savedInstanceState.getStringArray(STATE_KEY_OP_CONTEXT_FILES));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            savedFilePaths.forEach(s -> addFileToOpContext(savedOperation, new FMFile(new File(s))));
+        } else {
+            for (int i = 0; i < savedFilePaths.size(); i++) {
+                addFileToOpContext(savedOperation, new FMFile(new File(savedFilePaths.get(i))));
+            }
+        }
+    }
+
+
+    /**
+     * Initializes the navigation ui.
+     */
+    private void initUi() {
         fileListView = findViewById(R.id.fileView);
         registerForContextMenu(fileListView);
 
@@ -397,7 +436,6 @@ public class FileActivity extends AppCompatActivity
                 }
             }
         });
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
@@ -406,50 +444,6 @@ public class FileActivity extends AppCompatActivity
                 super.onDrawerStateChanged(newState);
             }
         });
-
-        initNavAndHeader();
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        //noinspection deprecation
-        drawer.setDrawerListener(toggle); // I ned dis
-        toggle.syncState();
-
-        if (new PrefUtils<Boolean>(UPDATE_NOTIFICATION).getValue()) {
-            new VersionCheckTask(result -> {
-                try {
-                    if (result != null && !result.isEmpty()) {
-                        VersionInfo.parse(v -> {
-                            if (v.getLatest().newerThan(v.getCurrent())) {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.lerk.lrkfm"));
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                PendingIntent pendingIntent = PendingIntent.getActivity(FileActivity.this.getApplicationContext(), 0, intent, 0);
-                                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(FileActivity.this, CHANNEL_ID)
-                                        .setSmallIcon(R.drawable.ic_launcher)
-                                        .setContentTitle(FileActivity.this.getText(R.string.notif_update_title))
-                                        .setContentText(FileActivity.this.getText(R.string.notif_update_content) + result)
-                                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                        .setContentIntent(pendingIntent)
-                                        .setAutoCancel(true);
-                                NotificationManagerCompat.from(FileActivity.this.getApplicationContext()).notify(NEW_VERSION_NOTIF, notificationBuilder.build());
-                            }
-                            Log.i(TAG, "Running version: '" + v.getCurrent() + "', latest: '" + v.getCurrent() + "'");
-                        }, FileActivity.this.getPackageManager().getPackageInfo(FileActivity.this.getPackageName(), 0).versionName, result);
-                    } else {
-                        Log.e(TAG, "Unable to fetch version!");
-                    }
-                } catch (PackageManager.NameNotFoundException e) {
-                    Log.wtf(TAG, "Unable to get package name!", e);
-                }
-            }).execute();
-        }
-    }
-
-
-    /**
-     * Initializes the navigation drawer and it's header.
-     */
-    private void initNavAndHeader() {
         navigationView = findViewById(R.id.nav_view);
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
@@ -457,6 +451,11 @@ public class FileActivity extends AppCompatActivity
         currentDirectoryTextView = headerView.findViewById(R.id.currentDirectoryTextView);
         loadUserBookmarks();
         setFreeSpaceText();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        //noinspection deprecation
+        drawer.setDrawerListener(toggle); // I ned dis
+        toggle.syncState();
     }
 
     /**
@@ -465,9 +464,8 @@ public class FileActivity extends AppCompatActivity
     private void setFreeSpaceText() {
         TextView diskUsageTextView = headerView.findViewById(R.id.diskUsage);
 
-        String defaultValue = getString(R.string.pref_header_unit_default_value);
         String s = null;
-        String nav_header_unit = preferences.getString("nav_header_unit", defaultValue);
+        String nav_header_unit = new PrefUtils<String>(NAV_HEADER_UNIT).getValue();
         if (nav_header_unit.equals(getString(R.string.pref_header_unit_m_value))) {
             s = DiskUtil.freeSpaceMebi(true) + " MiB " + getString(R.string.free);
         } else if (nav_header_unit.equals(getString(R.string.pref_header_unit_g_value))) {
@@ -573,12 +571,11 @@ public class FileActivity extends AppCompatActivity
      * @param item      the menu item to remove
      * @param bookmark  the bookmark to remove
      */
-    @SuppressLint("ApplySharedPref")
     private void removeBookmarkFromMenu(Menu menu, String s, Set<String> bookmarks, MenuItem item, Bookmark bookmark) {
         menu.removeItem(item.getItemId());
         bookmarkItems.remove(bookmark);
         bookmarks.remove(s);
-        new PrefUtils<Set<String>>(BOOKMARKS).setValue(bookmarks);
+        new PrefUtils<HashSet<String>>(BOOKMARKS).setValue(new HashSet<>(bookmarks));
     }
 
     /**
@@ -1103,7 +1100,7 @@ public class FileActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        preferences.edit().putString(CURRENT_DIR_CACHE, currentDirectory).apply();
+        new PrefUtils<String>(CURRENT_DIR_CACHE).setValue(currentDirectory);
     }
 
     /**
@@ -1112,7 +1109,7 @@ public class FileActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        preferences.edit().putString(CURRENT_DIR_CACHE, "").apply();
+        new PrefUtils<String>(CURRENT_DIR_CACHE).setValue("");
     }
 
     /**
@@ -1121,8 +1118,9 @@ public class FileActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (!preferences.getString(CURRENT_DIR_CACHE, "").equals("")) {
-            currentDirectory = preferences.getString(CURRENT_DIR_CACHE, "");
+        String cachedDirectory = new PrefUtils<String>(CURRENT_DIR_CACHE).getValue();
+        if (! cachedDirectory.equals("")) {
+            currentDirectory = cachedDirectory;
         }
     }
 
@@ -1139,7 +1137,6 @@ public class FileActivity extends AppCompatActivity
     /**
      * Adds a bookmark. Prompts for location.
      */
-    @SuppressLint("ApplySharedPref")
     private void promptAndAddBookmark() {
         Set<String> stringSet = new PrefUtils<HashSet<String>>(BOOKMARKS).getValue();
         if (new PrefUtils<Boolean>(BOOKMARK_CURRENT_FOLDER).getValue()) {
@@ -1156,7 +1153,7 @@ public class FileActivity extends AppCompatActivity
             AlertDialog alertDialog = bookmarkDialogBuilder.create();
             alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> stringSet.add(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
             alertDialog.setOnDismissListener(dialog -> {
-                preferences.edit().putStringSet(BOOKMARKS.getKey(), stringSet).commit();
+                new PrefUtils<Set<String>>(BOOKMARKS).setValue(stringSet);
                 loadUserBookmarks();
             });
             alertDialog.show();
