@@ -55,6 +55,11 @@ public enum PreferenceEntity {
      */
     CURRENT_DIR_CACHE(Store.LOCAL, "current_dir_cached", ""),
 
+    /**
+     * Always show {@link io.lerk.lrkFM.activities.IntroActivity}.
+     */
+    ALWAYS_SHOW_INTRO(Store.LOCAL, "always_show_intro", false),
+
     // Backed up to cloud
 
     /**

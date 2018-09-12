@@ -145,4 +145,7 @@
     <string name="deleting_detail">Lösche:</string>
     <string name="copying">Kopiere…</string>
     <string name="copying_detail">Kopiere:</string>
+    <string name="archive">Archiv</string>
+    <string name="pref_always_show_intro">Intro jedes mal anzeigen</string>
+    <string name="pref_always_show_intro_desc">Zeigt das Intro an, auch wenn es nicht der erste Start der Anwendung ist.</string>
 </resources>

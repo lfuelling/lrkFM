@@ -23,7 +23,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -49,6 +48,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.activities.themed.ThemedAppCompatActivity;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.HistoryEntry;
@@ -95,13 +95,11 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.HOME_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.NAV_HEADER_UNIT;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
-import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
 import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
 import static io.lerk.lrkFM.tasks.VersionCheckTask.NEW_VERSION_NOTIF;
 
-public class FileActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class FileActivity extends ThemedAppCompatActivity {
 
     /**
      * Logtag.
@@ -313,7 +311,6 @@ public class FileActivity extends AppCompatActivity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setThemeFromPreferences();
         super.onCreate(savedInstanceState);
         context = new WeakReference<>(this);
 
@@ -352,16 +349,6 @@ public class FileActivity extends AppCompatActivity
         } else {
             loadHomeDir();
         }
-    }
-
-    /**
-     * Reads the current theme using {@link PrefUtils} and sets it.
-     */
-    private void setThemeFromPreferences() {
-        String currentTheme = new PrefUtils<String>(THEME).getValue();
-        String defaultVal = getString(R.string.pref_themes_value_default);
-        boolean defaultOrDark = currentTheme.equals(defaultVal);
-        setTheme(defaultOrDark ? R.style.AppTheme : R.style.AppTheme_Dark);
     }
 
     /**
@@ -448,7 +435,38 @@ public class FileActivity extends AppCompatActivity
         });
         navigationView = findViewById(R.id.nav_view);
         setSupportActionBar(toolbar);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home) {
+                loadHomeDir();
+            } else if (id == R.id.nav_path) {
+                promptAndLoadPath();
+            } else if (id == R.id.nav_settings) {
+                launchSettings();
+            } else if (id == R.id.nav_add_bookmark) {
+                promptAndAddBookmark();
+            } else if (id == R.id.nav_bug_report) {
+                launchBugReportTab();
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    bookmarkItems.forEach(bookmark -> {
+                        if (bookmark.getMenuItem().getItemId() == id) {
+                            loadPath(bookmark.getPath());
+                        }
+                    });
+                } else {
+                    for (Bookmark bookmark : bookmarkItems) {
+                        if (bookmark.getMenuItem().getItemId() == id) {
+                            loadPath(bookmark.getPath());
+                        }
+                    }
+                }
+            }
+
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+        });
         headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
         currentDirectoryTextView = headerView.findViewById(R.id.currentDirectoryTextView);
         loadUserBookmarks();
@@ -1047,47 +1065,6 @@ public class FileActivity extends AppCompatActivity
         } else {
             Toast.makeText(this, R.string.err_file_exists, Toast.LENGTH_LONG).show();
         }
-    }
-
-    /**
-     * Called when a navigation item is selected.
-     *
-     * @param item the selected navigation item id
-     * @return true
-     */
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-            loadHomeDir();
-        } else if (id == R.id.nav_path) {
-            promptAndLoadPath();
-        } else if (id == R.id.nav_settings) {
-            launchSettings();
-        } else if (id == R.id.nav_add_bookmark) {
-            promptAndAddBookmark();
-        } else if (id == R.id.nav_bug_report) {
-            launchBugReportTab();
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                bookmarkItems.forEach(bookmark -> {
-                    if (bookmark.getMenuItem().getItemId() == id) {
-                        loadPath(bookmark.getPath());
-                    }
-                });
-            } else {
-                for (Bookmark bookmark : bookmarkItems) {
-                    if (bookmark.getMenuItem().getItemId() == id) {
-                        loadPath(bookmark.getPath());
-                    }
-                }
-            }
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     /**

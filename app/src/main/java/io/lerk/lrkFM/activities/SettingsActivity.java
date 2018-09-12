@@ -21,18 +21,17 @@ import org.jraf.android.alibglitch.GlitchEffect;
 import java.util.HashSet;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.themed.ThemedAppCompatPreferenceActivity;
 import io.lerk.lrkFM.consts.PreferenceEntity;
 import io.lerk.lrkFM.util.PrefUtils;
 
-import static io.lerk.lrkFM.consts.PreferenceEntity.*;
-
 /**
+ * Settings.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme((new PrefUtils<String>(THEME).getValue().equals(getString(R.string.pref_themes_value_default))) ? R.style.AppTheme : R.style.AppTheme_Dark);
         super.onCreate(savedInstanceState);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new GeneralPreferenceFragment()).commit();
         setupActionBar();

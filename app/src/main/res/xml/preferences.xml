@@ -91,6 +91,11 @@
             android:key="bookmark_current_folder"
             android:summary="@string/pref_bookmark_corrent_folder_desc"
             android:title="@string/pref_bookmark_corrent_folder" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="always_show_intro"
+            android:summary="@string/pref_always_show_intro_desc"
+            android:title="@string/pref_always_show_intro" />
         <Preference
             android:key="app_version"
             android:title="@string/pref_version" />

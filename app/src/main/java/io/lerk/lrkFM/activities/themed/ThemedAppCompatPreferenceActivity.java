@@ -1,5 +1,6 @@
-package io.lerk.lrkFM.activities;
+package io.lerk.lrkFM.activities.themed;
 
+import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -13,13 +14,21 @@ import android.view.ViewGroup;
 /**
  * A {@link android.preference.PreferenceActivity} which implements and proxies the necessary calls
  * to be used with AppCompat.
+ *
+ * Now with Themes!
+ *
  */
-public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
+public abstract class ThemedAppCompatPreferenceActivity extends PreferenceActivity {
 
-    private AppCompatDelegate mDelegate;
+    private AppCompatDelegate delegate;
 
+    /**
+     * {@inheritDoc}
+     * @see ThemedAppCompatActivity#setThemeFromPreferences(Activity)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemedAppCompatActivity.setThemeFromPreferences(this);
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
@@ -92,9 +101,9 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
     }
 
     private AppCompatDelegate getDelegate() {
-        if (mDelegate == null) {
-            mDelegate = AppCompatDelegate.create(this, null);
+        if (delegate == null) {
+            delegate = AppCompatDelegate.create(this, null);
         }
-        return mDelegate;
+        return delegate;
     }
 }

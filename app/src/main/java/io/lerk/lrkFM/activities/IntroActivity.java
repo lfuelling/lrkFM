@@ -4,28 +4,33 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.themed.ThemedAppCompatActivity;
+import io.lerk.lrkFM.consts.PreferenceEntity;
 import io.lerk.lrkFM.util.PrefUtils;
-
-import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
 
 /**
  * Intro.
  *
  * @author Lukas Fülling (lukas@k40s.net)
  */
-public class IntroActivity extends AppCompatActivity {
+public class IntroActivity extends ThemedAppCompatActivity {
 
-    private static int c = 0;
+    private static Integer c = 0;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme((new PrefUtils<String>(THEME).getValue().equals(getString(R.string.pref_themes_value_default))) ? R.style.AppTheme : R.style.AppTheme_Dark);
+        if(new PrefUtils<Boolean>(PreferenceEntity.FIRST_START).getValue() && !new PrefUtils<Boolean>(PreferenceEntity.ALWAYS_SHOW_INTRO).getValue()) {
+            launchMainAndFinish(savedInstanceState);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -43,11 +48,21 @@ public class IntroActivity extends AppCompatActivity {
                 fab.setImageResource(R.drawable.ic_chevron_right_white_24dp);
                 c++;
             } else {
-                Intent intent = new Intent(IntroActivity.this, FileActivity.class);
-                intent.putExtra("firstStartDone", true);
-                startActivity(intent);
-                finish();
+                launchMainAndFinish(savedInstanceState);
             }
         });
+    }
+
+    /**
+     * Launch {@link FileActivity} and call {@link #finish()}.
+     */
+    private void launchMainAndFinish(@Nullable Bundle savedInstanceState) {
+        Intent intent = new Intent(IntroActivity.this, FileActivity.class);
+        intent.putExtra("firstStartDone", true);
+        if (savedInstanceState != null) {
+            intent.putExtras(savedInstanceState);
+        }
+        startActivity(intent);
+        finish();
     }
 }

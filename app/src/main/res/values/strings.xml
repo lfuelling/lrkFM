@@ -161,4 +161,6 @@
     <string name="copying">Copying…</string>
     <string name="copying_detail">Copying:</string>
     <string name="archive">Archive</string>
+    <string name="pref_always_show_intro">Always show intro</string>
+    <string name="pref_always_show_intro_desc">Always show intro even if it\'s not the first launch.</string>
 </resources>
