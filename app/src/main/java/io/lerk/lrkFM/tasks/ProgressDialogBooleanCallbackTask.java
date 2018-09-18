@@ -1,21 +1,15 @@
 package io.lerk.lrkFM.tasks;
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import io.lerk.lrkFM.Handler;
-import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.activities.file.FileActivity;
 
 /**
  * {@link AsyncTask} which has void params, void progress and boolean return value.
  * This class also shows a progress spinner while the task is running.
  */
-public abstract class ProgressDialogBooleanCallbackTask extends AsyncTask<Void, Void, Boolean> {
-
-    /**
-     * The {@link ProgressDialog}.
-     */
-    protected final ProgressDialog dialog;
+public abstract class ProgressDialogBooleanCallbackTask extends ProgressDialogTask<Boolean> {
 
     /**
      * The callback {@link Handler}.
@@ -28,16 +22,8 @@ public abstract class ProgressDialogBooleanCallbackTask extends AsyncTask<Void, 
      * @param callback the callback to use.
      */
     public ProgressDialogBooleanCallbackTask(FileActivity context, Handler<Boolean> callback) {
-        this.dialog = new ProgressDialog(context);
+        super(context);
         this.callback = callback;
-    }
-
-    /**
-     * Shows the progress spinner.
-     */
-    @Override
-    protected void onPreExecute() {
-        this.dialog.show();
     }
 
     /**
@@ -46,9 +32,7 @@ public abstract class ProgressDialogBooleanCallbackTask extends AsyncTask<Void, 
      */
     @Override
     protected void onPostExecute(final Boolean success) {
-        if (dialog.isShowing()) {
-            dialog.dismiss();
-        }
+        super.onPostExecute(success);
         callback.handle(success);
     }
 }

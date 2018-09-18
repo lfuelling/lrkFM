@@ -4,11 +4,10 @@ import android.util.Log;
 
 import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 import io.lerk.lrkFM.tasks.ProgressDialogBooleanCallbackTask;
-import io.lerk.lrkFM.tasks.archive.ArchiveUtil;
 
 /**
  * {@link android.os.AsyncTask} that is called when there's an archive to extract.

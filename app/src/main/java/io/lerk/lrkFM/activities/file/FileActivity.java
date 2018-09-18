@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.activities;
+package io.lerk.lrkFM.activities.file;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -48,12 +48,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.activities.IntroActivity;
+import io.lerk.lrkFM.activities.SettingsActivity;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatActivity;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
+import io.lerk.lrkFM.adapter.FileArrayAdapter;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.HistoryEntry;
-import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
-import io.lerk.lrkFM.exceptions.NoAccessException;
+import io.lerk.lrkFM.tasks.DirectoryLoaderTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveCreationTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveExtractionTask;
 import io.lerk.lrkFM.entities.Bookmark;
@@ -61,19 +63,15 @@ import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
 import io.lerk.lrkFM.tasks.operation.FileCopyTask;
 import io.lerk.lrkFM.tasks.operation.FileMoveTask;
 import io.lerk.lrkFM.tasks.operation.FileOperationTask;
-import io.lerk.lrkFM.util.ArchiveLoader;
-import io.lerk.lrkFM.util.ArchiveParentFinder;
-import io.lerk.lrkFM.util.DiskUtil;
+import io.lerk.lrkFM.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.consts.Operation;
-import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.PrefUtils;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.adapter.FileArrayAdapter;
-import io.lerk.lrkFM.util.FileLoader;
 import io.lerk.lrkFM.tasks.VersionCheckTask;
-import io.lerk.lrkFM.util.VibratingToast;
-import io.lerk.lrkFM.util.version.VersionInfo;
+import io.lerk.lrkFM.VibratingToast;
+import io.lerk.lrkFM.version.VersionInfo;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -344,9 +342,7 @@ public class FileActivity extends ThemedAppCompatActivity {
             checkForUpdate();
         }
 
-        if(savedInstanceState != null) {
-            restoreFromInstanceState(savedInstanceState);
-        } else {
+        if(savedInstanceState == null) {
             loadHomeDir();
         }
     }
@@ -388,7 +384,9 @@ public class FileActivity extends ThemedAppCompatActivity {
      *
      * @param savedInstanceState the previusly saved instance state.
      */
-    private void restoreFromInstanceState(@NonNull Bundle savedInstanceState) {
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
         loadPath(savedInstanceState.getString(STATE_KEY_CURRENT_DIR));
         Operation savedOperation = Operation.valueOf(savedInstanceState.getString(STATE_KEY_OP_CONTEXT_OP));
         List<String> savedFilePaths = Arrays.asList(savedInstanceState.getStringArray(STATE_KEY_OP_CONTEXT_FILES));
@@ -400,7 +398,6 @@ public class FileActivity extends ThemedAppCompatActivity {
             }
         }
     }
-
 
     /**
      * Initializes the navigation ui.
@@ -654,47 +651,40 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     @SuppressWarnings("DeprecatedIsStillUsed") // see above
     private void loadDirectory(String path) {
-        ArrayList<FMFile> files;
-        FileLoader fileLoader = new FileLoader(path);
-        View errorText = findViewById(R.id.unableToLoadText);
-        View emptyText = findViewById(R.id.emptyDirText);
-        try {
-            files = fileLoader.loadLocationFiles();
-            fileListView.setVisibility(VISIBLE);
-            errorText.setVisibility(GONE);
-            emptyText.setVisibility(GONE);
+        new DirectoryLoaderTask(this, path, files -> {
+            View errorText = findViewById(R.id.unableToLoadText);
+            View emptyText = findViewById(R.id.emptyDirText);
 
+            if(files!= null) {
+                fileListView.setVisibility(VISIBLE);
+                errorText.setVisibility(GONE);
+                emptyText.setVisibility(GONE);
 
-            if (arrayAdapter == null || exploringArchive) {
-                if(exploringArchive) {
-                    exploringArchive = false;
+                if (arrayAdapter == null || exploringArchive) {
+                    if(exploringArchive) {
+                        exploringArchive = false;
+                    }
+                    arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
+                    fileListView.setAdapter(arrayAdapter);
+                } else {
+                    ((BaseArrayAdapter) fileListView.getAdapter()).clear();
+                    ((BaseArrayAdapter) fileListView.getAdapter()).addAll(files);
+                    ((BaseArrayAdapter) fileListView.getAdapter()).notifyDataSetChanged();
                 }
-                arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
-                fileListView.setAdapter(arrayAdapter);
             } else {
-                ((BaseArrayAdapter) fileListView.getAdapter()).clear();
-                ((BaseArrayAdapter) fileListView.getAdapter()).addAll(files);
-                ((BaseArrayAdapter) fileListView.getAdapter()).notifyDataSetChanged();
+                fileListView.setVisibility(GONE);
+                errorText.setVisibility(VISIBLE);
+                emptyText.setVisibility(GONE);
             }
-        } catch (NoAccessException e) {
-            Log.w(TAG, "Can't read '" + path + "': Permission denied!");
-            fileListView.setVisibility(GONE);
-            errorText.setVisibility(VISIBLE);
-            emptyText.setVisibility(GONE);
-        } catch (EmptyDirectoryException e) {
-            Log.w(TAG, "Can't read '" + path + "': Empty directory!");
-            fileListView.setVisibility(GONE);
-            errorText.setVisibility(GONE);
-            emptyText.setVisibility(VISIBLE);
-        }
-        currentDirectory = path;
+            currentDirectory = path;
 
-        HistoryEntry entry = historyMap.get(historyCounter);
-        if (entry != null && !entry.getPath().equals(currentDirectory)) {
-            historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, null));
-        }
-        setToolbarText();
-        setFreeSpaceText();
+            HistoryEntry entry = historyMap.get(historyCounter);
+            if (entry != null && !entry.getPath().equals(currentDirectory)) {
+                historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, null));
+            }
+            setToolbarText();
+            setFreeSpaceText();
+        }).execute();
     }
 
     /**

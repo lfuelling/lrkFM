@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.PrefUtils;
 
 import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
 

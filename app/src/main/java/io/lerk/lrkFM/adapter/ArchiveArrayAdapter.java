@@ -17,8 +17,8 @@ import java.util.List;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.util.ContextMenuUtil;
-import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.activities.file.ContextMenuUtil;
+import io.lerk.lrkFM.PrefUtils;
 
 import static io.lerk.lrkFM.consts.PreferenceEntity.FILENAME_LENGTH;
 

@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference;
 
 import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 

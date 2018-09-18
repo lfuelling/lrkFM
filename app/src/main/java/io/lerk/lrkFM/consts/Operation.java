@@ -3,7 +3,7 @@ package io.lerk.lrkFM.consts;
 import android.support.annotation.StringRes;
 
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.FileActivity;
+import io.lerk.lrkFM.activities.file.FileActivity;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)

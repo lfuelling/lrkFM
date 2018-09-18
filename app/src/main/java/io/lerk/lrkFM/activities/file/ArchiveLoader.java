@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM.activities.file;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +12,7 @@ public class ArchiveLoader extends AbstractLoader {
     private final FMArchive archive;
     private String path;
 
-    public ArchiveLoader(@NonNull FMArchive archiveFile, String path) {
+    ArchiveLoader(@NonNull FMArchive archiveFile, String path) {
         this.archive = archiveFile;
         this.path = path;
     }

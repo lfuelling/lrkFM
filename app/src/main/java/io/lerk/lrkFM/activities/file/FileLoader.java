@@ -1,6 +1,7 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM.activities.file;
 
 import android.os.Build;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
 import io.lerk.lrkFM.exceptions.NoAccessException;
 
@@ -46,7 +48,8 @@ public class FileLoader extends AbstractLoader {
      * @throws NoAccessException if no access
      * @throws EmptyDirectoryException  if no contents
      */
-    public ArrayList<FMFile> loadLocationFiles() throws NoAccessException, EmptyDirectoryException {
+    @Override
+    public ArrayList<FMFile> loadLocationFiles() throws NoAccessException, EmptyDirectoryException, BlockingStuffOnMainThreadException {
         return this.loadLocationFilesForPath(null);
     }
 
@@ -57,7 +60,11 @@ public class FileLoader extends AbstractLoader {
      * @throws NoAccessException if no access
      * @throws EmptyDirectoryException if no contents
      */
-    protected ArrayList<FMFile> loadLocationFilesForPath(@Nullable String parent) throws NoAccessException, EmptyDirectoryException {
+    @Override
+    protected ArrayList<FMFile> loadLocationFilesForPath(@Nullable String parent) throws NoAccessException, EmptyDirectoryException, BlockingStuffOnMainThreadException {
+        if(Looper.myLooper() == Looper.getMainLooper()) {
+            throw new BlockingStuffOnMainThreadException();
+        }
         if (parent != null) {
             location = parent;
         }

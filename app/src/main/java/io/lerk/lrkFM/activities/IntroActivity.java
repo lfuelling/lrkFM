@@ -10,9 +10,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatActivity;
 import io.lerk.lrkFM.consts.PreferenceEntity;
-import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.PrefUtils;
 
 /**
  * Intro.
@@ -28,7 +29,7 @@ public class IntroActivity extends ThemedAppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(new PrefUtils<Boolean>(PreferenceEntity.FIRST_START).getValue() && !new PrefUtils<Boolean>(PreferenceEntity.ALWAYS_SHOW_INTRO).getValue()) {
+        if(!new PrefUtils<Boolean>(PreferenceEntity.FIRST_START).getValue() && !new PrefUtils<Boolean>(PreferenceEntity.ALWAYS_SHOW_INTRO).getValue()) {
             launchMainAndFinish(savedInstanceState);
         }
         super.onCreate(savedInstanceState);

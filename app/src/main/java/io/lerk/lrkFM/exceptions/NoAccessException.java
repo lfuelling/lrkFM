@@ -2,8 +2,6 @@ package io.lerk.lrkFM.exceptions;
 
 import java.io.Serializable;
 
-import io.lerk.lrkFM.util.FileLoader;
-
 /**
  * {@link NoAccessException}.
  */

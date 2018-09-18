@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,8 +8,6 @@ import android.util.Log;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.lerk.lrkFM.BuildConfig;
-import io.lerk.lrkFM.LrkFMApp;
 import io.lerk.lrkFM.consts.PreferenceEntity;
 
 /**

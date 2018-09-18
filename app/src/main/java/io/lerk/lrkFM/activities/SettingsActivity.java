@@ -23,7 +23,7 @@ import java.util.HashSet;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatPreferenceActivity;
 import io.lerk.lrkFM.consts.PreferenceEntity;
-import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.PrefUtils;
 
 /**
  * Settings.

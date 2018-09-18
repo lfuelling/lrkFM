@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util;
+package io.lerk.lrkFM;
 
 import android.content.Context;
 import android.os.Vibrator;

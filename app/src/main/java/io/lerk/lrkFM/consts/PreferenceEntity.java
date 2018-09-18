@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import java.util.HashSet;
 
 import io.lerk.lrkFM.LrkFMApp;
-import io.lerk.lrkFM.util.PrefUtils;
+import io.lerk.lrkFM.PrefUtils;
 import io.lerk.lrkFM.R;
 
 /**

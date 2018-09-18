@@ -1,10 +1,8 @@
-package io.lerk.lrkFM.util.version;
+package io.lerk.lrkFM.version;
 
 import io.lerk.lrkFM.Handler;
 
 public class VersionInfo {
-
-    private static final String TAG = VersionInfo.class.getCanonicalName();
 
     private final Version current, latest;
 
@@ -24,11 +22,10 @@ public class VersionInfo {
     }
 
     public static void parse(Handler<VersionInfo> callback, String current, String latest) {
-        if (instance != null) {
-            callback.handle(instance);
-        } else {
-            callback.handle(new VersionInfo(Version.fromString(current), Version.fromString(latest)));
+        if (instance == null) {
+            instance = new VersionInfo(Version.fromString(current), Version.fromString(latest));
         }
+        callback.handle(instance);
     }
 
 

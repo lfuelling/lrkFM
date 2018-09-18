@@ -1,4 +1,4 @@
-package io.lerk.lrkFM.util.version;
+package io.lerk.lrkFM.version;
 
 import android.support.annotation.NonNull;
 
