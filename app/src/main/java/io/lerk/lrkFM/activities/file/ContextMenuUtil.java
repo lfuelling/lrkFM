@@ -21,6 +21,7 @@ import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.tasks.archive.ArchiveCreationTask;
+import io.lerk.lrkFM.tasks.archive.ArchiveParentFinderTask;
 import io.lerk.lrkFM.tasks.operation.FileDeleteTask;
 import io.lerk.lrkFM.tasks.operation.FileMoveTask;
 import io.lerk.lrkFM.tasks.operation.FileOperationTask;
@@ -114,34 +115,41 @@ public class ContextMenuUtil {
      * @param menu menu
      */
     private void addExtractToMenu(FMFile file, ContextMenu menu) {
-        menu.add(0, ID_EXTRACT, 0, activity.getString(R.string.extract))
-                .setOnMenuItemClickListener(i -> {
-                    FMFile archiveToExtract = file;
-                    ArchiveParentFinder parentFinder = new ArchiveParentFinder(file.getFile().getAbsolutePath()).invoke();
-                    if (!file.isArchive() && parentFinder.isArchive()) {
-                        archiveToExtract = parentFinder.getArchiveFile();
-                    }
+        new ArchiveParentFinderTask(file, parentFinder ->
+                menu.add(0, ID_EXTRACT, 0, activity.getString(R.string.extract))
+                        .setOnMenuItemClickListener(i -> {
 
-                    activity.addFileToOpContext(EXTRACT, archiveToExtract);
-                    if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
-                        Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
-                    }
+                            FMFile archiveToExtract = file;
 
-                    PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
-                    if (alwaysExtractInCurrentPref.getValue()) {
-                        activity.finishFileOperation();
-                    } else {
-                        new AlertDialog.Builder(activity)
-                                .setView(R.layout.layout_extract_now_prompt)
-                                .setPositiveButton(R.string.yes, (dialog, which) -> activity.finishFileOperation())
-                                .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
-                                .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
-                    }
+                            if (!file.isArchive() && parentFinder.isArchive()) {
+                                archiveToExtract = parentFinder.getArchiveFile();
+                            }
 
-                    activity.reloadCurrentDirectory();
-                    return true;
-                })
-                .setVisible(file.isArchive() || new ArchiveParentFinder(file.getFile().getAbsolutePath()).isArchive());
+                            activity.addFileToOpContext(EXTRACT, archiveToExtract);
+                            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+                                Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
+                            }
+
+
+                            if (new PrefUtils<Boolean>(ALWAYS_EXTRACT_IN_CURRENT_DIR).getValue()) {
+                                activity.finishFileOperation();
+                            } else {
+                                new AlertDialog.Builder(activity)
+                                        .setView(R.layout.layout_extract_now_prompt)
+                                        .setPositiveButton(R.string.yes, (dialog, which) -> activity.finishFileOperation())
+                                        .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> {
+                                            new PrefUtils<Boolean>(ALWAYS_EXTRACT_IN_CURRENT_DIR).setValue(true);
+                                            activity.finishFileOperation();
+                                        })
+                                        .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                            }
+
+                            activity.reloadCurrentDirectory();
+
+                            return true;
+                        })
+                        .setVisible(file.isArchive() || parentFinder.isArchive())
+        ).execute();
     }
 
     /**
@@ -173,7 +181,8 @@ public class ContextMenuUtil {
                     R.string.rename,
                     R.drawable.ic_mode_edit_black_24dp,
                     R.layout.layout_name_prompt,
-                    (d) -> new FileMoveTask(activity, b -> {}, f, d).execute(),
+                    (d) -> new FileMoveTask(activity, b -> {
+                    }, f, d).execute(),
                     (d) -> Log.i(TAG, "Cancelled."));
             alertDialog.setOnShowListener(d -> arrayAdapter.presetNameForDialog(alertDialog, R.id.destinationName, f.getName()));
             alertDialog.show();

@@ -10,12 +10,12 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
-import io.lerk.lrkFM.tasks.ProgressDialogBooleanCallbackTask;
+import io.lerk.lrkFM.tasks.ProgressDialogCallbackTask;
 
 /**
  * {@link android.os.AsyncTask} to be run when creating an archive.
  */
-public class ArchiveCreationTask extends ProgressDialogBooleanCallbackTask {
+public class ArchiveCreationTask extends ProgressDialogCallbackTask<Boolean> {
 
     private static final String TAG = ArchiveCreationTask.class.getCanonicalName();
     /**

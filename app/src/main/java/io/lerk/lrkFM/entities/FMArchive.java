@@ -1,5 +1,6 @@
 package io.lerk.lrkFM.entities;
 
+import android.os.Looper;
 import android.util.Log;
 
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 
 import io.lerk.lrkFM.consts.FileType;
+import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
@@ -35,7 +37,7 @@ public class FMArchive extends FMFile {
      *
      * @param f the file
      */
-    public FMArchive(File f) {
+    public FMArchive(File f) throws BlockingStuffOnMainThreadException {
         super(f);
         if (!this.isArchive()) {
             this.contents = null;
@@ -52,7 +54,6 @@ public class FMArchive extends FMFile {
      * @return the contents
      */
     public ArrayList<FMFile> getContentForPath(String path) {
-
         String rPath;
         if (!path.startsWith(ROOT_DIR)) {
             rPath = ROOT_DIR + path;
@@ -85,7 +86,10 @@ public class FMArchive extends FMFile {
      *
      * @return a {@link HashMap} containing the relative path of the file in the archive and the file.
      */
-    private HashMap<String, ArrayList<FMFile>> calculateArchiveContents() {
+    private HashMap<String, ArrayList<FMFile>> calculateArchiveContents() throws BlockingStuffOnMainThreadException {
+        if(Looper.myLooper() == Looper.getMainLooper()) {
+            throw new BlockingStuffOnMainThreadException();
+        }
         HashMap<String, ArrayList<FMFile>> res = new HashMap<>();
         if(getFileType() != FileType.ARCHIVE_P7Z) {
             try(InputStream is = new FileInputStream(getFile())) {
@@ -116,9 +120,7 @@ public class FMArchive extends FMFile {
                 Log.e(TAG, "Error reading " + getFileType().getExtension());
             }
         } else {
-            SevenZFile sevenZFile;
-            try {
-                sevenZFile = new SevenZFile(getFile());
+            try(SevenZFile sevenZFile = new SevenZFile(getFile())) {
                 SevenZArchiveEntry entry;
                 while ((entry = sevenZFile.getNextEntry()) != null) {
                     String filePath;

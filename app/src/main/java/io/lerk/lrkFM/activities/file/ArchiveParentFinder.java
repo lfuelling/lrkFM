@@ -4,6 +4,7 @@ import java.io.File;
 
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
+import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
 /**
  * @author Lukas Fülling (lukas@k40s.net)
@@ -25,7 +26,7 @@ public class ArchiveParentFinder {
         return archiveFile;
     }
 
-    public ArchiveParentFinder invoke() {
+    public ArchiveParentFinder invoke() throws BlockingStuffOnMainThreadException {
         archive = false;
         archiveFile = null;
         String tPath = path;

@@ -5,9 +5,9 @@ import android.app.AlertDialog;
 import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;
-import io.lerk.lrkFM.tasks.ProgressDialogBooleanCallbackTask;
+import io.lerk.lrkFM.tasks.ProgressDialogCallbackTask;
 
-public abstract class FileOperationTask extends ProgressDialogBooleanCallbackTask {
+public abstract class FileOperationTask extends ProgressDialogCallbackTask<Boolean> {
 
     FileOperationTask(FileActivity context, Handler<Boolean> callback) {
         super(context, callback);

@@ -12,10 +12,9 @@ import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
 import io.lerk.lrkFM.exceptions.NoAccessException;
 
-public class DirectoryLoaderTask extends ProgressDialogTask<ArrayList<FMFile>> {
+public class DirectoryLoaderTask extends ProgressDialogCallbackTask<ArrayList<FMFile>> {
 
     private static final String TAG = DirectoryLoaderTask.class.getCanonicalName();
-    private final Handler<ArrayList<FMFile>> callback;
     private final String path;
 
     /**
@@ -26,11 +25,9 @@ public class DirectoryLoaderTask extends ProgressDialogTask<ArrayList<FMFile>> {
      * @param callback the callback to use.
      */
     public DirectoryLoaderTask(FileActivity context, String path, Handler<ArrayList<FMFile>> callback) {
-        super(context);
+        super(context, callback);
         this.path = path;
-        this.callback = callback;
     }
-
 
     @Override
     protected ArrayList<FMFile> doInBackground(Void... voids) {
@@ -47,11 +44,5 @@ public class DirectoryLoaderTask extends ProgressDialogTask<ArrayList<FMFile>> {
             Log.wtf(TAG, "This should not happen!", e);
         }
         return files;
-    }
-
-    @Override
-    protected void onPostExecute(ArrayList<FMFile> fmFiles) {
-        super.onPostExecute(fmFiles);
-        this.callback.handle(fmFiles);
     }
 }

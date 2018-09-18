@@ -60,6 +60,8 @@ import io.lerk.lrkFM.tasks.archive.ArchiveCreationTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveExtractionTask;
 import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
+import io.lerk.lrkFM.tasks.archive.ArchiveLoaderTask;
+import io.lerk.lrkFM.tasks.archive.ArchiveParentFinderTask;
 import io.lerk.lrkFM.tasks.operation.FileCopyTask;
 import io.lerk.lrkFM.tasks.operation.FileMoveTask;
 import io.lerk.lrkFM.tasks.operation.FileOperationTask;
@@ -270,33 +272,36 @@ public class FileActivity extends ThemedAppCompatActivity {
                 }
                 if (iFile.exists()) {
                     FMFile file = new FMFile(iFile);
-                    ArchiveParentFinder parentFinder = new ArchiveParentFinder(file.getFile().getAbsolutePath()).invoke();
-                    FMArchive archiveToExtract = null;
-                    if (!file.isArchive() && parentFinder.isArchive()) {
-                        archiveToExtract = parentFinder.getArchiveFile();
-                    } else if (file.isArchive()) {
-                        archiveToExtract = new FMArchive(file.getFile());
-                    }
-                    if (archiveToExtract != null) {
-                            addFileToOpContext(EXTRACT, archiveToExtract);
-                            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
-                                Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
+                    new ArchiveParentFinderTask(file, parentFinder ->
+                        new ArchiveLoaderTask(file, a -> {
+                            FMArchive archiveToExtract = null;
+                            if (!file.isArchive() && parentFinder.isArchive()) {
+                                archiveToExtract = parentFinder.getArchiveFile();
+                            } else if (file.isArchive()) {
+                                archiveToExtract = a;
                             }
+                            if (archiveToExtract != null) {
+                                addFileToOpContext(EXTRACT, archiveToExtract);
+                                if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+                                    Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
+                                }
 
-                            PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
-                            if (alwaysExtractInCurrentPref.getValue()) {
-                                finishFileOperation();
+                                PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
+                                if (alwaysExtractInCurrentPref.getValue()) {
+                                    finishFileOperation();
+                                } else {
+                                    new AlertDialog.Builder(this)
+                                            .setView(R.layout.layout_extract_now_prompt)
+                                            .setPositiveButton(R.string.yes, (dialog, which) -> finishFileOperation())
+                                            .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
+                                            .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                                }
                             } else {
-                                new AlertDialog.Builder(this)
-                                        .setView(R.layout.layout_extract_now_prompt)
-                                        .setPositiveButton(R.string.yes, (dialog, which) -> finishFileOperation())
-                                        .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
-                                        .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                                Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
                             }
-                    } else {
-                        Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
-                    }
-                    reloadCurrentDirectory();
+                            reloadCurrentDirectory();
+                        }).execute() // load the archive file
+                    ).execute(); // load it's contents
                 }
             }
         } else {
@@ -633,14 +638,15 @@ public class FileActivity extends ThemedAppCompatActivity {
     @SuppressWarnings("deprecation")
     // one of the two methods that may call the "deprecated" functions.
     public void loadPath(String path) {
-        ArchiveParentFinder archiveResult = new ArchiveParentFinder(path).invoke();
-        boolean archive = archiveResult.isArchive();
-        FMArchive aF = archiveResult.getArchiveFile();
-        if (archive) {
-            loadArchive(path, aF);
-        } else {
-            loadDirectory(path);
-        }
+        new ArchiveParentFinderTask(new FMFile(new File(path)), archiveResult -> {
+            boolean archive = archiveResult.isArchive();
+            FMArchive aF = archiveResult.getArchiveFile();
+            if (archive) {
+                loadArchive(path, aF);
+            } else {
+                loadDirectory(path);
+            }
+        }).execute();
     }
 
     /**
