@@ -8,11 +8,14 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.support.annotation.AttrRes;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +28,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -262,13 +266,15 @@ public class FileActivity extends ThemedAppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        if (intent.getDataString() != null) {
-            if (!intent.getDataString().isEmpty()) {
+        String dataString = intent.getDataString();
+        if (dataString != null) {
+            if (!dataString.isEmpty()) {
+                Log.d(TAG, "Intent dataString present: '" + dataString + "'");
                 File iFile;
                 try {
-                    iFile = new File(Uri.decode(intent.getDataString().split("://")[1]));
+                    iFile = new File(Uri.decode(dataString.split("://")[1]));
                 } catch (IndexOutOfBoundsException e) {
-                    iFile = new File(Uri.decode(intent.getDataString()));
+                    iFile = new File(Uri.decode(dataString));
                 }
                 if (iFile.exists()) {
                     FMFile file = new FMFile(iFile);
@@ -304,8 +310,6 @@ public class FileActivity extends ThemedAppCompatActivity {
                     ).execute(); // load it's contents
                 }
             }
-        } else {
-            Log.e(TAG, "Unable to handle archive: intent data is null!");
         }
     }
 
@@ -402,6 +406,14 @@ public class FileActivity extends ThemedAppCompatActivity {
                 addFileToOpContext(savedOperation, new FMFile(new File(savedFilePaths.get(i))));
             }
         }
+    }
+
+    @ColorInt
+    public int getColorByAttr(@AttrRes int id) {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = getTheme();
+        theme.resolveAttribute(id, typedValue, true);
+        return typedValue.data;
     }
 
     /**

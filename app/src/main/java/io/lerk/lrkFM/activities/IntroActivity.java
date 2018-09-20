@@ -29,7 +29,7 @@ public class IntroActivity extends ThemedAppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(!new PrefUtils<Boolean>(PreferenceEntity.FIRST_START).getValue() && !new PrefUtils<Boolean>(PreferenceEntity.ALWAYS_SHOW_INTRO).getValue()) {
+        if(new PrefUtils<Boolean>(PreferenceEntity.FIRST_START).getValue() || new PrefUtils<Boolean>(PreferenceEntity.ALWAYS_SHOW_INTRO).getValue()) {
             launchMainAndFinish(savedInstanceState);
         }
         super.onCreate(savedInstanceState);
