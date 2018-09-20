@@ -35,47 +35,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <data android:mimeType="*/*" />
                 <data android:host="*" />
-
-                <data android:pathPattern=".*\\.zip" />
-                <data android:pathPattern=".*\\..*\\.zip" />
-                <data android:pathPattern=".*\\..*\\..*\\.zip" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.zip" />
-                <!--
-                    Work around Android's ugly primitive PatternMatcher
-                    implementation that can't cope with finding a . early in
-                    the path unless it's explicitly matched.
-                -->
-                <data android:pathPattern=".*\\.7z" />
-                <data android:pathPattern=".*\\..*\\.7z" />
-                <data android:pathPattern=".*\\..*\\..*\\.7z" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.7z" />
-
-                <data android:pathPattern=".*\\.tar.gz" />
-                <data android:pathPattern=".*\\..*\\.tar.gz" />
-                <data android:pathPattern=".*\\..*\\..*\\.tar.gz" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.tar.gz" />
-
-                <data android:pathPattern=".*\\.rar" />
-                <data android:pathPattern=".*\\..*\\.rar" />
-                <data android:pathPattern=".*\\..*\\..*\\.rar" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.rar" />
-
-                <data android:pathPattern=".*\\.bz2" />
-                <data android:pathPattern=".*\\..*\\.bz2" />
-                <data android:pathPattern=".*\\..*\\..*\\.bz2" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.bz2" />
-
-                <data android:pathPattern=".*\\.gz" />
-                <data android:pathPattern=".*\\..*\\.gz" />
-                <data android:pathPattern=".*\\..*\\..*\\.gz" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.gz" />
-
-                <data android:pathPattern=".*\\.tar" />
-                <data android:pathPattern=".*\\..*\\.tar" />
-                <data android:pathPattern=".*\\..*\\..*\\.tar" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.tar" />
+                <data android:mimeType="application/x-rar-compressed" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-7z-compressed" />
+                <data android:mimeType="application/x-tar" />
+                <data android:mimeType="application/gzip" />
+                <data android:mimeType="application/x-tar+gzip" />
             </intent-filter>
         </activity>
         <activity

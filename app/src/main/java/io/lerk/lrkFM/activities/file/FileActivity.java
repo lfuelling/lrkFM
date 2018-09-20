@@ -40,7 +40,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,31 +51,31 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.lerk.lrkFM.DiskUtil;
+import io.lerk.lrkFM.EditablePair;
+import io.lerk.lrkFM.PrefUtils;
+import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.VibratingToast;
 import io.lerk.lrkFM.activities.IntroActivity;
 import io.lerk.lrkFM.activities.SettingsActivity;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatActivity;
+import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.adapter.FileArrayAdapter;
+import io.lerk.lrkFM.consts.Operation;
+import io.lerk.lrkFM.entities.Bookmark;
 import io.lerk.lrkFM.entities.FMArchive;
+import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.entities.HistoryEntry;
 import io.lerk.lrkFM.tasks.DirectoryLoaderTask;
+import io.lerk.lrkFM.tasks.VersionCheckTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveCreationTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveExtractionTask;
-import io.lerk.lrkFM.entities.Bookmark;
-import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
 import io.lerk.lrkFM.tasks.archive.ArchiveLoaderTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveParentFinderTask;
 import io.lerk.lrkFM.tasks.operation.FileCopyTask;
 import io.lerk.lrkFM.tasks.operation.FileMoveTask;
 import io.lerk.lrkFM.tasks.operation.FileOperationTask;
-import io.lerk.lrkFM.DiskUtil;
-import io.lerk.lrkFM.EditablePair;
-import io.lerk.lrkFM.consts.Operation;
-import io.lerk.lrkFM.PrefUtils;
-import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.entities.FMFile;
-import io.lerk.lrkFM.tasks.VersionCheckTask;
-import io.lerk.lrkFM.VibratingToast;
 import io.lerk.lrkFM.version.VersionInfo;
 
 import static android.view.View.GONE;
@@ -142,11 +141,6 @@ public class FileActivity extends ThemedAppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-
-    /**
-     * Self.
-     */
-    private static WeakReference<FileActivity> context;
 
     /**
      * {@link ListView} that contains the files inside the current directory.
@@ -270,43 +264,47 @@ public class FileActivity extends ThemedAppCompatActivity {
         if (dataString != null) {
             if (!dataString.isEmpty()) {
                 Log.d(TAG, "Intent dataString present: '" + dataString + "'");
-                File iFile;
-                try {
-                    iFile = new File(Uri.decode(dataString.split("://")[1]));
-                } catch (IndexOutOfBoundsException e) {
-                    iFile = new File(Uri.decode(dataString));
+                File iFile = null;
+                if (dataString.startsWith("content://")) {
+                    Toast.makeText(this, R.string.error_content_uri, Toast.LENGTH_LONG).show();
+                } else if (dataString.startsWith("file://")) {
+                    try {
+                        iFile = new File(Uri.decode(dataString.split("://")[1]));
+                    } catch (IndexOutOfBoundsException e) {
+                        iFile = new File(Uri.decode(dataString));
+                    }
                 }
-                if (iFile.exists()) {
+                if (iFile != null && iFile.exists()) {
                     FMFile file = new FMFile(iFile);
                     new ArchiveParentFinderTask(file, parentFinder ->
-                        new ArchiveLoaderTask(file, a -> {
-                            FMArchive archiveToExtract = null;
-                            if (!file.isArchive() && parentFinder.isArchive()) {
-                                archiveToExtract = parentFinder.getArchiveFile();
-                            } else if (file.isArchive()) {
-                                archiveToExtract = a;
-                            }
-                            if (archiveToExtract != null) {
-                                addFileToOpContext(EXTRACT, archiveToExtract);
-                                if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
-                                    Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
+                            new ArchiveLoaderTask(file, a -> {
+                                FMArchive archiveToExtract = null;
+                                if (!file.isArchive() && parentFinder.isArchive()) {
+                                    archiveToExtract = parentFinder.getArchiveFile();
+                                } else if (file.isArchive()) {
+                                    archiveToExtract = a;
                                 }
+                                if (archiveToExtract != null) {
+                                    addFileToOpContext(EXTRACT, archiveToExtract);
+                                    if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+                                        Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
+                                    }
 
-                                PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
-                                if (alwaysExtractInCurrentPref.getValue()) {
-                                    finishFileOperation();
+                                    PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
+                                    if (alwaysExtractInCurrentPref.getValue()) {
+                                        finishFileOperation();
+                                    } else {
+                                        new AlertDialog.Builder(this)
+                                                .setView(R.layout.layout_extract_now_prompt)
+                                                .setPositiveButton(R.string.yes, (dialog, which) -> finishFileOperation())
+                                                .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
+                                                .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                                    }
                                 } else {
-                                    new AlertDialog.Builder(this)
-                                            .setView(R.layout.layout_extract_now_prompt)
-                                            .setPositiveButton(R.string.yes, (dialog, which) -> finishFileOperation())
-                                            .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
-                                            .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                                    Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
                                 }
-                            } else {
-                                Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
-                            }
-                            reloadCurrentDirectory();
-                        }).execute() // load the archive file
+                                reloadCurrentDirectory();
+                            }).execute() // load the archive file
                     ).execute(); // load it's contents
                 }
             }
@@ -319,7 +317,6 @@ public class FileActivity extends ThemedAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = new WeakReference<>(this);
 
         PrefUtils<Boolean> firstStartPref = new PrefUtils<>(FIRST_START);
         if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
@@ -351,7 +348,7 @@ public class FileActivity extends ThemedAppCompatActivity {
             checkForUpdate();
         }
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             loadHomeDir();
         }
     }
@@ -673,13 +670,13 @@ public class FileActivity extends ThemedAppCompatActivity {
             View errorText = findViewById(R.id.unableToLoadText);
             View emptyText = findViewById(R.id.emptyDirText);
 
-            if(files!= null) {
+            if (files != null) {
                 fileListView.setVisibility(VISIBLE);
                 errorText.setVisibility(GONE);
                 emptyText.setVisibility(GONE);
 
                 if (arrayAdapter == null || exploringArchive) {
-                    if(exploringArchive) {
+                    if (exploringArchive) {
                         exploringArchive = false;
                     }
                     arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
@@ -950,18 +947,22 @@ public class FileActivity extends ThemedAppCompatActivity {
         if (!operation.equals(NONE) && !files.isEmpty()) {
             if (operation.equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    files.forEach((f) -> new FileCopyTask(this, s -> {}, f, null).execute());
+                    files.forEach((f) -> new FileCopyTask(this, s -> {
+                    }, f, null).execute());
                 } else { // -_-
                     for (FMFile f : files) {
-                        new FileCopyTask(this, s -> {}, f, null).execute();
+                        new FileCopyTask(this, s -> {
+                        }, f, null).execute();
                     }
                 }
             } else if (operation.equals(MOVE)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    files.forEach((f) -> new FileMoveTask(this, s -> {}, f, null).execute());
+                    files.forEach((f) -> new FileMoveTask(this, s -> {
+                    }, f, null).execute());
                 } else { // -_-
                     for (FMFile f : files) {
-                        new FileMoveTask(this, s -> {}, f, null).execute();
+                        new FileMoveTask(this, s -> {
+                        }, f, null).execute();
                     }
                 }
             } else if (operation.equals(EXTRACT)) {
@@ -1111,7 +1112,7 @@ public class FileActivity extends ThemedAppCompatActivity {
     protected void onResume() {
         super.onResume();
         String cachedDirectory = new PrefUtils<String>(CURRENT_DIR_CACHE).getValue();
-        if (! cachedDirectory.equals("")) {
+        if (!cachedDirectory.equals("")) {
             currentDirectory = cachedDirectory;
         }
     }
@@ -1198,9 +1199,5 @@ public class FileActivity extends ThemedAppCompatActivity {
 
     public EditablePair<Operation, ArrayList<FMFile>> getFileOpContext() {
         return fileOpContext;
-    }
-
-    public static FileActivity get() {
-        return context.get();
     }
 }
