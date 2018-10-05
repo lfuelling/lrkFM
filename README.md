@@ -21,12 +21,7 @@ You can join the beta program through [here.](https://play.google.com/apps/testi
 ### Permissions
 
 Obviously this app needs full access to the filesystem to work. This is checked and prompted if needed when starting the app.
-
-You also will notice that the app needs network permissions and the permission to prevent the phone from sleeping. Those permissions are only needed by Firebase (Google stuff) which I use to collect crash dumps and performance metrics, if the submission of those is enabled in the app's settings. Because those permissions are not needed by lrkFM directly, you also won't find them in the local manifest. But when you build the master branch yourself, you'll see that they are added to the manifest at compile time.
-
-### Operation Modes
-
-There are two main types of operation. The first one will prompt for a destination path when triggering a file operation. The second one will remember the file you want to copy, move, etc. and let's you navigate to the target folder (or create it) and then trigger execution of the operation.
+The app also needs internet access to check for updates if this feature is enabled in the settings.
 
 ## Screenshots
 
