@@ -58,10 +58,12 @@
     <string name="pref_header_path_length">Maximale Länge des Pfads im Header</string>
     <string name="pref_header_path_length_desc">Ab dieser Länge wird der Pfad von vorne an gekürzt.</string>
     <string name="pref_version">App Version</string>
-    <string name="pref_sortby_text_name">Name</string>
     <string name="pref_sortby_title">Sortierungsparameter</string>
     <string name="pref_sortby_desc">Dateien werden hiernach angeordnet.</string>
-    <string name="pref_sortby_text_date">Datum</string>
+    <string name="pref_sortby_text_name_asc">Name (Aufsteigend)</string>
+    <string name="pref_sortby_text_name_desc">Name (Absteigend)</string>
+    <string name="pref_sortby_text_date_asc">Datum (Aufsteigend)</string>
+    <string name="pref_sortby_text_date_desc">Datum (Absteigend)</string>
     <string name="pref_context_for_ops_desc">Wenn aktiviert, muss zum Zielpfad navigiert werden.</string>
     <string name="pref_context_for_ops">Nicht nach Zielpfad fragen</string>
     <string name="pref_context_for_ops_toast_desc">Toast beim auswählen einer Datei anzeigen</string>
