@@ -1,73 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="HardcodedText"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
     <!--
      Please don't remove the stuff with android:visibility="invisible"
      because I need those things to retain the size of the element.
      I know this is hacky, dirty and the worst practise but
      I started off with no fixed size and I won't add it now.
      -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:ignore="HardcodedText">
+
     <ImageButton
         android:id="@+id/contextMenuButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_more_vert_black_24dp"
-        android:background="@color/transparent"
+        android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/context_menu_margin"
-        android:layout_marginEnd="@dimen/context_menu_margin"
-        android:contentDescription="@string/context_btn_desc" />
+        android:background="@color/transparent"
+        android:contentDescription="@string/context_btn_desc"
+        android:paddingStart="@dimen/context_menu_margin_start"
+        android:paddingTop="@dimen/context_menu_margin"
+        android:paddingEnd="@dimen/context_menu_margin"
+        android:paddingBottom="@dimen/context_menu_margin"
+        android:src="@drawable/ic_tune_black_24dp"
+        android:tint="?android:attr/textColorPrimary" />
+
     <TextView
         android:id="@+id/fileTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/context_menu_margin_end"
+        android:layout_marginTop="@dimen/file_view_margin"
+        android:layout_marginEnd="@dimen/file_view_margin"
+        android:layout_toEndOf="@id/contextMenuButton"
         android:maxWidth="256dp"
         android:text="Title blablaloremispumdolorsitamet"
-        android:textColor="@color/primary_text"
-        android:layout_toEndOf="@id/contextMenuButton"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/file_title_fs"
-        android:layout_marginTop="@dimen/file_view_margin"
-        android:layout_marginStart="@dimen/file_view_margin"
-        android:layout_marginEnd="@dimen/file_view_margin"/>
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="@dimen/file_title_fs" />
+
     <TextView
-        android:visibility="invisible"
+        android:id="@+id/filePermissions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fileTitle"
+        android:layout_marginStart="@dimen/context_menu_margin_end"
+        android:layout_marginBottom="@dimen/file_view_margin"
+        android:layout_toEndOf="@id/contextMenuButton"
+        android:text="drwx"
+        android:visibility="invisible"/>
+
+    <TextView
         android:id="@+id/fileSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/fileIcon"
         android:layout_toStartOf="@id/fileIcon"
-        android:layout_marginTop="@dimen/file_size_margin"
-        android:text="1 MB"/>
-    <TextView
-        android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:id="@+id/filePermissions"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/contextMenuButton"
-        android:layout_below="@id/fileTitle"
-        android:layout_marginStart="@dimen/file_view_margin"
-        android:layout_marginBottom="@dimen/file_view_margin"
-        android:text="drwx"/>
+        android:text="1 MB"
+        android:visibility="invisible" />
+
     <ImageView
         android:id="@+id/fileIcon"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/file_title_fs"
-        android:src="@drawable/ic_launcher"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/file_view_margin"
         android:layout_marginTop="@dimen/file_view_margin"
-        android:contentDescription="@string/file_icon_desc" />
+        android:layout_marginEnd="@dimen/file_view_margin"
+        android:contentDescription="@string/file_icon_desc"
+        android:src="@drawable/ic_launcher"
+        android:tint="?android:attr/textColorPrimary" />
+
     <TextView
         android:id="@+id/fileDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/file_view_margin"
         android:layout_below="@id/fileTitle"
         android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/file_view_margin"
         android:text="01.01.1970"
         android:visibility="invisible"/>
 

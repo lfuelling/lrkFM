@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -135,7 +136,10 @@ public class FileArrayAdapter extends BaseArrayAdapter {
             }
             v.setOnCreateContextMenuListener((menu, view, info) -> new ContextMenuUtil(activity, this).initializeContextMenu(f, fileName, menu));
             ImageButton contextButton = v.findViewById(R.id.contextMenuButton);
-            contextButton.setOnClickListener(v1 -> activity.getFileListView().showContextMenuForChild(v));
+            contextButton.setOnClickListener(v1 -> {
+                ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(8);
+                activity.getFileListView().showContextMenuForChild(v);
+            });
 
             for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
                 if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {

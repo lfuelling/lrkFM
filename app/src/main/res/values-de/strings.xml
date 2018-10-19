@@ -148,4 +148,8 @@
     <string name="archive">Archiv</string>
     <string name="pref_always_show_intro">Intro jedes mal anzeigen</string>
     <string name="pref_always_show_intro_desc">Zeigt das Intro an, auch wenn es nicht der erste Start der Anwendung ist.</string>
+    <string name="error_content_uri">Entschuldigung, die App unterstützt zur Zeit leider keine content:// URIs.</string>
+    <string name="restart_required_title">Neustart Erforderlich</string>
+    <string name="restart_required_message">Eine Änderung dieser Einstellung erfordert einen Neustart von lrkFM.</string>
+    <string name="a11y_desc_logo">App Logo</string>
 </resources>

@@ -8,7 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
-import android.preference.SwitchPreference;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +20,10 @@ import org.jraf.android.alibglitch.GlitchEffect;
 
 import java.util.HashSet;
 
+import io.lerk.lrkFM.PrefUtils;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatPreferenceActivity;
 import io.lerk.lrkFM.consts.PreferenceEntity;
-import io.lerk.lrkFM.PrefUtils;
 
 /**
  * Settings.
@@ -83,6 +83,16 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
             }
 
             addOnPreferenceChangeListeners(this.getPreferenceScreen());
+
+            getPreferenceScreen().findPreference("theme").setOnPreferenceChangeListener((p, n) -> {
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.restart_required_title)
+                        .setMessage(R.string.restart_required_message)
+                        .setNeutralButton(R.string.okay, (d, w) -> d.dismiss())
+                        .create().show();
+                new PrefUtils<String>(PreferenceEntity.THEME).setValue(String.valueOf(n));
+                return true;
+            });
         }
 
         @Override

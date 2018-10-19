@@ -13,9 +13,10 @@
     <dimen name="nav_header_margin_bottom">4dp</dimen>
     <dimen name="nav_header_padding_top">40dp</dimen>
     <dimen name="file_size_margin">12dp</dimen>
-    <dimen name="status_bar_size">20dp</dimen>
-    <dimen name="context_menu_margin_end">4dp</dimen>
+    <dimen name="status_bar_size">24dp</dimen>
+    <dimen name="context_menu_margin_start">12dp</dimen>
     <dimen name="context_menu_margin">8dp</dimen>
+    <dimen name="context_menu_margin_end">4dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 </resources>
