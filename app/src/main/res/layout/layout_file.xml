@@ -14,8 +14,10 @@
         android:background="@color/transparent"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/context_menu_margin"
-        android:layout_marginEnd="@dimen/context_menu_margin_end"
+        android:paddingStart="@dimen/context_menu_margin_start"
+        android:paddingEnd="@dimen/context_menu_margin"
+        android:paddingTop="@dimen/context_menu_margin"
+        android:paddingBottom="@dimen/context_menu_margin"
         android:contentDescription="@string/context_btn_desc" />
     <TextView
         android:id="@+id/fileTitle"

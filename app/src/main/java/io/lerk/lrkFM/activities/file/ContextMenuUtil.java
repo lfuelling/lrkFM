@@ -17,6 +17,7 @@ import java.util.Objects;
 
 import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
 import io.lerk.lrkFM.consts.Operation;
 import io.lerk.lrkFM.entities.FMFile;
@@ -70,16 +71,19 @@ public class ContextMenuUtil {
      */
     public void initializeContextMenu(FMFile f, String fileName, ContextMenu menu) {
         menu.setHeaderTitle(fileName);
-        addCopyToMenu(f, menu);
-        addMoveToMenu(f, menu);
-        addRenameToMenu(f, menu);
-        addExtractToMenu(f, menu);
-        addShareToMenu(f, menu);
-        addDeleteToMenu(f, menu);
         addCopyPathToMenu(f, menu);
-        addCreateZipToMenu(f, menu);
-        addExploreToMenu(f, menu);
-        addOpenWithToMenu(f, menu);
+
+        if (!(arrayAdapter instanceof ArchiveArrayAdapter)) { // those actions are not available while inside archives
+            addExtractToMenu(f, menu);
+            addDeleteToMenu(f, menu);
+            addShareToMenu(f, menu);
+            addCreateZipToMenu(f, menu);
+            addExploreToMenu(f, menu);
+            addOpenWithToMenu(f, menu);
+            addCopyToMenu(f, menu);
+            addMoveToMenu(f, menu);
+            addRenameToMenu(f, menu);
+        }
     }
 
     /**
@@ -121,7 +125,7 @@ public class ContextMenuUtil {
 
                             FMFile archiveToExtract = file;
 
-                            if (!file.isArchive() && parentFinder.isArchive()) {
+                            if ((!file.isArchive() && parentFinder.isArchive())) {
                                 archiveToExtract = parentFinder.getArchiveFile();
                             }
 
