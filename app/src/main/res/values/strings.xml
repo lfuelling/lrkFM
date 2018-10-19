@@ -68,13 +68,17 @@
     <string name="pref_header_path_length_desc">The path will bew shortened from the front from this length.</string>
     <string name="pref_header_path_length_default" translatable="false">27</string>
     <string name="pref_version">App Version</string>
-    <string name="pref_sortby_value_name" translatable="false">name</string>
-    <string name="pref_sortby_value_default" translatable="false">@string/pref_sortby_value_name</string>
-    <string name="pref_sortby_text_name">Name</string>
+    <string name="pref_sortby_value_default" translatable="false">@string/pref_sortby_value_name_asc</string>
     <string name="pref_sortby_title">File sort param</string>
     <string name="pref_sortby_desc">The files in the file view will be sorted by this property.</string>
-    <string name="pref_sortby_text_date">Date</string>
-    <string name="pref_sortby_value_date" translatable="false">date</string>
+    <string name="pref_sortby_text_name_asc">Name (Ascending)</string>
+    <string name="pref_sortby_text_name_desc">Name (Descending)</string>
+    <string name="pref_sortby_text_date_asc">Date (Ascending)</string>
+    <string name="pref_sortby_text_date_desc">Date (Descending)</string>
+    <string name="pref_sortby_value_name_asc" translatable="false">namea</string>
+    <string name="pref_sortby_value_name_desc" translatable="false">named</string>
+    <string name="pref_sortby_value_date_asc" translatable="false">datea</string>
+    <string name="pref_sortby_value_date_desc" translatable="false">dated</string>
     <string name="pref_context_for_ops_desc">When activated you need to navigate to the destination path.</string>
     <string name="pref_context_for_ops">Don\'t prompt for destination path.</string>
     <string name="pref_context_for_ops_toast_desc">Show toast when adding a file to the operations context.</string>

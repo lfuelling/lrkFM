@@ -7,14 +7,16 @@ import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.util.Date;
 
+import io.lerk.lrkFM.PrefUtils;
 import io.lerk.lrkFM.consts.FileType;
+import io.lerk.lrkFM.consts.PreferenceEntity;
 
 /**
  * File object.
  *
  * @author Lukas Fülling (lukas@k40s.net)
  */
-public class FMFile {
+public class FMFile implements Comparable<FMFile> {
 
     private static final String TAG = FMFile.class.getCanonicalName();
 
@@ -115,5 +117,21 @@ public class FMFile {
             fileExtension = "";
         }
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+    }
+
+    @Override
+    public int compareTo(FMFile o) {
+        String sortParam = new PrefUtils<String>(PreferenceEntity.SORT_FILES_BY).getValue();
+        switch (sortParam) {
+            case "datea":
+                return Long.compare(this.lastModified.getTime(), o.lastModified.getTime());
+            case "dated":
+                return Long.compare(o.lastModified.getTime(), this.lastModified.getTime());
+            case "named":
+                return o.name.compareToIgnoreCase(this.name);
+            case "namea":
+            default:
+                return this.name.compareToIgnoreCase(o.name);
+        }
     }
 }

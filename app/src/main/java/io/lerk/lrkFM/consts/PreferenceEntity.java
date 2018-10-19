@@ -33,7 +33,7 @@ public enum PreferenceEntity {
     /**
      * The parameter to sort files by.
      */
-    SORT_FILES_BY(Store.LOCAL, "sort_files_by", (LrkFMApp.getContext() != null) ? LrkFMApp.getContext().getString(R.string.pref_sortby_value_default) : "name"),
+    SORT_FILES_BY(Store.LOCAL, "sort_files_by", (LrkFMApp.getContext() != null) ? LrkFMApp.getContext().getString(R.string.pref_sortby_value_default) : "namea"),
 
     /**
      * If the backup quota is exceeded.

@@ -679,12 +679,13 @@ public class FileActivity extends ThemedAppCompatActivity {
                     if (exploringArchive) {
                         exploringArchive = false;
                     }
-                    arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()));
+                    arrayAdapter = new FileArrayAdapter(this, R.layout.layout_file, files);
+                    arrayAdapter.sort(FMFile::compareTo);
                     fileListView.setAdapter(arrayAdapter);
                 } else {
                     ((BaseArrayAdapter) fileListView.getAdapter()).clear();
                     ((BaseArrayAdapter) fileListView.getAdapter()).addAll(files);
-                    ((BaseArrayAdapter) fileListView.getAdapter()).notifyDataSetChanged();
+                    ((BaseArrayAdapter) fileListView.getAdapter()).sort(FMFile::compareTo); // sort method automatically calls `notifyDataSetChanged`
                 }
             } else {
                 fileListView.setVisibility(GONE);
@@ -721,41 +722,14 @@ public class FileActivity extends ThemedAppCompatActivity {
         errorText.setVisibility(GONE);
         emptyText.setVisibility(GONE);
 
-        arrayAdapter = new ArchiveArrayAdapter(this, R.layout.layout_file, sortFilesByPreference(files, new PrefUtils<String>(SORT_FILES_BY).getValue()), archive);
+        arrayAdapter = new ArchiveArrayAdapter(this, R.layout.layout_file, files, archive);
+        arrayAdapter.sort(FMFile::compareTo);
         fileListView.setAdapter(arrayAdapter);
 
         currentDirectory = path;
         historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, archive));
         setToolbarText();
         setFreeSpaceText();
-    }
-
-    /**
-     * Sorts files by user preference.
-     *
-     * @param files files to sort
-     * @param pref  chosen preference
-     * @return sorted list
-     */
-    private ArrayList<FMFile> sortFilesByPreference(ArrayList<FMFile> files, String pref) {
-        if (pref.equals(getString(R.string.pref_sortby_value_name))) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                files.sort(Comparator.comparing(FMFile::getName));
-            } else { // FUCKING OUT OF DATE USERS >.<
-                //noinspection ComparatorCombinators,RedundantCast
-                Arrays.sort((FMFile[]) files.toArray(new FMFile[0]), (o1, o2) -> o1.getName().compareTo(o2.getName()));
-            }
-        } else if (pref.equals(getString(R.string.pref_sortby_value_date))) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                files.sort(Comparator.comparing(FMFile::getLastModified));
-            } else { // you see how beautiful the code above is?
-                //noinspection ComparatorCombinators,RedundantCast
-                Arrays.sort((FMFile[]) files.toArray(new FMFile[0]), (o1, o2) -> o1.getLastModified().compareTo(o2.getLastModified()));
-            }
-        } else {
-            Log.d(TAG, "This sort method is not implemented, skipping file sort!");
-        }
-        return files;
     }
 
     /**
