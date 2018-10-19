@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="?android:attr/actionBarSize"
     android:background="?attr/colorPrimaryDark"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingBottom="@dimen/nav_header_margin_bottom"
     android:paddingLeft="@dimen/nav_header_padding"
     android:paddingRight="@dimen/nav_header_padding"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark">
-
-    <RelativeLayout
-        android:layout_height="?android:attr/actionBarSize"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/status_bar_size">
+    android:theme="@style/ThemeOverlay.AppCompat.Dark"
+    android:layout_marginTop="@dimen/status_bar_size">
 
         <ImageView
             android:id="@+id/imageView"
@@ -22,8 +19,8 @@
             android:layout_height="?android:attr/actionBarSize"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="-4dp"
-            app:srcCompat="@mipmap/ic_launcher" />
+            app:srcCompat="@mipmap/ic_launcher"
+            android:contentDescription="@string/a11y_desc_logo" />
 
         <TextView
             android:id="@+id/currentDirectoryTextView"
@@ -42,5 +39,3 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
     </RelativeLayout>
 
-
-</RelativeLayout>
