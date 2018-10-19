@@ -1,11 +1,11 @@
 package io.lerk.lrkFM;
 
+import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDexApplication;
 
 import java.lang.ref.WeakReference;
 
-public class LrkFMApp extends MultiDexApplication {
+public class LrkFMApp extends Application {
 
     public static final String CHANNEL_ID = "lrkFM";
     private static WeakReference<Context> context;

@@ -78,7 +78,7 @@ public class PrefUtils<T> {
         if (context != null) {
             try {
                 if (type.equals(Boolean.class)) {
-                    return (T) returnBooleanValueCheckForDebug();
+                    return (T) Boolean.valueOf(preferences.getBoolean(key, (Boolean) preference.getDefaultValue()));
                 } else if (type.equals(String.class)) {
                     return (T) preferences.getString(key, (String) preference.getDefaultValue());
                 } else if (type.equals(HashSet.class)) {
@@ -91,20 +91,6 @@ public class PrefUtils<T> {
             Log.e(TAG, "Unable to get preference: context is null!");
         }
         return null;
-    }
-
-    /**
-     * Returns the value of a {@link Boolean} preference but also checks for {@link BuildConfig#DEBUG} and returns other values in this case.
-     * @return The preference value
-     */
-    private Boolean returnBooleanValueCheckForDebug() {
-        if (BuildConfig.DEBUG) {
-            if(preference.equals(PreferenceEntity.FIRST_START)) {
-                return Boolean.TRUE; // In debug, every start is a firstStart
-            }
-        }
-        // return the actual value
-        return preferences.getBoolean(key, (Boolean) preference.getDefaultValue());
     }
 
     /**

@@ -29,9 +29,6 @@ public class IntroActivity extends ThemedAppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(new PrefUtils<Boolean>(PreferenceEntity.FIRST_START).getValue() || new PrefUtils<Boolean>(PreferenceEntity.ALWAYS_SHOW_INTRO).getValue()) {
-            launchMainAndFinish(savedInstanceState);
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
         Toolbar toolbar = findViewById(R.id.toolbar);

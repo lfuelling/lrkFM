@@ -15,7 +15,8 @@
         android:restoreAnyVersion="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning" >
+        tools:ignore="GoogleAppIndexingWarning"
+        android:allowBackup="false" >
         <meta-data
             android:name="android.max_aspect"
             android:value="ratio_float" />

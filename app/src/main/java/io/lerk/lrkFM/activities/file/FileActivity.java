@@ -88,6 +88,7 @@ import static io.lerk.lrkFM.consts.Operation.EXTRACT;
 import static io.lerk.lrkFM.consts.Operation.MOVE;
 import static io.lerk.lrkFM.consts.Operation.NONE;
 import static io.lerk.lrkFM.consts.PreferenceEntity.ALWAYS_EXTRACT_IN_CURRENT_DIR;
+import static io.lerk.lrkFM.consts.PreferenceEntity.ALWAYS_SHOW_INTRO;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARKS;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_CURRENT_FOLDER;
 import static io.lerk.lrkFM.consts.PreferenceEntity.BOOKMARK_EDIT_MODE;
@@ -318,10 +319,9 @@ public class FileActivity extends ThemedAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PrefUtils<Boolean> firstStartPref = new PrefUtils<>(FIRST_START);
         if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
-            firstStartPref.setValue(false);
-        } else if (firstStartPref.getValue()) {
+            new PrefUtils<Boolean>(FIRST_START).setValue(false);
+        } else if (new PrefUtils<Boolean>(FIRST_START).getValue() || new PrefUtils<Boolean>(ALWAYS_SHOW_INTRO).getValue()) {
             startActivity(new Intent(this, IntroActivity.class));
             finish();
         }
@@ -1122,7 +1122,7 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     private void launchBugReportTab() {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setToolbarColor(getColor(R.color.default_primary));
+        builder.setToolbarColor(getColorByAttr(R.attr.colorPrimary));
         CustomTabsIntent build = builder.build();
         build.launchUrl(this, Uri.parse("https://github.com/lfuelling/lrkFM/issues/new"));
     }
