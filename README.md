@@ -1,4 +1,6 @@
-# lrkFM ![badge](https://travis-ci.org/lfuelling/lrkFM.svg?branch=master)
+# lrkFM ![badge](https://travis-ci.org/lfuelling/lrkFM.svg?branch=master) 
+
+[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/0)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/0)[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/1)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/1)[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/2)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/2)[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/3)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/3)[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/4)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/4)[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/5)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/5)[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/6)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/6)[![](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/images/7)](https://sourcerer.io/fame/lfuelling/lfuelling/lrkFM/links/7)
 
 File manager for Android. It has the following features:
 
