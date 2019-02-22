@@ -36,9 +36,10 @@ public class FileMoveTask extends FileOperationTask {
             Toast.makeText(context, R.string.err_empty_input, LENGTH_SHORT).show();
             this.cancel(true);
         }
-        destination = new File(OperationUtil.getFullPathForRename(f, newName));
+        destination = new File(newName + "/" + f.getFile().getName());
         if (destination.exists()) {
             getFileExistsDialogBuilder(context)
+                    .setOnDismissListener(d -> this.execute())
                     .setOnCancelListener(d -> cancel(true)) //cancel task on "no"
                     .create().show();
         }

@@ -922,21 +922,21 @@ public class FileActivity extends ThemedAppCompatActivity {
             if (operation.equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     files.forEach((f) -> new FileCopyTask(this, s -> {
-                    }, f, null).execute());
+                    }, f, null));
                 } else { // -_-
                     for (FMFile f : files) {
                         new FileCopyTask(this, s -> {
-                        }, f, null).execute();
+                        }, f, null);
                     }
                 }
             } else if (operation.equals(MOVE)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     files.forEach((f) -> new FileMoveTask(this, s -> {
-                    }, f, null).execute());
+                    }, f, null));
                 } else { // -_-
                     for (FMFile f : files) {
                         new FileMoveTask(this, s -> {
-                        }, f, null).execute();
+                        }, f, null);
                     }
                 }
             } else if (operation.equals(EXTRACT)) {

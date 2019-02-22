@@ -5,10 +5,11 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -16,6 +17,11 @@ import java.util.Arrays;
 
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
+
+import static io.lerk.lrkFM.tasks.operation.CompatOperations.copyDirectory;
+import static io.lerk.lrkFM.tasks.operation.CompatOperations.copyFile;
+import static io.lerk.lrkFM.tasks.operation.CompatOperations.moveDirectory;
+import static io.lerk.lrkFM.tasks.operation.CompatOperations.moveFile;
 
 /**
  * Utility class for file operations.
@@ -61,9 +67,9 @@ class OperationUtil {
                 Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } else {
                 if (f.getFile().isDirectory()) {
-                    FileUtils.copyDirectory(f.getFile(), d);
+                    copyDirectory(f.getFile(), d);
                 } else {
-                    FileUtils.copyFile(f.getFile(), d);
+                    copyFile(f.getFile(), d);
                 }
             }
             return true;
@@ -79,12 +85,16 @@ class OperationUtil {
         }
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Files.move(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                // Files.move() seems to be broken :c
+                Files.copy(f.getFile().toPath(), d.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                if(!f.getFile().delete()) {
+                    Log.w(TAG, "Unable to remove source file!");
+                }
             } else {
                 if (f.getFile().isDirectory()) {
-                    FileUtils.moveDirectory(f.getFile(), d);
+                    moveDirectory(f.getFile(), d);
                 } else {
-                    FileUtils.moveFile(f.getFile(), d);
+                    moveFile(f.getFile(), d);
                 }
             }
             return true;

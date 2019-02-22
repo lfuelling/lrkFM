@@ -186,7 +186,7 @@ public class ContextMenuUtil {
                     R.drawable.ic_mode_edit_black_24dp,
                     R.layout.layout_name_prompt,
                     (d) -> new FileMoveTask(activity, b -> {
-                    }, f, d).execute(),
+                    }, f, d),
                     (d) -> Log.i(TAG, "Cancelled."));
             alertDialog.setOnShowListener(d -> arrayAdapter.presetNameForDialog(alertDialog, R.id.destinationName, f.getName()));
             alertDialog.show();

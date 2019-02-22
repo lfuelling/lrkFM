@@ -68,6 +68,7 @@ public class FileCopyTask extends FileOperationTask {
         }
         if (destination.exists()) {
             getFileExistsDialogBuilder(context)
+                    .setOnDismissListener(dialogInterface -> this.execute())
                     .setOnCancelListener(dialogInterface -> cancel(true))
                     .create().show();
         }
