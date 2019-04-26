@@ -3,7 +3,9 @@
 buildscript {
     repositories {
         maven { url 'https://nexus.k40s.net/repository/maven-public/' }
+        maven { url 'https://jitpack.io' }
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.1'
@@ -17,6 +19,9 @@ buildscript {
 allprojects {
     repositories {
         maven { url 'https://nexus.k40s.net/repository/maven-public/' }
+        maven { url 'https://jitpack.io' }
+        google()
+        jcenter()
     }
 }
 

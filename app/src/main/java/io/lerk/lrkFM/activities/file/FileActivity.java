@@ -886,6 +886,9 @@ public class FileActivity extends ThemedAppCompatActivity {
         if (item.getItemId() == R.id.settings) {
             launchSettings();
             return true;
+        } else if (item.getItemId() == R.id.overflow_new_file){
+            launchNewFileDialog();
+            return true;
         } else if (item.getItemId() == R.id.new_directory) {
             launchNewDirDialog();
             return true;
@@ -1050,6 +1053,40 @@ public class FileActivity extends ThemedAppCompatActivity {
         }
     }
 
+    /**
+     * Launches a prompt to create a new file.
+     */
+     private void launchNewFileDialog(){
+        AlertDialog newFileDialog = new AlertDialog.Builder(this)
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> Log.d(TAG, "Cancel pressed"))
+                .setTitle(R.string.new_file)
+                .setView(R.layout.layout_filename_prompt)
+                .create();
+        newFileDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (file, i) -> {
+            String newFileName = currentDirectory + File.separator + ((EditText) newFileDialog.findViewById(R.id.filedestinationName)).getText().toString();
+            newFile(new File(newFileName));
+            reloadCurrentDirectory();
+        });
+        newFileDialog.show();
+    }
+
+     void newFile(File file){
+        if(!file.exists()) {
+            try {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                    Files.createFile(file.toPath());
+                }else{
+                    if(!file.createNewFile()){
+                        Toast.makeText(this, "Unable to create file.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            } catch (IOException e){
+                Log.e(TAG, "Unable to create file.", e);
+            }
+        } else {
+            Toast.makeText(this, "File already exists", Toast.LENGTH_LONG).show();
+        }
+    }
     /**
      * Checks if permission to access files is granted.
      *
