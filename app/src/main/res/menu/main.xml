@@ -2,6 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:menuCategory="container">
+        <item android:id="@+id/overflow_new_file"
+            android:title="@string/new_file"
+            app:showAsAction="never" />
         <item android:id="@+id/new_directory"
             android:title="@string/new_directory"
             app:showAsAction="never"/>

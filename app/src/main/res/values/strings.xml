@@ -51,8 +51,10 @@
     <string name="warn_delete_msg">Are you sure that you want to delete: </string>
     <string name="move">Move</string>
     <string name="rename">Rename</string>
-    <string name="name_input_hint">Enter new file name</string>
+    <string name="name_input_hint">Enter new directory name</string> <!-- It's a directory -->
+    <string name="enter_new_file_name">Enter new file name</string> <!-- For file -->
     <string name="new_directory">New Directory</string>
+    <string name="new_file">New File</string>
     <string name="err_file_exists">The specified file already exists!</string>
     <string name="err_unable_to_mkdir">Unable to create directory!</string>
     <string name="file_icon_desc">Icon that shows if the element is a file or a directory.</string>
