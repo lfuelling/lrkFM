@@ -552,14 +552,20 @@ public class FileActivity extends ThemedAppCompatActivity {
     private void addBookmarkToMenu(Menu menu, String s, Set<String> bookmarks) {
         String title = getTitleFromPath(s);
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
-        item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
+        item.setIcon(R.drawable.ic_bookmark_border_black_24dp); // this is auto tinted by android
         Bookmark bookmark = new Bookmark(s, title, item);
+
         if (new Pref<Boolean>(BOOKMARK_EDIT_MODE).getValue()) {
             item.setActionView(R.layout.editable_menu_item);
+
             View v = item.getActionView();
             ImageButton deleteButton = v.findViewById(R.id.menu_item_action_delete);
-            deleteButton.setOnClickListener(v0 -> removeBookmarkFromMenu(menu, s, bookmarks, item, bookmark));
             ImageButton editButton = v.findViewById(R.id.menu_item_action_edit);
+
+            deleteButton.setImageDrawable(getDrawable(R.drawable.ic_delete_white_24dp));
+            editButton.setImageDrawable(getDrawable(R.drawable.ic_edit_white_24dp));
+
+            deleteButton.setOnClickListener(v0 -> removeBookmarkFromMenu(menu, s, bookmarks, item, bookmark));
             editButton.setOnClickListener((v1) -> {
                 AlertDialog dia = new AlertDialog.Builder(this)
                         .setView(R.layout.layout_path_prompt)
