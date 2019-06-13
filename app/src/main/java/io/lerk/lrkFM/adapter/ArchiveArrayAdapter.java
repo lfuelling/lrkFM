@@ -14,11 +14,11 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.activities.file.ContextMenuUtil;
-import io.lerk.lrkFM.PrefUtils;
 
 import static io.lerk.lrkFM.consts.PreferenceEntity.FILENAME_LENGTH;
 
@@ -74,7 +74,7 @@ public class ArchiveArrayAdapter extends BaseArrayAdapter {
 
             final String fileName = f.getName();
             if (fileNameView != null) {
-                int maxLength = Integer.parseInt(new PrefUtils<String>(FILENAME_LENGTH).getValue());
+                int maxLength = Integer.parseInt(new Pref<String>(FILENAME_LENGTH).getValue());
                 if (fileName.length() >= maxLength) {
                     @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength - 3) + "...";
                     fileNameView.setText(output); //shorten long names

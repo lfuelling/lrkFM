@@ -8,6 +8,11 @@ import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
+/**
+ * Task to delete a file.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class FileDeleteTask extends FileOperationTask {
 
     private static final String TAG = FileDeleteTask.class.getCanonicalName();

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
  *
  * Now with Themes!
  *
+ * @author Lukas Fülling (lukas@k40s.net)
  */
 public abstract class ThemedAppCompatPreferenceActivity extends PreferenceActivity {
 

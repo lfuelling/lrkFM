@@ -7,6 +7,11 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.tasks.ProgressDialogCallbackTask;
 
+/**
+ * Abstract operation task.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public abstract class FileOperationTask extends ProgressDialogCallbackTask<Boolean> {
 
     FileOperationTask(FileActivity context, Handler<Boolean> callback) {

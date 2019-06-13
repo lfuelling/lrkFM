@@ -6,7 +6,13 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 import io.lerk.lrkFM.tasks.CallbackTask;
 
+/**
+ * Task to find the parent archive of a file.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class ArchiveParentFinderTask extends CallbackTask<ArchiveParentFinder> {
+
     private final FMFile fmFile;
 
     /**

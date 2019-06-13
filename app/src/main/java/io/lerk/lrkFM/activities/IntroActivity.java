@@ -12,8 +12,6 @@ import android.support.v7.widget.Toolbar;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatActivity;
-import io.lerk.lrkFM.consts.PreferenceEntity;
-import io.lerk.lrkFM.PrefUtils;
 
 /**
  * Intro.

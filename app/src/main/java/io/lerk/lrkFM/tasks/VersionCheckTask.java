@@ -14,6 +14,8 @@ import io.lerk.lrkFM.Handler;
 
 /**
  * {@link AsyncTask} that is called when the app checks for a new version.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
  */
 public class VersionCheckTask extends AsyncTask<Void, String, String> {
 
@@ -38,6 +40,7 @@ public class VersionCheckTask extends AsyncTask<Void, String, String> {
 
     /**
      * Parses the version from the lrkFM PlayStore page.
+     *
      * @param voids the void params (unused)
      * @return the new version as string.
      */
@@ -72,6 +75,7 @@ public class VersionCheckTask extends AsyncTask<Void, String, String> {
 
     /**
      * Calls the {@link Handler}.
+     *
      * @param onlineVersion the current version.
      */
     @Override

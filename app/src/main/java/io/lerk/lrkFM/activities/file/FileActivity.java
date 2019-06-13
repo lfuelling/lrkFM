@@ -53,7 +53,7 @@ import java.util.TreeSet;
 
 import io.lerk.lrkFM.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
-import io.lerk.lrkFM.PrefUtils;
+import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.VibratingToast;
 import io.lerk.lrkFM.activities.IntroActivity;
@@ -98,7 +98,6 @@ import static io.lerk.lrkFM.consts.PreferenceEntity.HEADER_PATH_LENGTH;
 import static io.lerk.lrkFM.consts.PreferenceEntity.HOME_DIR;
 import static io.lerk.lrkFM.consts.PreferenceEntity.NAV_HEADER_UNIT;
 import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_TOAST;
-import static io.lerk.lrkFM.consts.PreferenceEntity.SORT_FILES_BY;
 import static io.lerk.lrkFM.consts.PreferenceEntity.UPDATE_NOTIFICATION;
 import static io.lerk.lrkFM.consts.PreferenceEntity.USE_CONTEXT_FOR_OPS_TOAST;
 import static io.lerk.lrkFM.tasks.VersionCheckTask.NEW_VERSION_NOTIF;
@@ -227,7 +226,6 @@ public class FileActivity extends ThemedAppCompatActivity {
         return fileListView;
     }
 
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -276,40 +274,48 @@ public class FileActivity extends ThemedAppCompatActivity {
                     }
                 }
                 if (iFile != null && iFile.exists()) {
-                    FMFile file = new FMFile(iFile);
-                    new ArchiveParentFinderTask(file, parentFinder ->
-                            new ArchiveLoaderTask(file, a -> {
-                                FMArchive archiveToExtract = null;
-                                if (!file.isArchive() && parentFinder.isArchive()) {
-                                    archiveToExtract = parentFinder.getArchiveFile();
-                                } else if (file.isArchive()) {
-                                    archiveToExtract = a;
-                                }
-                                if (archiveToExtract != null) {
-                                    addFileToOpContext(EXTRACT, archiveToExtract);
-                                    if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
-                                        Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
-                                    }
-
-                                    PrefUtils<Boolean> alwaysExtractInCurrentPref = new PrefUtils<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
-                                    if (alwaysExtractInCurrentPref.getValue()) {
-                                        finishFileOperation();
-                                    } else {
-                                        new AlertDialog.Builder(this)
-                                                .setView(R.layout.layout_extract_now_prompt)
-                                                .setPositiveButton(R.string.yes, (dialog, which) -> finishFileOperation())
-                                                .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
-                                                .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
-                                    }
-                                } else {
-                                    Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
-                                }
-                                reloadCurrentDirectory();
-                            }).execute() // load the archive file
-                    ).execute(); // load it's contents
+                    loadFileFromIntent(iFile);
                 }
             }
         }
+    }
+
+    /**
+     * Loads a file coming from an intent.
+     * @param iFile the file to load
+     */
+    private void loadFileFromIntent(File iFile) {
+        FMFile file = new FMFile(iFile);
+        new ArchiveParentFinderTask(file, parentFinder ->
+                new ArchiveLoaderTask(file, a -> {
+                    FMArchive archiveToExtract = null;
+                    if (!file.isArchive() && parentFinder.isArchive()) {
+                        archiveToExtract = parentFinder.getArchiveFile();
+                    } else if (file.isArchive()) {
+                        archiveToExtract = a;
+                    }
+                    if (archiveToExtract != null) {
+                        addFileToOpContext(EXTRACT, archiveToExtract);
+                        if (new Pref<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+                            Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
+                        }
+
+                        Pref<Boolean> alwaysExtractInCurrentPref = new Pref<>(ALWAYS_EXTRACT_IN_CURRENT_DIR);
+                        if (alwaysExtractInCurrentPref.getValue()) {
+                            finishFileOperation();
+                        } else {
+                            new AlertDialog.Builder(this)
+                                    .setView(R.layout.layout_extract_now_prompt)
+                                    .setPositiveButton(R.string.yes, (dialog, which) -> finishFileOperation())
+                                    .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> alwaysExtractInCurrentPref.setValue(true))
+                                    .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
+                        }
+                    } else {
+                        Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
+                    }
+                    reloadCurrentDirectory();
+                }).execute() // load the archive file
+        ).execute(); // load it's contents
     }
 
     /**
@@ -320,8 +326,8 @@ public class FileActivity extends ThemedAppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (getIntent().hasExtra(FIRST_START_EXTRA) && getIntent().getBooleanExtra(FIRST_START_EXTRA, false)) {
-            new PrefUtils<Boolean>(FIRST_START).setValue(false);
-        } else if (new PrefUtils<Boolean>(FIRST_START).getValue() || new PrefUtils<Boolean>(ALWAYS_SHOW_INTRO).getValue()) {
+            new Pref<Boolean>(FIRST_START).setValue(false);
+        } else if (new Pref<Boolean>(FIRST_START).getValue() || new Pref<Boolean>(ALWAYS_SHOW_INTRO).getValue()) {
             startActivity(new Intent(this, IntroActivity.class));
             finish();
         }
@@ -344,7 +350,7 @@ public class FileActivity extends ThemedAppCompatActivity {
 
         initUi();
 
-        if (new PrefUtils<Boolean>(UPDATE_NOTIFICATION).getValue()) {
+        if (new Pref<Boolean>(UPDATE_NOTIFICATION).getValue()) {
             checkForUpdate();
         }
 
@@ -496,7 +502,7 @@ public class FileActivity extends ThemedAppCompatActivity {
         TextView diskUsageTextView = headerView.findViewById(R.id.diskUsage);
 
         String s = null;
-        String nav_header_unit = new PrefUtils<String>(NAV_HEADER_UNIT).getValue();
+        String nav_header_unit = new Pref<String>(NAV_HEADER_UNIT).getValue();
         if (nav_header_unit.equals(getString(R.string.pref_header_unit_m_value))) {
             s = DiskUtil.freeSpaceMebi(true) + " MiB " + getString(R.string.free);
         } else if (nav_header_unit.equals(getString(R.string.pref_header_unit_g_value))) {
@@ -520,7 +526,7 @@ public class FileActivity extends ThemedAppCompatActivity {
             //noinspection ComparatorCombinators
             bookmarks = new TreeSet<>((o1, o2) -> getTitleFromPath(o1).compareTo(getTitleFromPath(o2)));
         }
-        bookmarks.addAll(new PrefUtils<HashSet<String>>(BOOKMARKS).getValue());
+        bookmarks.addAll(new Pref<HashSet<String>>(BOOKMARKS).getValue());
         if (!bookmarks.isEmpty()) {
             bookmarkItems = new HashSet<>();
             menu.removeGroup(R.id.bookmarksMenuGroup);
@@ -548,7 +554,7 @@ public class FileActivity extends ThemedAppCompatActivity {
         MenuItem item = menu.add(R.id.bookmarksMenuGroup, Menu.NONE, 2, title);
         item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
         Bookmark bookmark = new Bookmark(s, title, item);
-        if (new PrefUtils<Boolean>(BOOKMARK_EDIT_MODE).getValue()) {
+        if (new Pref<Boolean>(BOOKMARK_EDIT_MODE).getValue()) {
             item.setActionView(R.layout.editable_menu_item);
             View v = item.getActionView();
             ImageButton deleteButton = v.findViewById(R.id.menu_item_action_delete);
@@ -606,7 +612,7 @@ public class FileActivity extends ThemedAppCompatActivity {
         menu.removeItem(item.getItemId());
         bookmarkItems.remove(bookmark);
         bookmarks.remove(s);
-        new PrefUtils<HashSet<String>>(BOOKMARKS).setValue(new HashSet<>(bookmarks));
+        new Pref<HashSet<String>>(BOOKMARKS).setValue(new HashSet<>(bookmarks));
     }
 
     /**
@@ -617,7 +623,7 @@ public class FileActivity extends ThemedAppCompatActivity {
         historyMap = new HashMap<>();
         historyCounter = 0;
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        PrefUtils<String> homeDirPreference = new PrefUtils<>(HOME_DIR);
+        Pref<String> homeDirPreference = new Pref<>(HOME_DIR);
         String startDir = homeDirPreference.getValue();
         if (startDir == null) {
             homeDirPreference.setValue(absolutePath);
@@ -771,7 +777,7 @@ public class FileActivity extends ThemedAppCompatActivity {
             }
         }
         if (currentDirectoryTextView != null) {
-            int maxLength = Integer.parseInt(new PrefUtils<String>(HEADER_PATH_LENGTH).getValue());
+            int maxLength = Integer.parseInt(new Pref<String>(HEADER_PATH_LENGTH).getValue());
 
             if (currentDirectory.length() > maxLength) {
                 currentDirectoryTextView.setText(shortenDirectoryPath(maxLength));
@@ -779,7 +785,7 @@ public class FileActivity extends ThemedAppCompatActivity {
                 currentDirectoryTextView.setText(currentDirectory);
             }
         }
-        if (new PrefUtils<Boolean>(SHOW_TOAST).getValue()) {
+        if (new Pref<Boolean>(SHOW_TOAST).getValue()) {
             Toast.makeText(this, getText(R.string.toast_cd_new_dir) + WHITESPACE + currentDirectory, Toast.LENGTH_SHORT).show();
         }
     }
@@ -886,7 +892,7 @@ public class FileActivity extends ThemedAppCompatActivity {
         if (item.getItemId() == R.id.settings) {
             launchSettings();
             return true;
-        } else if (item.getItemId() == R.id.overflow_new_file){
+        } else if (item.getItemId() == R.id.overflow_new_file) {
             launchNewFileDialog();
             return true;
         } else if (item.getItemId() == R.id.new_directory) {
@@ -925,21 +931,21 @@ public class FileActivity extends ThemedAppCompatActivity {
             if (operation.equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     files.forEach((f) -> new FileCopyTask(this, s -> {
-                    }, f, null));
+                    }, f, null).execute());
                 } else { // -_-
                     for (FMFile f : files) {
                         new FileCopyTask(this, s -> {
-                        }, f, null);
+                        }, f, null).execute();
                     }
                 }
             } else if (operation.equals(MOVE)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     files.forEach((f) -> new FileMoveTask(this, s -> {
-                    }, f, null));
+                    }, f, null).execute());
                 } else { // -_-
                     for (FMFile f : files) {
                         new FileMoveTask(this, s -> {
-                        }, f, null);
+                        }, f, null).execute();
                     }
                 }
             } else if (operation.equals(EXTRACT)) {
@@ -1056,7 +1062,7 @@ public class FileActivity extends ThemedAppCompatActivity {
     /**
      * Launches a prompt to create a new file.
      */
-     private void launchNewFileDialog(){
+    private void launchNewFileDialog() {
         AlertDialog newFileDialog = new AlertDialog.Builder(this)
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> Log.d(TAG, "Cancel pressed"))
                 .setTitle(R.string.new_file)
@@ -1070,23 +1076,24 @@ public class FileActivity extends ThemedAppCompatActivity {
         newFileDialog.show();
     }
 
-     void newFile(File file){
-        if(!file.exists()) {
+    void newFile(File file) {
+        if (!file.exists()) {
             try {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     Files.createFile(file.toPath());
-                }else{
-                    if(!file.createNewFile()){
+                } else {
+                    if (!file.createNewFile()) {
                         Toast.makeText(this, "Unable to create file.", Toast.LENGTH_LONG).show();
                     }
                 }
-            } catch (IOException e){
+            } catch (IOException e) {
                 Log.e(TAG, "Unable to create file.", e);
             }
         } else {
             Toast.makeText(this, "File already exists", Toast.LENGTH_LONG).show();
         }
     }
+
     /**
      * Checks if permission to access files is granted.
      *
@@ -1104,7 +1111,7 @@ public class FileActivity extends ThemedAppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        new PrefUtils<String>(CURRENT_DIR_CACHE).setValue(currentDirectory);
+        new Pref<String>(CURRENT_DIR_CACHE).setValue(currentDirectory);
     }
 
     /**
@@ -1113,7 +1120,7 @@ public class FileActivity extends ThemedAppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        new PrefUtils<String>(CURRENT_DIR_CACHE).setValue("");
+        new Pref<String>(CURRENT_DIR_CACHE).setValue("");
     }
 
     /**
@@ -1122,7 +1129,7 @@ public class FileActivity extends ThemedAppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        String cachedDirectory = new PrefUtils<String>(CURRENT_DIR_CACHE).getValue();
+        String cachedDirectory = new Pref<String>(CURRENT_DIR_CACHE).getValue();
         if (!cachedDirectory.equals("")) {
             currentDirectory = cachedDirectory;
         }
@@ -1142,8 +1149,8 @@ public class FileActivity extends ThemedAppCompatActivity {
      * Adds a bookmark. Prompts for location.
      */
     private void promptAndAddBookmark() {
-        Set<String> stringSet = new PrefUtils<HashSet<String>>(BOOKMARKS).getValue();
-        if (new PrefUtils<Boolean>(BOOKMARK_CURRENT_FOLDER).getValue()) {
+        Set<String> stringSet = new Pref<HashSet<String>>(BOOKMARKS).getValue();
+        if (new Pref<Boolean>(BOOKMARK_CURRENT_FOLDER).getValue()) {
             stringSet.add(currentDirectory);
         } else {
             AlertDialog.Builder bookmarkDialogBuilder = new AlertDialog.Builder(this);
@@ -1157,7 +1164,7 @@ public class FileActivity extends ThemedAppCompatActivity {
             AlertDialog alertDialog = bookmarkDialogBuilder.create();
             alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> stringSet.add(((EditText) alertDialog.findViewById(R.id.destinationPath)).getText().toString()));
             alertDialog.setOnDismissListener(dialog -> {
-                new PrefUtils<Set<String>>(BOOKMARKS).setValue(stringSet);
+                new Pref<Set<String>>(BOOKMARKS).setValue(stringSet);
                 loadUserBookmarks();
             });
             alertDialog.show();
@@ -1199,7 +1206,7 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     public void addFileToOpContext(Operation op, FMFile f) {
         if (!fileOpContext.getFirst().equals(op)) {
-            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+            if (new Pref<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                 new VibratingToast(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT);
             }
             fileOpContext.setFirst(op);

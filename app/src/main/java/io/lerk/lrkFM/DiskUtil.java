@@ -4,9 +4,10 @@ import android.os.StatFs;
 import android.util.Log;
 
 /**
+ * Some helper methods for FS queries.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  * @author Tom Susel (https://gist.github.com/toms972)
- * Some helper methods for FS queries.
  */
 public class DiskUtil {
     /*

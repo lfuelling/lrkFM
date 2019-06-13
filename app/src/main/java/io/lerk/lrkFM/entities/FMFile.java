@@ -7,7 +7,7 @@ import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.util.Date;
 
-import io.lerk.lrkFM.PrefUtils;
+import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.consts.FileType;
 import io.lerk.lrkFM.consts.PreferenceEntity;
 
@@ -121,7 +121,7 @@ public class FMFile implements Comparable<FMFile> {
 
     @Override
     public int compareTo(FMFile o) {
-        String sortParam = new PrefUtils<String>(PreferenceEntity.SORT_FILES_BY).getValue();
+        String sortParam = new Pref<String>(PreferenceEntity.SORT_FILES_BY).getValue();
         switch (sortParam) {
             case "datea":
                 return Long.compare(this.lastModified.getTime(), o.lastModified.getTime());

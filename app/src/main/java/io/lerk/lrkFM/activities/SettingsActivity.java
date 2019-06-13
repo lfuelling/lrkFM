@@ -20,7 +20,7 @@ import org.jraf.android.alibglitch.GlitchEffect;
 
 import java.util.HashSet;
 
-import io.lerk.lrkFM.PrefUtils;
+import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatPreferenceActivity;
 import io.lerk.lrkFM.consts.PreferenceEntity;
@@ -90,7 +90,7 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
                         .setMessage(R.string.restart_required_message)
                         .setNeutralButton(R.string.okay, (d, w) -> d.dismiss())
                         .create().show();
-                new PrefUtils<String>(PreferenceEntity.THEME).setValue(String.valueOf(n));
+                new Pref<String>(PreferenceEntity.THEME).setValue(String.valueOf(n));
                 return true;
             });
         }
@@ -107,7 +107,7 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
     }
 
     /**
-     * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences with {@link PrefUtils}. It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}
+     * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences with {@link Pref}. It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}
      * This is what you get, when customizing too much stuff.
      *
      * @param preferenceGroup the current {@link PreferenceGroup}
@@ -142,13 +142,13 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
             PreferenceEntity preferenceEntity = PreferenceEntity.determineByKey(preference.getKey());
             if (preferenceEntity != null) {
                 if (newValue instanceof Boolean) {
-                    new PrefUtils<Boolean>(preferenceEntity).setValue((Boolean) newValue);
+                    new Pref<Boolean>(preferenceEntity).setValue((Boolean) newValue);
                     return true;
                 } else if (newValue instanceof String) {
-                    new PrefUtils<String>(preferenceEntity).setValue((String) newValue);
+                    new Pref<String>(preferenceEntity).setValue((String) newValue);
                     return true;
                 } else if (newValue instanceof HashSet) {
-                    new PrefUtils<HashSet>(preferenceEntity).setValue((HashSet) newValue);
+                    new Pref<HashSet>(preferenceEntity).setValue((HashSet) newValue);
                     return true;
                 } else {
                     return false;

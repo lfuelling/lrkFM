@@ -2,6 +2,7 @@ package io.lerk.lrkFM;
 
 /**
  * Editable pair. Such mystery.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  */
 public class EditablePair<F, S> {

@@ -12,6 +12,8 @@ import io.lerk.lrkFM.tasks.ProgressDialogCallbackTask;
 
 /**
  * {@link android.os.AsyncTask} that is called when there's an archive to extract.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
  */
 public class ArchiveExtractionTask extends ProgressDialogCallbackTask<Boolean> {
 

@@ -8,8 +8,8 @@
     <string name="todo" translatable="false">TODO</string>
     <string name="nav_bookmarks">Bookmarks</string>
     <string name="home" translatable="false">Home</string>
-    <string name="unable_to_load_files0">Unable to load files <node>&#x1f612;</node></string>
-    <string name="unable_to_load_files1">If you just granted storage permissions, please reload.</string>
+    <string name="unable_to_load_files0">Unable to access files <node>&#x1f612;</node></string>
+    <string name="unable_to_load_files1">The directory might also be empty.</string>
     <string name="nav_path">Open Path</string>
     <string name="okay">@android:string/ok</string>
     <string name="cancel">@android:string/cancel</string>

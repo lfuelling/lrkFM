@@ -6,6 +6,8 @@ import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;
 
 /**
+ * File Operations.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  */
 public enum Operation {

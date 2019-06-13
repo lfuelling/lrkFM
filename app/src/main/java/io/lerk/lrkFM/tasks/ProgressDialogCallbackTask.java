@@ -9,6 +9,8 @@ import io.lerk.lrkFM.activities.file.FileActivity;
 /**
  * {@link AsyncTask} which has void params, void progress and generic return value.
  * This class also shows a progress spinner while the task is running.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
  */
 public abstract class ProgressDialogCallbackTask<T> extends CallbackTask<T> {
 
@@ -19,7 +21,8 @@ public abstract class ProgressDialogCallbackTask<T> extends CallbackTask<T> {
 
     /**
      * Constructor.
-     * @param context the current {@link FileActivity} instance.
+     *
+     * @param context  the current {@link FileActivity} instance.
      * @param callback the callback to use.
      */
     public ProgressDialogCallbackTask(FileActivity context, Handler<T> callback) {
@@ -35,6 +38,7 @@ public abstract class ProgressDialogCallbackTask<T> extends CallbackTask<T> {
 
     /**
      * Hides the progress spinner and triggers the callback.
+     *
      * @param t the return value.
      */
     @Override

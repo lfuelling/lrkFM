@@ -13,6 +13,7 @@ import java.nio.channels.FileChannel;
  * has a high enough user acceptance to make it the minimum required version.
  *
  * @author Lukas Fülling (lukas@k40s.net)
+ * @see OperationUtil
  */
 public class CompatOperations {
 
@@ -30,29 +31,31 @@ public class CompatOperations {
         dest.transferFrom(src, 0, src.size());
     }
 
-    static void copyDirectory(File file, File destination) throws IOException {
-        for (File f : file.listFiles()) {
-            if (f.isDirectory()) {
-                copyDirectory(f, new File(destination.getAbsolutePath() + "/" + f.getName()));
-            } else {
-                copyFile(f, new File(destination.getAbsolutePath() + "/" + f.getName()));
-            }
+    static void moveFile(File file, File destination) throws IOException {
+        copyFile(file, destination);
+        if (!file.delete()) { // delete file
+            Log.w(TAG, "Unable to remove source!");
         }
     }
 
-    static void moveFile(File file, File destination) throws IOException {
-        copyFile(file, destination);
-        if (!file.delete()) {
-            Log.w(TAG, "Unable to remove source!");
+    static void copyDirectory(File file, File destination) throws IOException {
+        for (File f : file.listFiles()) {
+            File dest = new File(destination.getAbsolutePath() + "/" + f.getName());
+            if (f.isDirectory()) {
+                copyDirectory(f, dest);
+            } else {
+                copyFile(f, dest);
+            }
         }
     }
 
     static void moveDirectory(File file, File destination) throws IOException {
         for (File f : file.listFiles()) {
+            File dest = new File(destination.getAbsolutePath() + "/" + f.getName());
             if (f.isDirectory()) {
-                moveDirectory(f, new File(destination.getAbsolutePath() + "/" + f.getName()));
+                moveDirectory(f, dest);
             } else {
-                moveFile(f, new File(destination.getAbsolutePath() + "/" + f.getName()));
+                moveFile(f, dest);
             }
         }
     }

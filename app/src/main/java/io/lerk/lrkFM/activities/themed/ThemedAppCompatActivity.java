@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.PrefUtils;
 
 import static io.lerk.lrkFM.consts.PreferenceEntity.THEME;
 
@@ -21,10 +21,10 @@ public abstract class ThemedAppCompatActivity extends AppCompatActivity {
     }
 
     /**
-     * Reads the current theme using {@link PrefUtils} and sets it.
+     * Reads the current theme using {@link Pref} and sets it.
      */
     static void setThemeFromPreferences(Activity context) {
-        String currentTheme = new PrefUtils<String>(THEME).getValue();
+        String currentTheme = new Pref<String>(THEME).getValue();
         String defaultVal = context.getString(R.string.pref_themes_value_default);
         boolean defaultOrDark = currentTheme.equals(defaultVal);
         context.setTheme(defaultOrDark ? R.style.AppTheme : R.style.AppTheme_Dark);

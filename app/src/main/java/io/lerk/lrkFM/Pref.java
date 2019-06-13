@@ -15,18 +15,20 @@ import io.lerk.lrkFM.consts.PreferenceEntity;
  * <p>
  * To read settings you can replace
  * <pre>PreferenceManager.getDefaultSharedPreferences(context).getBoolean(MY_PREFERENCE.getKey(), false);</pre>
- * with <pre>new PrefUtils&lt;Boolean&gt;(MY_PREFERENCE).getValue();</pre>.
+ * with <pre>new Pref&lt;Boolean&gt;(MY_PREFERENCE).getValue();</pre>.
  *
  * To write settings you can replace
  * <pre>PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(MY_PREFERENCE.getKey(), false).apply();</pre>
- * with <pre>new PrefUtils&lt;Boolean;&gt;(MY_PREFERENCE).setValue(false);</pre>
+ * with <pre>new Pref&lt;Boolean;&gt;(MY_PREFERENCE).setValue(false);</pre>
  *
  * @author Lukas Fülling (lukas@k40s.net)
  * @see PreferenceEntity
+ *
+ * @param T The type of preference to use. Currently {@link Boolean}, {@link String}, {@link HashSet}.
  */
-public class PrefUtils<T> {
+public class Pref<T> {
 
-    public static final String TAG = PrefUtils.class.getCanonicalName();
+    public static final String TAG = Pref.class.getCanonicalName();
 
     /**
      * The preference.
@@ -60,7 +62,7 @@ public class PrefUtils<T> {
      *
      * @param preference the preference to use
      */
-    public PrefUtils(PreferenceEntity preference) {
+    public Pref(PreferenceEntity preference) {
         this.preference = preference;
         type = preference.getType();
         key = preference.getKey();
@@ -94,7 +96,7 @@ public class PrefUtils<T> {
     }
 
     /**
-     * Let's you set a value. Currently {@link Boolean}, {@link String}, {@link HashSet}.
+     * Let's you set a value.
      *
      * @param value the value.
      */

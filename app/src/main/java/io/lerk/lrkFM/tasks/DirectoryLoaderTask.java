@@ -12,6 +12,11 @@ import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 import io.lerk.lrkFM.exceptions.EmptyDirectoryException;
 import io.lerk.lrkFM.exceptions.NoAccessException;
 
+/**
+ * Task to load directory contents.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class DirectoryLoaderTask extends ProgressDialogCallbackTask<ArrayList<FMFile>> {
 
     private static final String TAG = DirectoryLoaderTask.class.getCanonicalName();
@@ -21,7 +26,7 @@ public class DirectoryLoaderTask extends ProgressDialogCallbackTask<ArrayList<FM
      * Constructor.
      *
      * @param context  the current {@link FileActivity} instance.
-     * @param path the path to load
+     * @param path     the path to load
      * @param callback the callback to use.
      */
     public DirectoryLoaderTask(FileActivity context, String path, Handler<ArrayList<FMFile>> callback) {

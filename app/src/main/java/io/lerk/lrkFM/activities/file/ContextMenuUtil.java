@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import io.lerk.lrkFM.EditablePair;
+import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.adapter.ArchiveArrayAdapter;
 import io.lerk.lrkFM.adapter.BaseArrayAdapter;
@@ -26,7 +27,6 @@ import io.lerk.lrkFM.tasks.archive.ArchiveParentFinderTask;
 import io.lerk.lrkFM.tasks.operation.FileDeleteTask;
 import io.lerk.lrkFM.tasks.operation.FileMoveTask;
 import io.lerk.lrkFM.tasks.operation.FileOperationTask;
-import io.lerk.lrkFM.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.Operation.COPY;
@@ -130,19 +130,19 @@ public class ContextMenuUtil {
                             }
 
                             activity.addFileToOpContext(EXTRACT, archiveToExtract);
-                            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+                            if (new Pref<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                                 Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
                             }
 
 
-                            if (new PrefUtils<Boolean>(ALWAYS_EXTRACT_IN_CURRENT_DIR).getValue()) {
+                            if (new Pref<Boolean>(ALWAYS_EXTRACT_IN_CURRENT_DIR).getValue()) {
                                 activity.finishFileOperation();
                             } else {
                                 new AlertDialog.Builder(activity)
                                         .setView(R.layout.layout_extract_now_prompt)
                                         .setPositiveButton(R.string.yes, (dialog, which) -> activity.finishFileOperation())
                                         .setNeutralButton(R.string.yes_and_remember, (dialog, which) -> {
-                                            new PrefUtils<Boolean>(ALWAYS_EXTRACT_IN_CURRENT_DIR).setValue(true);
+                                            new Pref<Boolean>(ALWAYS_EXTRACT_IN_CURRENT_DIR).setValue(true);
                                             activity.finishFileOperation();
                                         })
                                         .setNegativeButton(R.string.no, (dialog, which) -> Log.d(TAG, "noop")).create().show();
@@ -205,7 +205,7 @@ public class ContextMenuUtil {
         menu.add(0, ID_MOVE, 0, activity.getString(R.string.move)).setOnMenuItemClickListener(item -> {
 
             activity.addFileToOpContext(MOVE, f);
-            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+            if (new Pref<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                 Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + f.getName(), LENGTH_SHORT).show();
             }
 
@@ -224,7 +224,7 @@ public class ContextMenuUtil {
         menu.add(0, ID_COPY, 0, activity.getString(R.string.copy)).setOnMenuItemClickListener(item -> {
 
             activity.addFileToOpContext(COPY, f);
-            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+            if (new Pref<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                 Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + f.getName(), LENGTH_SHORT).show();
             }
 
@@ -260,7 +260,7 @@ public class ContextMenuUtil {
 
         menu.add(0, ID_ADD_TO_ZIP, 0, (zipFileReady) ? activity.getString(R.string.add_to_zip) : activity.getString(R.string.new_zip_file)).setOnMenuItemClickListener(item -> {
             activity.addFileToOpContext(CREATE_ZIP, f);
-            if (new PrefUtils<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
+            if (new Pref<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                 Toast.makeText(activity, activity.getString(R.string.file_added_to_context) + f.getName(), LENGTH_SHORT).show();
             }
             activity.reloadCurrentDirectory();

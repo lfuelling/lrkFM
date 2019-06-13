@@ -1,6 +1,5 @@
 package io.lerk.lrkFM.activities.file;
 
-import android.os.Build;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -9,7 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
@@ -44,9 +42,10 @@ public class FileLoader extends AbstractLoader {
 
     /**
      * Calls {@link #FileLoader(String)} with <pre>null</pre> as argument.
+     *
+     * @throws NoAccessException       if no access
+     * @throws EmptyDirectoryException if no contents
      * @see #loadLocationFilesForPath(String)
-     * @throws NoAccessException if no access
-     * @throws EmptyDirectoryException  if no contents
      */
     @Override
     public ArrayList<FMFile> loadLocationFiles() throws NoAccessException, EmptyDirectoryException, BlockingStuffOnMainThreadException {
@@ -55,14 +54,15 @@ public class FileLoader extends AbstractLoader {
 
     /**
      * Loads the contents of a directory.
+     *
      * @param parent the parent dir
      * @return the files and subdirectories
-     * @throws NoAccessException if no access
+     * @throws NoAccessException       if no access
      * @throws EmptyDirectoryException if no contents
      */
     @Override
     protected ArrayList<FMFile> loadLocationFilesForPath(@Nullable String parent) throws NoAccessException, EmptyDirectoryException, BlockingStuffOnMainThreadException {
-        if(Looper.myLooper() == Looper.getMainLooper()) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new BlockingStuffOnMainThreadException();
         }
         if (parent != null) {
@@ -82,24 +82,12 @@ public class FileLoader extends AbstractLoader {
                 if (fileList != null) {
                     List<File> asList = Arrays.asList(fileList);
                     if (!asList.isEmpty()) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            //noinspection Convert2Lambda,SimplifyStreamApiCallChains
-                            asList.stream().forEach(new Consumer<File>() {  // This operation fails if List.forEach or a Lambda is used. Get your shit together Android!
-                                @Override
-                                public void accept(File f) {
-                                    Log.d(TAG, "Loading file: " + f.getName());
-                                    FMFile file = new FMFile(f);
-                                    result.add(file);
-                                }
-                            });
-                        } else { // puny Marshmallow and Lollipop users!
-                            for (File f : asList) {
-                                Log.d(TAG, "Loading file: " + f.getName());
-                                FMFile file = new FMFile(f);
-                                result.add(file);
-                            }
+                        for (File f : asList) {
+                            Log.d(TAG, "Loading file: " + f.getName());
+                            FMFile file = new FMFile(f);
+                            result.add(file);
                         }
-                        Log.i(TAG, "Loaded " + String.valueOf(result.size()) + " files");
+                        Log.i(TAG, "Loaded " + result.size() + " files");
                     } else {
                         Log.w(TAG, "Directory content is null!");
                         throw new EmptyDirectoryException(location);

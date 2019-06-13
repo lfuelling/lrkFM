@@ -16,6 +16,11 @@ import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
+/**
+ * Task used to copy a file.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class FileCopyTask extends FileOperationTask {
 
     private static final String TAG = FileCopyTask.class.getCanonicalName();

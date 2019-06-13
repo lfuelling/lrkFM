@@ -5,6 +5,11 @@ import android.content.Context;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * Main application class.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class LrkFMApp extends Application {
 
     public static final String CHANNEL_ID = "lrkFM";

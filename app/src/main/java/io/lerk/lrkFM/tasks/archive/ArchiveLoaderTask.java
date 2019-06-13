@@ -6,6 +6,11 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 import io.lerk.lrkFM.tasks.CallbackTask;
 
+/**
+ * Task that loads an archive.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class ArchiveLoaderTask extends CallbackTask<FMArchive> {
 
     private final FMFile file;

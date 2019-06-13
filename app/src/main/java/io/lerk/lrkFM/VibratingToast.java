@@ -16,7 +16,7 @@ public class VibratingToast extends Toast {
 
     public VibratingToast(Context context, CharSequence text, int duration) {
         super(context);
-        if(new PrefUtils<Boolean>(PreferenceEntity.VIBRATING_TOASTS).getValue()) {
+        if(new Pref<Boolean>(PreferenceEntity.VIBRATING_TOASTS).getValue()) {
             ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(120);
         }
         makeText(context, text, duration).show();

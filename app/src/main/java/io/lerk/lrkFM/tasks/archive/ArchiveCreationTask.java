@@ -14,6 +14,8 @@ import io.lerk.lrkFM.tasks.ProgressDialogCallbackTask;
 
 /**
  * {@link android.os.AsyncTask} to be run when creating an archive.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
  */
 public class ArchiveCreationTask extends ProgressDialogCallbackTask<Boolean> {
 

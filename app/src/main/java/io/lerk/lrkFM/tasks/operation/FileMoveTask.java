@@ -17,6 +17,11 @@ import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
+/**
+ * Task to move a file.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class FileMoveTask extends FileOperationTask {
     private static final String TAG = FileMoveTask.class.getCanonicalName();
     private final WeakReference<FileActivity> contextRef;

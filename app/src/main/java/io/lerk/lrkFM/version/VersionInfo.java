@@ -2,6 +2,11 @@ package io.lerk.lrkFM.version;
 
 import io.lerk.lrkFM.Handler;
 
+/**
+ * Version singleton.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class VersionInfo {
 
     private final Version current, latest;
@@ -27,7 +32,5 @@ public class VersionInfo {
         }
         callback.handle(instance);
     }
-
-
 
 }

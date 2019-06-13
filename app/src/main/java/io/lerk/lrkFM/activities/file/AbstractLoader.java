@@ -20,5 +20,4 @@ public abstract class AbstractLoader {
 
     abstract protected ArrayList<FMFile> loadLocationFilesForPath(@Nullable String parent) throws NoAccessException, EmptyDirectoryException, BlockingStuffOnMainThreadException;
 
-
 }

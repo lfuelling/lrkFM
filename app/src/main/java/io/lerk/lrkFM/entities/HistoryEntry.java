@@ -3,6 +3,8 @@ package io.lerk.lrkFM.entities;
 import android.support.annotation.Nullable;
 
 /**
+ * History entry.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  */
 public class HistoryEntry {

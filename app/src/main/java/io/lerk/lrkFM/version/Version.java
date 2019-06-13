@@ -2,7 +2,15 @@ package io.lerk.lrkFM.version;
 
 import android.support.annotation.NonNull;
 
+/**
+ * The app version.
+ * <p>
+ * Example: 1.0.0-rc.1
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public class Version {
+
     private final Integer major, minor, patch, sub;
     private final Boolean beta, rc;
 

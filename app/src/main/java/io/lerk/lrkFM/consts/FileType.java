@@ -8,6 +8,11 @@ import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMFile;
 
+/**
+ * File types.
+ *
+ * @author Lukas Fülling (lukas@k40s.net)
+ */
 public enum FileType {
     // known archives
     ARCHIVE_RAR(R.string.type_rar, "rar"),

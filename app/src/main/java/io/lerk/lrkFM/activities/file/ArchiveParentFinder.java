@@ -7,6 +7,8 @@ import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
 
 /**
+ * Finds parent archives.
+ *
  * @author Lukas Fülling (lukas@k40s.net)
  */
 public class ArchiveParentFinder {

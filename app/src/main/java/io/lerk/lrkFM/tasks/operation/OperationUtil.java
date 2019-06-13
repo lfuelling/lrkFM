@@ -6,10 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -27,6 +24,7 @@ import static io.lerk.lrkFM.tasks.operation.CompatOperations.moveFile;
  * Utility class for file operations.
  *
  * @author Lukas Fülling (lukas@k40s.net)
+ * @see CompatOperations
  */
 class OperationUtil {
 

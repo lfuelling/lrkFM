@@ -17,11 +17,11 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
+import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.activities.file.ContextMenuUtil;
-import io.lerk.lrkFM.PrefUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.PreferenceEntity.FILENAME_LENGTH;
@@ -45,7 +45,7 @@ public class FileArrayAdapter extends BaseArrayAdapter {
      */
     @Override
     protected void openFile(FMFile f) {
-        if (new PrefUtils<Boolean>(ZIPS_EXPLORABLE).getValue() && f.isArchive() && !(f instanceof FMArchive)) {
+        if (new Pref<Boolean>(ZIPS_EXPLORABLE).getValue() && f.isArchive() && !(f instanceof FMArchive)) {
             activity.loadPath(f.getAbsolutePath());
         } else {
             Intent i = new Intent(Intent.ACTION_VIEW);
@@ -99,7 +99,7 @@ public class FileArrayAdapter extends BaseArrayAdapter {
 
             final String fileName = f.getName();
             if (fileNameView != null) {
-                int maxLength = Integer.parseInt(new PrefUtils<String>(FILENAME_LENGTH).getValue());
+                int maxLength = Integer.parseInt(new Pref<String>(FILENAME_LENGTH).getValue());
                 if (fileName.length() >= maxLength) {
                     @SuppressLint("SetTextI18n") String output = fileName.substring(0, maxLength - 3) + "...";
                     fileNameView.setText(output); //shorten long names
@@ -129,7 +129,7 @@ public class FileArrayAdapter extends BaseArrayAdapter {
                     }
                 }
             }
-            if (f.isDirectory() || (f.isArchive() && new PrefUtils<Boolean>(ZIPS_EXPLORABLE).getValue())) {
+            if (f.isDirectory() || (f.isArchive() && new Pref<Boolean>(ZIPS_EXPLORABLE).getValue())) {
                 v.setOnClickListener(v1 -> activity.loadPath(f.getFile().getAbsolutePath()));
             } else {
                 v.setOnClickListener(v1 -> openFile(f));
