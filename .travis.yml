@@ -8,10 +8,22 @@ android:
   - extra-android-m2repository
   - addon-google_apis-google-28
   - sys-img-armeabi-v7a-android-24
-  
 env:
   global:
-    - ADB_INSTALL_TIMEOUT=8
-
+  - ADB_INSTALL_TIMEOUT=8
 script:
-  - ./gradlew build -S
+- "./gradlew build -S"
+- "./gradlew assembleRelease"
+before_install:
+- openssl aes-256-cbc -K $encrypted_9246cef756ee_key -iv $encrypted_9246cef756ee_iv
+  -in keystore.jks.enc -out keystore.jks -d
+deploy:
+  provider: releases
+  overwrite: true
+  file_glob: true
+  api_key:
+    secure: nI1YMrhRqtk9Zs4eXmZOrmwUB+vq9RHnNH9b2M1q71PVH62vCeMwlsDwtPEG0zHViVv7awZ42ogKKsj3HI0N8Nnt/sA2Cw8lRynfgvABWJ3npqZkStiiI0hT1OdnZD/MtUeMyh03lgPvpB6lhVHNPYrMqbTxYMFOa4lX6HG7f5GELALFtv2of0XXBfX5Qty0T0V3G48FIfVKmz/5jxLRkY7eJU4WmQ4wFsuH/UvaiF6pLw4yIMvrBKfKQxjy/JH049Jc+tidySsnYnxgb/rO08fVtuQjfoo1xdzskpek/QwyazhisxFVYvAEnVpFTbmQHuZKwRqTtPEF0WhL2oRNKaqxJFxxt/YKuOrc0tRF5BEHfvyuJ1lOOjPYhmNi2joCq4DlALZNDVHqfk8ftIzNoS/p2NHbTRkFFbTwBQpIPXfxCQl4JpZB157JdgubcPSohXzupZ/E6IXUgmNJmFgi7oEPm7EgZTqMeXpw07nWyue5lrcF+GZJEM9D63keqchMXSNIZWVLc1r5hExx0rryTry8nD2cGpnxR8IEZX8cBC9HjJj6I1iq4OtVDCh15NZ75+BIRr4la3SJosbCOsB/xFuNXARc1jhDCPVxckcOIeU0gIbQsXJ1SWMvhMalZ0uSopQkzfzsu1bKnu5mvun3Q40qYwiREp6nFqqFtYUbjYY=
+  file: /home/travis/build/lfuelling/lrkFM/app/build/outputs/apk/release/*.apk
+  on:
+    repo: lfuelling/lrkFM
+    tags: true

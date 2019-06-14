@@ -22,23 +22,25 @@ android {
         }
     }
     signingConfigs {
-        release {
-            //keyAlias System.getenv("APK_KEY_ALIAS")
-            //keyPassword System.getenv("APK_KEY_PASSWORD")
-            //def filePath = System.getenv("APK_STORE_FILE")
-            //if (filePath != null) {
-            //    storeFile file(filePath)
-            //}
-            //storePassword System.getenv("APK_STORE_PASSWORD")
-        }
+        release
     }
     buildTypes {
         release {
             minifyEnabled false // doesn't work with some apache stuff
-            //signingConfig signingConfigs.release
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
+
+    def isRunningOnTravis = System.getenv("CI") == "true"
+
+    if (isRunningOnTravis) {
+        signingConfigs.release.storeFile = file("../keystore.jks")
+        signingConfigs.release.storePassword = System.getenv("keystore_password")
+        signingConfigs.release.keyAlias = System.getenv("keystore_alias")
+        signingConfigs.release.keyPassword = System.getenv("keystore_password")
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
