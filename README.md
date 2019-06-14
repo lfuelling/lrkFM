@@ -25,10 +25,7 @@ The app also needs internet access to check for updates if this feature is enabl
 
 ## Screenshots
 
-![Screenshot](screenshots/Screenshot_1.png)
-![Screenshot](screenshots/Screenshot_2.png)
-![Screenshot](screenshots/Screenshot_3.png)
-![Screenshot](screenshots/Screenshot_4.png)
+[![Screenshot](screenshots/screenshots.png)](screenshots/)
 
 [![Get it on GooglePlay](https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=io.lerk.lrkFM&utm_source=repo_link&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
