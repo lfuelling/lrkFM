@@ -27,6 +27,8 @@ The app also needs internet access to check for updates if this feature is enabl
 
 [![Screenshot](screenshots/screenshots.png)](screenshots/)
 
+[![Get it on F-Droid](https://gitlab.com/fdroid/artwork/raw/master/badge/get-it-on-en.png)](https://apt.izzysoft.de/fdroid/index/apk/io.lerk.lrkFM)
+
 [![Get it on GooglePlay](https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=io.lerk.lrkFM&utm_source=repo_link&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
 **Please note:** This project was moved from my personal GitLab instance to GitHub. Issue mentions in commits might be misleading!
