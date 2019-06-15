@@ -23,10 +23,6 @@ You can join the beta program through [here.](https://play.google.com/apps/testi
 Obviously this app needs full access to the filesystem to work. This is checked and prompted if needed when starting the app.
 The app also needs internet access to check for updates if this feature is enabled in the settings.
 
-## Screenshots
-
-[![Screenshot](screenshots/screenshots.png)](screenshots/)
-
 <a href="https://apt.izzysoft.de/fdroid/index/apk/io.lerk.lrkFM">
     <img src="https://gitlab.com/fdroid/artwork/raw/master/badge/get-it-on-en.png" height="100" alt="Get it on F-Droid" />
 </a>
@@ -34,6 +30,10 @@ The app also needs internet access to check for updates if this feature is enabl
 <a href="https://play.google.com/store/apps/details?id=io.lerk.lrkFM&utm_source=repo_link&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
     <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="100" alt="Get it on GooglePlay" />
 </a>
+
+## Screenshots
+
+[![Screenshot](screenshots/screenshots.png)](screenshots/)
 
 **Please note:** This project was moved from my personal GitLab instance to GitHub. Issue mentions in commits might be misleading!
 
