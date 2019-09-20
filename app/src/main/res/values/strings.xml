@@ -58,7 +58,7 @@
     <string name="err_file_exists">The specified file already exists!</string>
     <string name="err_unable_to_mkdir">Unable to create directory!</string>
     <string name="file_icon_desc">Icon that shows if the element is a file or a directory.</string>
-    <string name="context_btn_desc">Opens the file operations context menu.</string>
+    <string name="context_btn_desc">Button that opens the file operations context menu.</string>
     <string name="action_reload_view">Reload</string>
     <string name="err_deleting_element">Unable to delete!</string>
     <string name="err_empty_input">Input may not be empty!</string>

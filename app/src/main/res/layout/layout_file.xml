@@ -47,6 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/fileIcon"
         android:layout_alignBottom="@id/fileIcon"
+        android:layout_marginEnd="@dimen/file_view_margin"
         android:text="1 MB"/>
     <ImageView
         android:id="@+id/fileIcon"
