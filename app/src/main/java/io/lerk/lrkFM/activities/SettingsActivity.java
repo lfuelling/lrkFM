@@ -8,6 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import org.jraf.android.alibglitch.GlitchEffect;
 
 import java.util.HashSet;
+import java.util.List;
 
 import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
@@ -33,8 +35,13 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new GeneralPreferenceFragment()).commit();
         setupActionBar();
+    }
+
+    @Override
+    public void onBuildHeaders(List<Header> target) {
+        super.onBuildHeaders(target);
+        loadHeadersFromResource(R.xml.pref_headers, target);
     }
 
     /**
@@ -53,7 +60,9 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
+                || UIPreferenceFragment.class.getName().equals(fragmentName)
+                || NotificationsPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
@@ -65,7 +74,7 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
+            addPreferencesFromResource(R.xml.preferences_general);
             setHasOptionsMenu(true);
 
             try {
@@ -82,6 +91,27 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
                 Log.e(TAG, "Unable to get App version!", e);
             }
 
+            addOnPreferenceChangeListeners(this.getPreferenceScreen());
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity().getApplicationContext(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static class UIPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preferences_ui);
+            setHasOptionsMenu(true);
             addOnPreferenceChangeListeners(this.getPreferenceScreen());
 
             getPreferenceScreen().findPreference("theme").setOnPreferenceChangeListener((p, n) -> {
@@ -106,8 +136,29 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
         }
     }
 
+    public static class NotificationsPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preferences_notifications);
+            setHasOptionsMenu(true);
+            addOnPreferenceChangeListeners(this.getPreferenceScreen());
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity().getApplicationContext(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
     /**
-     * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences with {@link Pref}. It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}
+     * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences_general with {@link Pref}. It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}
      * This is what you get, when customizing too much stuff.
      *
      * @param preferenceGroup the current {@link PreferenceGroup}

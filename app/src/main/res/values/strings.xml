@@ -181,4 +181,5 @@
     <string name="warn_delete_mult_msg_start">Are you sure that you want to delete</string>
     <string name="warn_delete_mult_msg_end">file(s)?</string>
     <string name="err_deleting_element_mult">Error deleting:</string>
+    <string name="pref_header_notifications_toasts"><![CDATA[Notifications & Toasts]]></string>
 </resources>

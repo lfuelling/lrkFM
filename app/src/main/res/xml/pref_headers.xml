@@ -3,5 +3,11 @@
     <header
         android:fragment="io.lerk.lrkFM.activities.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
+    <header
+        android:fragment="io.lerk.lrkFM.activities.SettingsActivity$UIPreferenceFragment"
+        android:title="@string/pref_header_ui" />
+    <header
+        android:fragment="io.lerk.lrkFM.activities.SettingsActivity$NotificationsPreferenceFragment"
+        android:title="@string/pref_header_notifications_toasts" />
 
 </preference-headers>

@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_cat_notifications">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="update_notification"
+            android:summary="@string/pref_update_notification_desc"
+            android:title="@string/pref_update_notification_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_cat_toasts">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="show_toast_on_cd"
+            android:summary="@string/pref_show_toast_cd_desc"
+            android:title="@string/pref_show_toast_cd" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="context_for_ops_toast"
+            android:summary="@string/pref_context_for_ops_toast_desc"
+            android:title="@string/pref_context_for_ops_toast" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:dependency="context_for_ops_toast"
+            android:key="context_toasts_vibrating"
+            android:summary="@string/pref_context_toasts_vibrating_desc"
+            android:title="@string/pref_context_toasts_vibrating" />
+    </PreferenceCategory>
+</PreferenceScreen>

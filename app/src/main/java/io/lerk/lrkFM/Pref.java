@@ -24,7 +24,7 @@ import io.lerk.lrkFM.consts.PreferenceEntity;
  * @author Lukas Fülling (lukas@k40s.net)
  * @see PreferenceEntity
  *
- * @param T The type of preference to use. Currently {@link Boolean}, {@link String}, {@link HashSet}.
+ * @param <T> The type of preference to use. Currently {@link Boolean}, {@link String}, {@link HashSet}.
  */
 public class Pref<T> {
 

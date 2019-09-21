@@ -20,7 +20,7 @@ public enum PreferenceStore {
     CLOUD_BACKED("cloud_backed");
 
     /**
-     * Name of the preferences.
+     * Name of the preferences_general.
      *
      * @see Pref
      */
@@ -28,7 +28,7 @@ public enum PreferenceStore {
 
     /**
      * Constructor.
-     * @param name name of the preferences
+     * @param name name of the preferences_general
      * @see #name
      */
     PreferenceStore(String name) {
@@ -37,7 +37,7 @@ public enum PreferenceStore {
 
     /**
      * Getter for name.
-     * @return the name of the preferences
+     * @return the name of the preferences_general
      * @see #name
      */
     public String getName() {

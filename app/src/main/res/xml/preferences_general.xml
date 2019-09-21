@@ -1,0 +1,43 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_cat_app">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="zips_explorable"
+            android:summary="@string/pref_zips_explorable_desc"
+            android:title="@string/pref_zips_explorable" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="always_extract_in_current_folder"
+            android:summary="@string/pref_always_extract_in_current_folder_desc"
+            android:title="@string/pref_always_extract_in_current_folder" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="context_for_ops"
+            android:summary="@string/pref_context_for_ops_desc"
+            android:title="@string/pref_context_for_ops" />
+        <ListPreference
+            android:defaultValue="@string/pref_sortby_value_default"
+            android:entries="@array/sort_by_texts"
+            android:entryValues="@array/sort_by_values"
+            android:key="sort_files_by"
+            android:summary="@string/pref_sortby_desc"
+            android:title="@string/pref_sortby_title" />
+        <EditTextPreference
+            android:key="home_dir"
+            android:summary="@string/pref_home_dir_desc"
+            android:title="@string/pref_home_dir" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="bookmark_current_folder"
+            android:summary="@string/pref_bookmark_corrent_folder_desc"
+            android:title="@string/pref_bookmark_corrent_folder" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="always_show_intro"
+            android:summary="@string/pref_always_show_intro_desc"
+            android:title="@string/pref_always_show_intro" />
+        <Preference
+            android:key="app_version"
+            android:title="@string/pref_version" />
+    </PreferenceCategory>
+</PreferenceScreen>
