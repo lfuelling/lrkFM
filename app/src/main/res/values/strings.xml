@@ -182,4 +182,6 @@
     <string name="warn_delete_mult_msg_end">file(s)?</string>
     <string name="err_deleting_element_mult">Error deleting:</string>
     <string name="pref_header_notifications_toasts"><![CDATA[Notifications & Toasts]]></string>
+    <string name="pref_show_menu_button">Show menu button</string>
+    <string name="pref_show_menu_button_desc">When active, the checkboxes will be replaced with menu buttons.</string>
 </resources>

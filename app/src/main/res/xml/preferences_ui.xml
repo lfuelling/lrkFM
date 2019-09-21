@@ -19,6 +19,11 @@
             android:key="bookmark_deletion_on"
             android:summary="@string/pref_bookmark_corrent_deletion_desc"
             android:title="@string/pref_bookmark_deletion" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="show_menu_button_instead_of_checkbox"
+            android:summary="@string/pref_show_menu_button_desc"
+            android:title="@string/pref_show_menu_button" />
         <EditTextPreference
             android:defaultValue="27"
             android:inputType="number"

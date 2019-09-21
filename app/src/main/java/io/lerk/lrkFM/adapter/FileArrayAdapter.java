@@ -9,7 +9,6 @@ import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,13 +20,13 @@ import java.util.Objects;
 
 import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
-import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.activities.file.ContextMenuUtil;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.consts.PreferenceEntity.FILENAME_LENGTH;
+import static io.lerk.lrkFM.consts.PreferenceEntity.SHOW_MENU_BUTTON_INSTEAD_OF_CHECKBOX;
 import static io.lerk.lrkFM.consts.PreferenceEntity.ZIPS_EXPLORABLE;
 
 /**
@@ -138,6 +137,14 @@ public class FileArrayAdapter extends BaseArrayAdapter {
                 v.setOnClickListener(v1 -> openFile(f));
             }
             v.setOnCreateContextMenuListener((menu, view, info) -> new ContextMenuUtil(activity, this).initializeContextMenu(f, fileName, menu));
+
+
+            ImageButton contextButton = v.findViewById(R.id.contextMenuButton);
+            contextButton.setOnClickListener(v1 -> {
+                ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(8);
+                activity.getFileListView().showContextMenuForChild(v);
+            });
+
             CheckBox checkBox = v.findViewById(R.id.fileCheckBox);
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked && !isInContext(f)) {
@@ -146,6 +153,14 @@ public class FileArrayAdapter extends BaseArrayAdapter {
                     removeFromContext(f);
                 }
             });
+
+            if (new Pref<Boolean>(SHOW_MENU_BUTTON_INSTEAD_OF_CHECKBOX).getValue()) {
+                checkBox.setVisibility(View.INVISIBLE);
+                contextButton.setVisibility(View.VISIBLE);
+            } else {
+                checkBox.setVisibility(View.VISIBLE);
+                contextButton.setVisibility(View.GONE);
+            }
 
             for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
                 if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {

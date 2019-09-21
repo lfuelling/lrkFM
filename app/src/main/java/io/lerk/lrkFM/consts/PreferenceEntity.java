@@ -114,7 +114,12 @@ public enum PreferenceEntity {
     /**
      * Vibration on some Toasts.
      */
-    VIBRATING_TOASTS(CLOUD_BACKED, "context_toasts_vibrating", true);
+    VIBRATING_TOASTS(CLOUD_BACKED, "context_toasts_vibrating", true),
+
+    /**
+     * Replace checkboxes with menu buttons.
+     */
+    SHOW_MENU_BUTTON_INSTEAD_OF_CHECKBOX(CLOUD_BACKED, "show_menu_button_instead_of_checkbox", false);
 
     /**
      * The preference's key.
