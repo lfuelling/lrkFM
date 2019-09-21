@@ -15,7 +15,8 @@ public enum Operation {
     MOVE(R.string.move),
     EXTRACT(R.string.extract),
     CREATE_ZIP(R.string.new_zip_file),
-    NONE(R.string.todo);
+    NONE(R.string.empty),
+    DELETE(R.string.delete);
 
     private final int title;
 

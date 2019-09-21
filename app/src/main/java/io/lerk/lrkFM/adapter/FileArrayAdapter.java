@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,6 +21,7 @@ import java.util.Objects;
 
 import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.activities.file.FileActivity;
 import io.lerk.lrkFM.entities.FMArchive;
 import io.lerk.lrkFM.entities.FMFile;
 import io.lerk.lrkFM.activities.file.ContextMenuUtil;
@@ -129,24 +132,48 @@ public class FileArrayAdapter extends BaseArrayAdapter {
                     }
                 }
             }
-            if (f.isDirectory() || (f.isArchive() && new Pref<Boolean>(ZIPS_EXPLORABLE).getValue())) {
+            if (f.isDirectory() || (f.isExplorableArchive() && new Pref<Boolean>(ZIPS_EXPLORABLE).getValue())) {
                 v.setOnClickListener(v1 -> activity.loadPath(f.getFile().getAbsolutePath()));
             } else {
                 v.setOnClickListener(v1 -> openFile(f));
             }
             v.setOnCreateContextMenuListener((menu, view, info) -> new ContextMenuUtil(activity, this).initializeContextMenu(f, fileName, menu));
-            ImageButton contextButton = v.findViewById(R.id.contextMenuButton);
-            contextButton.setOnClickListener(v1 -> {
-                ((Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(8);
-                activity.getFileListView().showContextMenuForChild(v);
+            CheckBox checkBox = v.findViewById(R.id.fileCheckBox);
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked && !isInContext(f)) {
+                    activity.getFileOpContext().getSecond().add(f);
+                } else if (!isChecked && isInContext(f)) {
+                    removeFromContext(f);
+                }
             });
 
             for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
                 if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
                     v.setBackgroundColor(activity.getColorByAttr(R.attr.colorPrimary));
+                    checkBox.setChecked(true);
+                } else {
+                    checkBox.setChecked(false);
                 }
             }
         }
         return v;
+    }
+
+    private boolean isInContext(FMFile f) {
+        boolean res = false;
+        for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
+            if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    private void removeFromContext(FMFile f) {
+        for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
+            if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
+                activity.getFileOpContext().getSecond().remove(contextFile);
+            }
+        }
     }
 }

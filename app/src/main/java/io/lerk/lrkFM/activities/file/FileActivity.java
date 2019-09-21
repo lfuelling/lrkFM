@@ -74,6 +74,7 @@ import io.lerk.lrkFM.tasks.archive.ArchiveExtractionTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveLoaderTask;
 import io.lerk.lrkFM.tasks.archive.ArchiveParentFinderTask;
 import io.lerk.lrkFM.tasks.operation.FileCopyTask;
+import io.lerk.lrkFM.tasks.operation.FileDeleteTask;
 import io.lerk.lrkFM.tasks.operation.FileMoveTask;
 import io.lerk.lrkFM.tasks.operation.FileOperationTask;
 import io.lerk.lrkFM.version.VersionInfo;
@@ -84,6 +85,7 @@ import static android.widget.Toast.LENGTH_SHORT;
 import static io.lerk.lrkFM.LrkFMApp.CHANNEL_ID;
 import static io.lerk.lrkFM.consts.Operation.COPY;
 import static io.lerk.lrkFM.consts.Operation.CREATE_ZIP;
+import static io.lerk.lrkFM.consts.Operation.DELETE;
 import static io.lerk.lrkFM.consts.Operation.EXTRACT;
 import static io.lerk.lrkFM.consts.Operation.MOVE;
 import static io.lerk.lrkFM.consts.Operation.NONE;
@@ -266,6 +268,7 @@ public class FileActivity extends ThemedAppCompatActivity {
                 File iFile = null;
                 if (dataString.startsWith("content://")) {
                     Toast.makeText(this, R.string.error_content_uri, Toast.LENGTH_LONG).show();
+                    reloadCurrentDirectory();
                 } else if (dataString.startsWith("file://")) {
                     try {
                         iFile = new File(Uri.decode(dataString.split("://")[1]));
@@ -282,6 +285,7 @@ public class FileActivity extends ThemedAppCompatActivity {
 
     /**
      * Loads a file coming from an intent.
+     *
      * @param iFile the file to load
      */
     private void loadFileFromIntent(File iFile) {
@@ -295,6 +299,9 @@ public class FileActivity extends ThemedAppCompatActivity {
                         archiveToExtract = a;
                     }
                     if (archiveToExtract != null) {
+                        String archivePath = archiveToExtract.getFile().getAbsolutePath();
+                        String archiveParent = archivePath.substring(0, archivePath.lastIndexOf(File.separator));
+                        loadPath(archiveParent);
                         addFileToOpContext(EXTRACT, archiveToExtract);
                         if (new Pref<Boolean>(USE_CONTEXT_FOR_OPS_TOAST).getValue()) {
                             Toast.makeText(this, getString(R.string.file_added_to_context) + archiveToExtract.getName(), LENGTH_SHORT).show();
@@ -313,7 +320,6 @@ public class FileActivity extends ThemedAppCompatActivity {
                     } else {
                         Toast.makeText(this, R.string.unable_to_recognize_archive_format, Toast.LENGTH_LONG).show();
                     }
-                    reloadCurrentDirectory();
                 }).execute() // load the archive file
         ).execute(); // load it's contents
     }
@@ -678,6 +684,7 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     @SuppressWarnings("DeprecatedIsStillUsed") // see above
     private void loadDirectory(String path) {
+        currentDirectory = path;
         new DirectoryLoaderTask(this, path, files -> {
             View errorText = findViewById(R.id.unableToLoadText);
             View emptyText = findViewById(R.id.emptyDirText);
@@ -704,7 +711,6 @@ public class FileActivity extends ThemedAppCompatActivity {
                 errorText.setVisibility(VISIBLE);
                 emptyText.setVisibility(GONE);
             }
-            currentDirectory = path;
 
             HistoryEntry entry = historyMap.get(historyCounter);
             if (entry != null && !entry.getPath().equals(currentDirectory)) {
@@ -860,17 +866,23 @@ public class FileActivity extends ThemedAppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        boolean visible = !(fileOpContext.getFirst().equals(NONE) || fileOpContext.getSecond().isEmpty());
-        MenuItem paste = menu.findItem(R.id.action_paste).setVisible(visible)
+        boolean operationInProgress = !(fileOpContext.getFirst().equals(NONE) || fileOpContext.getSecond().isEmpty());
+        MenuItem paste = menu.findItem(R.id.action_paste).setVisible(operationInProgress)
                 .setTitle(fileOpContext.getFirst().getTitle());
-        if (visible) {
+        if (operationInProgress) {
             String title = paste.getTitle().toString();
             if (title.contains("(")) {
                 title = title.substring(0, paste.getTitle().toString().indexOf("("));
             }
             paste.setTitle(title + " (" + fileOpContext.getSecond().size() + ")");
         }
-        menu.findItem(R.id.action_clear_op_context).setVisible(visible);
+        menu.findItem(R.id.action_clear_op_context).setVisible(operationInProgress);
+
+        boolean noOperationButSelections = fileOpContext.getFirst().equals(NONE) && !fileOpContext.getSecond().isEmpty();
+        menu.findItem(R.id.action_copy).setVisible(noOperationButSelections);
+        menu.findItem(R.id.action_move).setVisible(noOperationButSelections);
+        menu.findItem(R.id.action_delete).setVisible(noOperationButSelections);
+
         return true;
     }
 
@@ -908,6 +920,16 @@ public class FileActivity extends ThemedAppCompatActivity {
             reloadCurrentDirectory();
             return true;
         } else if (item.getItemId() == R.id.action_paste) {
+            finishFileOperation();
+            return true;
+        } else if (item.getItemId() == R.id.action_copy) {
+            fileOpContext.setFirst(COPY);
+            return true;
+        } else if (item.getItemId() == R.id.action_move) {
+            fileOpContext.setFirst(MOVE);
+            return true;
+        } else if (item.getItemId() == R.id.action_delete) {
+            fileOpContext.setFirst(DELETE);
             finishFileOperation();
             return true;
         } else if (item.getItemId() == R.id.action_clear_op_context) {
@@ -1013,6 +1035,32 @@ public class FileActivity extends ThemedAppCompatActivity {
                         },
                         (d) -> Log.d(TAG, "Cancelled."));
                 alertDialog.show();
+            } else if (operation.equals(DELETE)) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.delete)
+                        .setMessage(getString(R.string.warn_delete_mult_msg_start) + FileActivity.WHITESPACE +
+                                files.size() + FileActivity.WHITESPACE +
+                                getString(R.string.warn_delete_mult_msg_end))
+                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
+                        .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                            for (int j = 0; j < files.size(); j++) {
+                                FMFile f = files.get(j);
+                                int idx = j;
+                                new FileDeleteTask(this, b -> {
+                                    if (!b) {
+                                        Toast.makeText(this, getString(R.string.err_deleting_element_mult) +
+                                                        FileActivity.WHITESPACE + f.getName(),
+                                                LENGTH_SHORT).show();
+                                    }
+                                    if (idx == files.size()) {
+                                        // clear operation when last file is deleted
+                                        clearFileOpCache();
+                                    }
+                                    reloadCurrentDirectory();
+                                }, f).execute();
+                            }
+                            dialogInterface.dismiss();
+                        }).show();
             } else {
                 Toast.makeText(this, R.string.invalid_operation, Toast.LENGTH_LONG).show();
             }

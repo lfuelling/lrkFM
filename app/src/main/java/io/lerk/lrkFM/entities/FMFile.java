@@ -108,6 +108,10 @@ public class FMFile implements Comparable<FMFile> {
                 type.equals(FileType.ARCHIVE_P7Z);
     }
 
+    public boolean isExplorableArchive() {
+        return getFileType().equals(FileType.ARCHIVE_ZIP);
+    }
+
     public static String getMimeTypeFromFile(FMFile f) {
         String fileExtension;
         try {

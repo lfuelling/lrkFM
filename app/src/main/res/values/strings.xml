@@ -173,4 +173,12 @@
     <string name="restart_required_title">Restart Required</string>
     <string name="restart_required_message">Changing this setting requires a restart of lrkFM.</string>
     <string name="a11y_desc_logo">App Logo</string>
+    <string name="file_already_selected">File already selected!</string>
+    <string name="action_copy">Copy…</string>
+    <string name="action_move">Move…</string>
+    <string name="action_delete">Delete…</string>
+    <string name="empty" />
+    <string name="warn_delete_mult_msg_start">Are you sure that you want to delete</string>
+    <string name="warn_delete_mult_msg_end">file(s)?</string>
+    <string name="err_deleting_element_mult">Error deleting:</string>
 </resources>
