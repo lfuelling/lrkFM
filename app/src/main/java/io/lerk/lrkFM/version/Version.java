@@ -1,6 +1,6 @@
 package io.lerk.lrkFM.version;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * The app version.

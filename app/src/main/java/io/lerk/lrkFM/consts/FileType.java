@@ -1,7 +1,7 @@
 package io.lerk.lrkFM.consts;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import android.util.Log;
 
 import io.lerk.lrkFM.Handler;

@@ -1,6 +1,6 @@
 package io.lerk.lrkFM.consts;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.HashSet;
 

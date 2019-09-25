@@ -1,6 +1,6 @@
 package io.lerk.lrkFM.entities;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * History entry.

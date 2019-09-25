@@ -2,7 +2,7 @@ package io.lerk.lrkFM;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import java.util.HashSet;

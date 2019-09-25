@@ -4,10 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.widget.Toolbar;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;

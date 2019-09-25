@@ -1,6 +1,6 @@
 package io.lerk.lrkFM.consts;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;
