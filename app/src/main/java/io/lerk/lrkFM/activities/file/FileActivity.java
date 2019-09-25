@@ -14,12 +14,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -27,6 +30,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -219,6 +223,16 @@ public class FileActivity extends ThemedAppCompatActivity {
     private boolean exploringArchive;
 
     /**
+     * Error text visible when no files are shown.
+     */
+    private View errorText;
+
+    /**
+     * Error text/Hint visible when no files are shown.
+     */
+    private View emptyText;
+
+    /**
      * Getter for the fileListView.
      *
      * @return fileListView
@@ -229,7 +243,7 @@ public class FileActivity extends ThemedAppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_KEY_CURRENT_DIR, currentDirectory);
         outState.putString(STATE_KEY_OP_CONTEXT_OP, fileOpContext.getFirst().name());
@@ -407,7 +421,11 @@ public class FileActivity extends ThemedAppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         loadPath(savedInstanceState.getString(STATE_KEY_CURRENT_DIR));
         Operation savedOperation = Operation.valueOf(savedInstanceState.getString(STATE_KEY_OP_CONTEXT_OP));
-        List<String> savedFilePaths = Arrays.asList(savedInstanceState.getStringArray(STATE_KEY_OP_CONTEXT_FILES));
+        String[] opContextFiles = savedInstanceState.getStringArray(STATE_KEY_OP_CONTEXT_FILES);
+        if (opContextFiles == null) {
+            opContextFiles = new String[]{};
+        }
+        List<String> savedFilePaths = Arrays.asList(opContextFiles);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             savedFilePaths.forEach(s -> addFileToOpContext(savedOperation, new FMFile(new File(s))));
         } else {
@@ -430,9 +448,14 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     private void initUi() {
         fileListView = findViewById(R.id.fileView);
-        registerForContextMenu(fileListView);
-
+        errorText = findViewById(R.id.unableToLoadText);
+        emptyText = findViewById(R.id.emptyDirText);
         toolbar = findViewById(R.id.toolbar);
+        navigationView = findViewById(R.id.nav_view);
+        headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        currentDirectoryTextView = headerView.findViewById(R.id.currentDirectoryTextView);
+
+        registerForContextMenu(fileListView);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener((v) -> {
@@ -456,7 +479,7 @@ public class FileActivity extends ThemedAppCompatActivity {
                 super.onDrawerStateChanged(newState);
             }
         });
-        navigationView = findViewById(R.id.nav_view);
+
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -490,8 +513,6 @@ public class FileActivity extends ThemedAppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
             return true;
         });
-        headerView = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        currentDirectoryTextView = headerView.findViewById(R.id.currentDirectoryTextView);
         loadUserBookmarks();
         setFreeSpaceText();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -686,9 +707,6 @@ public class FileActivity extends ThemedAppCompatActivity {
     private void loadDirectory(String path) {
         currentDirectory = path;
         new DirectoryLoaderTask(this, path, files -> {
-            View errorText = findViewById(R.id.unableToLoadText);
-            View emptyText = findViewById(R.id.emptyDirText);
-
             if (files != null) {
                 fileListView.setVisibility(VISIBLE);
                 errorText.setVisibility(GONE);
@@ -731,8 +749,6 @@ public class FileActivity extends ThemedAppCompatActivity {
     private void loadArchive(String path, FMArchive archive) {
         ArrayList<FMFile> files;
         ArchiveLoader loader = new ArchiveLoader(archive, path);
-        View errorText = findViewById(R.id.unableToLoadText);
-        View emptyText = findViewById(R.id.emptyDirText);
         exploringArchive = true;
 
         files = loader.loadLocationFiles();
