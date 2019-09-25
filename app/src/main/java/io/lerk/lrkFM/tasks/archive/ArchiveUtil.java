@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -126,7 +127,7 @@ class ArchiveUtil {
         };
     }
 
-    boolean doCreateZip(ArrayList<FMFile> files, File destination) throws BlockingStuffOnMainThreadException {
+    boolean doCreateZip(CopyOnWriteArrayList<FMFile> files, File destination) throws BlockingStuffOnMainThreadException {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new BlockingStuffOnMainThreadException();
         }

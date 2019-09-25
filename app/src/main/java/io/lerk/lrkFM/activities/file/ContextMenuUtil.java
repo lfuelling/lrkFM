@@ -14,6 +14,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.lerk.lrkFM.EditablePair;
 import io.lerk.lrkFM.Pref;
@@ -254,7 +255,7 @@ public class ContextMenuUtil {
      */
     private void addCreateZipToMenu(FMFile f, ContextMenu menu) {
 
-        EditablePair<Operation, ArrayList<FMFile>> fileOpContext = activity.getFileOpContext();
+        EditablePair<Operation, CopyOnWriteArrayList<FMFile>> fileOpContext = activity.getFileOpContext();
 
         boolean zipFileReady = fileOpContext.getFirst().equals(CREATE_ZIP) && fileOpContext.getSecond().size() >= 1;
 

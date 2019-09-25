@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.lerk.lrkFM.Handler;
 import io.lerk.lrkFM.R;
@@ -23,7 +24,7 @@ public class ArchiveCreationTask extends ProgressDialogCallbackTask<Boolean> {
     /**
      * The files to be added to the archive.
      */
-    private final ArrayList<FMFile> targets;
+    private final CopyOnWriteArrayList<FMFile> targets;
 
     /**
      * The destination archive file.
@@ -37,7 +38,7 @@ public class ArchiveCreationTask extends ProgressDialogCallbackTask<Boolean> {
      * @param destination the destination archive file
      * @param callback the callback {@link Handler}
      */
-    public ArchiveCreationTask(FileActivity context, ArrayList<FMFile> targets, File destination, Handler<Boolean> callback) {
+    public ArchiveCreationTask(FileActivity context, CopyOnWriteArrayList<FMFile> targets, File destination, Handler<Boolean> callback) {
         super(context, callback);
         this.dialog.setTitle(R.string.creating);
         this.dialog.setMessage(context.getString(R.string.creating_detail) + FileActivity.WHITESPACE + destination.getName());

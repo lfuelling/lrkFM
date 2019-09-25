@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.lerk.lrkFM.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
@@ -203,7 +204,7 @@ public class FileActivity extends ThemedAppCompatActivity {
     /**
      * The file operation context containing the {@link Operation} to do and a list of {@link FMFile} objects.
      */
-    private EditablePair<Operation, ArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new ArrayList<>());
+    private EditablePair<Operation, CopyOnWriteArrayList<FMFile>> fileOpContext = new EditablePair<>(NONE, new CopyOnWriteArrayList<>());
 
     /**
      * Extra used in {@link IntroActivity}.
@@ -961,7 +962,7 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     public void clearFileOpCache() {
         fileOpContext.setFirst(NONE);
-        fileOpContext.setSecond(new ArrayList<>());
+        fileOpContext.setSecond(new CopyOnWriteArrayList<>());
         reloadCurrentDirectory();
     }
 
@@ -970,7 +971,7 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     public void finishFileOperation() {
         Operation operation = fileOpContext.getFirst();
-        ArrayList<FMFile> files = fileOpContext.getSecond();
+        CopyOnWriteArrayList<FMFile> files = fileOpContext.getSecond();
         if (!operation.equals(NONE) && !files.isEmpty()) {
             if (operation.equals(COPY)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -1280,12 +1281,12 @@ public class FileActivity extends ThemedAppCompatActivity {
                 new VibratingToast(this, getString(R.string.switching_op_mode), Toast.LENGTH_SHORT);
             }
             fileOpContext.setFirst(op);
-            fileOpContext.setSecond(new ArrayList<>());
+            fileOpContext.setSecond(new CopyOnWriteArrayList<>());
         }
         fileOpContext.getSecond().add(f);
     }
 
-    public EditablePair<Operation, ArrayList<FMFile>> getFileOpContext() {
+    public EditablePair<Operation, CopyOnWriteArrayList<FMFile>> getFileOpContext() {
         return fileOpContext;
     }
 }
