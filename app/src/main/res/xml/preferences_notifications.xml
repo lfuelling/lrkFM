@@ -24,5 +24,12 @@
             android:key="context_toasts_vibrating"
             android:summary="@string/pref_context_toasts_vibrating_desc"
             android:title="@string/pref_context_toasts_vibrating" />
+        <SeekBarPreference
+            android:key="vibration_length"
+            android:defaultValue="@string/pref_vibration_length_default"
+            android:dependency="context_toasts_vibrating"
+            android:summary="@string/pref_vibration_length_desc"
+            android:max="250"
+            android:title="@string/pref_vibration_length"/>
     </PreferenceCategory>
 </PreferenceScreen>

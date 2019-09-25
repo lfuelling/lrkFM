@@ -2,7 +2,9 @@ package io.lerk.lrkFM;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
+
 import android.util.Log;
 
 import java.util.HashSet;
@@ -16,15 +18,17 @@ import io.lerk.lrkFM.consts.PreferenceEntity;
  * To read settings you can replace
  * <pre>PreferenceManager.getDefaultSharedPreferences(context).getBoolean(MY_PREFERENCE.getKey(), false);</pre>
  * with <pre>new Pref&lt;Boolean&gt;(MY_PREFERENCE).getValue();</pre>.
- *
+ * <p>
  * To write settings you can replace
  * <pre>PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(MY_PREFERENCE.getKey(), false).apply();</pre>
  * with <pre>new Pref&lt;Boolean;&gt;(MY_PREFERENCE).setValue(false);</pre>
- *
- * @author Lukas Fülling (lukas@k40s.net)
- * @see PreferenceEntity
+ * <p>
+ * Apparently androidx/Android Q introduces Integers as valid preference type.
+ * Since {@link SharedPreferences} (afaik) don't support that, they should be handled as Strings.
  *
  * @param <T> The type of preference to use. Currently {@link Boolean}, {@link String}, {@link HashSet}.
+ * @author Lukas Fülling (lukas@k40s.net)
+ * @see PreferenceEntity
  */
 public class Pref<T> {
 

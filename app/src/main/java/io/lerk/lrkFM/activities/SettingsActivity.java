@@ -1,16 +1,20 @@
 package io.lerk.lrkFM.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -26,10 +30,12 @@ import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.themed.ThemedAppCompatPreferenceActivity;
 import io.lerk.lrkFM.consts.PreferenceEntity;
+import io.lerk.lrkFM.consts.PreferenceStore;
 
 /**
  * Settings.
  */
+@SuppressWarnings("deprecation") // :c
 public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
 
     @Override
@@ -144,6 +150,10 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.preferences_notifications);
             setHasOptionsMenu(true);
             addOnPreferenceChangeListeners(this.getPreferenceScreen());
+
+            Preference vibrationLengthPreference = findPreference(PreferenceEntity.VIBRATION_LENGTH.getKey());
+            vibrationLengthPreference.setSummary(getContext().getResources() // add current value to description
+                    .getString(R.string.pref_vibration_length_desc_init));
         }
 
         @Override
@@ -158,7 +168,8 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
     }
 
     /**
-     * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences_general with {@link Pref}. It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}
+     * Adds a generic {@link android.preference.Preference.OnPreferenceChangeListener} to update the preferences with {@link Pref}.
+     * It does that recursively for every Preference contained in the supplied {@link PreferenceGroup}.
      * This is what you get, when customizing too much stuff.
      *
      * @param preferenceGroup the current {@link PreferenceGroup}
@@ -175,19 +186,25 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
     }
 
     /**
-     * This actually adds the listener. This is called by {@link #addOnPreferenceChangeListeners(PreferenceGroup)}
+     * This actually adds the listener.
+     * This is called by {@link #addOnPreferenceChangeListeners(PreferenceGroup)}.
      *
      * @param p the {@link Preference}
      */
     private static void setOnPreferenceChangeListener(Preference p) {
         p.setOnPreferenceChangeListener((preference, newValue) -> {
             if (preference.getKey().equals("filename_length")) {
-                if (Integer.parseInt(String.valueOf(newValue)) >= 4) {
-                    return true;
-                } else {
+                if (Integer.parseInt(String.valueOf(newValue)) <= 4) {
                     Toast.makeText(preference.getContext(), R.string.err_filename_length_lower_than_four, Toast.LENGTH_LONG).show();
                     ((EditTextPreference) preference).setText("4");
-                    return true;
+                    return false;
+                }
+            } else if (preference.getKey().equals("vibration_length")) {
+                preference.setSummary(preference.getContext().getResources()
+                        .getString(R.string.pref_vibration_length_desc) + " " + newValue);
+                Vibrator vibrator = (Vibrator) preference.getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                if (vibrator != null) {
+                    vibrator.vibrate((Integer) newValue);
                 }
             }
             PreferenceEntity preferenceEntity = PreferenceEntity.determineByKey(preference.getKey());
@@ -195,8 +212,9 @@ public class SettingsActivity extends ThemedAppCompatPreferenceActivity {
                 if (newValue instanceof Boolean) {
                     new Pref<Boolean>(preferenceEntity).setValue((Boolean) newValue);
                     return true;
-                } else if (newValue instanceof String) {
-                    new Pref<String>(preferenceEntity).setValue((String) newValue);
+                } else if (newValue instanceof String || newValue instanceof Integer) {
+                    String value = newValue.toString();
+                    new Pref<String>(preferenceEntity).setValue(value);
                     return true;
                 } else if (newValue instanceof HashSet) {
                     new Pref<HashSet>(preferenceEntity).setValue((HashSet) newValue);

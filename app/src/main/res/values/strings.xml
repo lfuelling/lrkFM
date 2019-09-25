@@ -15,7 +15,7 @@
     <string name="cancel">@android:string/cancel</string>
     <string name="invalid_path">Invalid path! Only absolute paths pointing to a directory please.</string>
     <string name="add_bookmark">Add Bookmark</string>
-    <string name="nav_bug_report" translatable="false">Report Bug</string>
+    <string name="nav_bug_report">Report Bug</string>
     <string name="share_file">Share File</string>
     <string name="pref_show_toast_cd">Show Toast on directory change</string>
     <string name="pref_show_toast_cd_desc">When loading a new directory, a toast will be shown.</string>
@@ -153,8 +153,8 @@
     <string name="only_one_app_to_handle_file">Only one app to handle this file found!</string>
     <string name="pref_themes_text_default">Default</string>
     <string name="pref_themes_text_dark">Dark</string>
-    <string translatable="false" name="pref_themes_value_default">default</string>
-    <string translatable="false" name="pref_themes_value_dark">dark</string>
+    <string name="pref_themes_value_default" translatable="false">default</string>
+    <string name="pref_themes_value_dark" translatable="false">dark</string>
     <string name="pref_themes_desc">Set the app\'s color scheme.</string>
     <string name="pref_themes_title">Theme</string>
     <string name="dialog_icon_desc">Dialog icon.</string>
@@ -177,11 +177,15 @@
     <string name="action_copy">Copy…</string>
     <string name="action_move">Move…</string>
     <string name="action_delete">Delete…</string>
-    <string name="empty" />
+    <string name="empty" translatable="false" />
     <string name="warn_delete_mult_msg_start">Are you sure that you want to delete</string>
     <string name="warn_delete_mult_msg_end">file(s)?</string>
     <string name="err_deleting_element_mult">Error deleting:</string>
     <string name="pref_header_notifications_toasts"><![CDATA[Notifications & Toasts]]></string>
     <string name="pref_show_menu_button">Show menu button</string>
     <string name="pref_show_menu_button_desc">When active, the checkboxes will be replaced with menu buttons.</string>
+    <string name="pref_vibration_length_default" translatable="false">120</string>
+    <string name="pref_vibration_length">Vibration Length</string>
+    <string name="pref_vibration_length_desc">Configure the length of vibration when toasts appear. Currently:</string>
+    <string name="pref_vibration_length_desc_init">Configure the length of vibration when toasts appear.</string>
 </resources>

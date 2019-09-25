@@ -45,11 +45,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     lintOptions {
         abortOnError false // fuck lint
     }
+
     productFlavors {
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/DEPENDENCIES'
@@ -61,6 +64,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.browser:browser:1.0.0'
+    implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.github.BoD:aLibGlitch:1.0.0'
     implementation 'org.jsoup:jsoup:1.12.1'

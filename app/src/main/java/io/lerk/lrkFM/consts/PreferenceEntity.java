@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import io.lerk.lrkFM.LrkFMApp;
 import io.lerk.lrkFM.R;
+import io.lerk.lrkFM.VibratingToast;
 
 import static io.lerk.lrkFM.consts.PreferenceStore.CLOUD_BACKED;
 import static io.lerk.lrkFM.consts.PreferenceStore.LOCAL;
@@ -117,6 +118,11 @@ public enum PreferenceEntity {
     VIBRATING_TOASTS(CLOUD_BACKED, "context_toasts_vibrating", true),
 
     /**
+     * Vibration length of vibrating Toasts.
+     */
+    VIBRATION_LENGTH(CLOUD_BACKED, "vibration_length", 120),
+
+    /**
      * Replace checkboxes with menu buttons.
      */
     SHOW_MENU_BUTTON_INSTEAD_OF_CHECKBOX(CLOUD_BACKED, "show_menu_button_instead_of_checkbox", false);
@@ -128,6 +134,7 @@ public enum PreferenceEntity {
 
     /**
      * The preference's storage type.
+     *
      * @see PreferenceStore
      */
     private final PreferenceStore store;
@@ -144,8 +151,9 @@ public enum PreferenceEntity {
 
     /**
      * Constructor.
-     * @param store teh storage type
-     * @param key the key
+     *
+     * @param store        teh storage type
+     * @param key          the key
      * @param defaultValue the default value
      */
     PreferenceEntity(PreferenceStore store, String key, Object defaultValue) {
@@ -157,6 +165,7 @@ public enum PreferenceEntity {
 
     /**
      * Getter.
+     *
      * @return the key.
      */
     public String getKey() {
@@ -165,6 +174,7 @@ public enum PreferenceEntity {
 
     /**
      * Getter.
+     *
      * @return the storage type.
      * @see PreferenceStore
      */
@@ -174,6 +184,7 @@ public enum PreferenceEntity {
 
     /**
      * Getter.
+     *
      * @return the type.
      */
     public Class getType() {
@@ -182,6 +193,7 @@ public enum PreferenceEntity {
 
     /**
      * Getter.
+     *
      * @return the default value.
      */
     public Object getDefaultValue() {
@@ -191,7 +203,7 @@ public enum PreferenceEntity {
     @Nullable
     public static PreferenceEntity determineByKey(String key) {
         for (PreferenceEntity preference : PreferenceEntity.values()) {
-            if(preference.getKey().equals(key)) {
+            if (preference.getKey().equals(key)) {
                 return preference;
             }
         }

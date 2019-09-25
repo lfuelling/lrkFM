@@ -154,4 +154,20 @@
     <string name="restart_required_title">Neustart Erforderlich</string>
     <string name="restart_required_message">Eine Änderung dieser Einstellung erfordert einen Neustart von lrkFM.</string>
     <string name="a11y_desc_logo">App Logo</string>
+    <string name="pref_vibration_length_desc">Legt fest, wie lange die Vibration im Falle eines Toasts dauert (in ms). Momentan:</string>
+    <string name="pref_vibration_length_desc_init">Legt fest, wie lange die Vibration im Falle eines Toasts dauert (in ms).</string>
+    <string name="action_copy">Kopieren…</string>
+    <string name="action_delete">Löschen…</string>
+    <string name="action_move">Verschieben…</string>
+    <string name="enter_new_file_name">Neuen Dateinamen eingeben</string>
+    <string name="err_deleting_element_mult">Fehler beim löschen:</string>
+    <string name="file_already_selected">Datei ist bereits ausgewählt!</string>
+    <string name="nav_bug_report">Fehler Melden</string>
+    <string name="new_file">Neue Datei</string>
+    <string name="pref_header_notifications_toasts"><![CDATA[Benachrichtigungen & Toasts]]></string>
+    <string name="pref_show_menu_button">Optionsbutton anzeigen</string>
+    <string name="pref_show_menu_button_desc">Wenn aktiv, werden die Checkboxen durch den Optionsbutton aus vorheringen Versionen ersetzt.</string>
+    <string name="pref_vibration_length">Dauer der Vibration</string>
+    <string name="warn_delete_mult_msg_start">Sicher, dass</string>
+    <string name="warn_delete_mult_msg_end">Dateien gelöscht werden sollen?</string>
 </resources>
