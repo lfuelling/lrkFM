@@ -1,5 +1,7 @@
 package io.lerk.lrkFM.consts;
 
+import android.os.Build;
+
 import androidx.annotation.Nullable;
 
 import java.util.HashSet;
@@ -28,7 +30,7 @@ public enum PreferenceEntity {
     /**
      * The home directory of the application.
      */
-    HOME_DIR(LOCAL, "home_dir", "/storage/emulated/0"),
+    HOME_DIR(LOCAL, "home_dir", (Build.VERSION.SDK_INT <= 28) ? "/storage/emulated/0" : "/storage"),
 
     /**
      * If the bookmarks can currently be edited.
