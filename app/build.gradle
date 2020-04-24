@@ -1,13 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'jacoco-android'
-
-jacocoAndroidUnitTestReport {
-    csv.enabled true
-}
 
 android {
+    buildToolsVersion '29.0.3'
     compileSdkVersion 29
-    buildToolsVersion '29.0.0'
     defaultConfig {
         applicationId "io.lerk.lrkFM"
         minSdkVersion 23
