@@ -8,7 +8,7 @@ import org.junit.Test;
  */
 public class FileActivityTest {
 
-    private static final String PATH_SE0 = "/storage/emulated/0";
+    private static final String PATH_SE0 = "/storage";
 
     //TODO: learn Mockito and implement tests!
 

@@ -4,10 +4,12 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.app.ActivityCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.activities.file.FileActivity;
@@ -35,7 +37,7 @@ public class IntroActivity extends ThemedAppCompatActivity {
         final boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        if(permissionGranted) {
+        if (permissionGranted) {
             fab.setImageResource(R.drawable.ic_chevron_right_white_24dp);
         }
         fab.setOnClickListener(view -> {

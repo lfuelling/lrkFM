@@ -1,7 +1,11 @@
 package io.lerk.lrkFM.tasks.archive;
 
+import android.net.IpSecManager;
 import android.os.Looper;
 import android.util.Log;
+
+import com.github.junrar.Junrar;
+import com.github.junrar.exception.RarException;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -35,7 +39,7 @@ class ArchiveUtil {
 
     private static final String TAG = ArchiveUtil.class.getCanonicalName();
 
-    boolean doExtractArchive(String path, FMFile f) throws BlockingStuffOnMainThreadException {
+    boolean doExtractArchive(String destination, FMFile f) throws BlockingStuffOnMainThreadException {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new BlockingStuffOnMainThreadException();
         }
@@ -43,7 +47,29 @@ class ArchiveUtil {
 
         FileType fileType = f.getFileType();
         if (fileType != FileType.ARCHIVE_P7Z) {
-            fileType.newHandler(getArchiveExtractionCallback(path, result, fileType)).handle(f);
+            if(fileType == FileType.ARCHIVE_RAR) {
+                fileType.newHandler(fmFile -> {
+                    File archiveFile = fmFile.getFile();
+                    File destinationFile = new File(destination);
+                    if (!destinationFile.exists()) {
+                        if (destinationFile.mkdirs()) {
+                            Log.i(TAG, "Folder created: '" + destinationFile.getAbsolutePath() + "'");
+                        } else {
+                            Log.e(TAG, "Unable to create folder: '" + destinationFile.getAbsolutePath() + "'");
+                        }
+                    }
+                    try {
+                        Junrar.extract(archiveFile, destinationFile);
+                        result.set(true);
+                    } catch (RarException | IOException e) {
+                        Log.e(TAG, "Unable to extract rar file '" + fmFile.getAbsolutePath() + "'!", e);
+                        result.set(false);
+                    }
+                }).handle(f);
+            } else {
+                // handle archives using commons compress
+                fileType.newHandler(getArchiveExtractionCallback(destination, result, fileType)).handle(f);
+            }
         } else {
             fileType.newHandler(fi -> {
                 SevenZFile sevenZFile;
@@ -54,20 +80,24 @@ class ArchiveUtil {
                         if (entry.isDirectory()) {
                             continue;
                         }
-                        File curfile = new File(path, entry.getName());
+                        File curfile = new File(destination, entry.getName());
                         File parent = curfile.getParentFile();
-                        if (!parent.exists()) {
-                            if (parent.mkdirs()) {
-                                Log.i(TAG, "Folder created: '" + parent.getAbsolutePath() + "'");
-                            } else {
-                                Log.e(TAG, "Unable to create folder: '" + parent.getAbsolutePath() + "'");
+                        if (parent != null) {
+                            if (!parent.exists()) {
+                                if (parent.mkdirs()) {
+                                    Log.i(TAG, "Folder created: '" + parent.getAbsolutePath() + "'");
+                                } else {
+                                    Log.e(TAG, "Unable to create folder: '" + parent.getAbsolutePath() + "'");
+                                }
                             }
+                            FileOutputStream out = new FileOutputStream(curfile);
+                            byte[] content = new byte[(int) entry.getSize()];
+                            sevenZFile.read(content, 0, content.length);
+                            out.write(content);
+                            out.close();
+                        } else {
+                            throw new IOException("Unable to get parent file for '" + curfile.getAbsolutePath() + "'!");
                         }
-                        FileOutputStream out = new FileOutputStream(curfile);
-                        byte[] content = new byte[(int) entry.getSize()];
-                        sevenZFile.read(content, 0, content.length);
-                        out.write(content);
-                        out.close();
                     }
                     result.set(true);
                 } catch (IOException e) {
@@ -120,7 +150,7 @@ class ArchiveUtil {
                     result.set(true);
                 }
             } catch (IOException | ArchiveException e) {
-                Log.e(TAG, "Error extracting " + fileType.getExtension());
+                Log.e(TAG, "Error extracting " + fileType.getExtension(), e);
                 result.set(false);
             }
 

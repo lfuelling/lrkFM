@@ -46,7 +46,7 @@
     <string name="err_activity_null">Unable to register context menu</string>
     <string name="warn_file_exists_title">File exists</string>
     <string name="warn_file_exists_msg">The existing file will be overwritten. Are you sure that you want to continue?</string>
-    <string name="yes">@android:string/yes</string>
+    <string name="yes">Yes</string>
     <string name="delete">Delete</string>
     <string name="warn_delete_msg">Are you sure that you want to delete: </string>
     <string name="move">Move</string>
@@ -188,4 +188,6 @@
     <string name="pref_vibration_length">Vibration Length</string>
     <string name="pref_vibration_length_desc">Configure the length of vibration when toasts appear. Currently:</string>
     <string name="pref_vibration_length_desc_init">Configure the length of vibration when toasts appear.</string>
+    <string name="pref_use_storage_access_framework">Use Storage Access Framework</string>
+    <string name="pref_use_storage_access_framework_desc"><![CDATA[Use the Android file picker instead of builtin. Helps on Android > 9.]]></string>
 </resources>
