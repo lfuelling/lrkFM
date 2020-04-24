@@ -1,11 +1,9 @@
 package io.lerk.lrkFM;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Vibrator;
+import android.util.Log;
 import android.widget.Toast;
-
-import androidx.preference.PreferenceManager;
 
 import io.lerk.lrkFM.consts.PreferenceEntity;
 
@@ -17,6 +15,8 @@ import io.lerk.lrkFM.consts.PreferenceEntity;
  * @author Lukas Fülling (lukas@k40s.net)
  */
 public class VibratingToast extends Toast {
+
+    private static final String TAG = VibratingToast.class.getCanonicalName();
 
     /**
      * Constructor. Calling this will also show the toast.
@@ -32,8 +32,12 @@ public class VibratingToast extends Toast {
         if (new Pref<Boolean>(PreferenceEntity.VIBRATING_TOASTS).getValue()) {
             Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             if (vibrator != null) {
-                int duration = Integer.parseInt(new Pref<String>(PreferenceEntity.VIBRATION_LENGTH).getValue());
-                vibrator.vibrate(duration);
+                try {
+                    int duration = Integer.parseInt(new Pref<String>(PreferenceEntity.VIBRATION_LENGTH).getValue());
+                    vibrator.vibrate(duration);
+                } catch (NumberFormatException e) {
+                    Log.w(TAG, "Unable to parse vibration length.");
+                }
             }
         }
         makeText(context, text, toastDuration).show();
