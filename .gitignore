@@ -11,3 +11,4 @@ keystore.properties
 google-services.json
 /app/release
 *.afphoto
+**/.cxx/

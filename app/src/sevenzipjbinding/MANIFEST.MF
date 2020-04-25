@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+CMake: 3.17.1
+Created-By: 1.8
+Implementation-Title: 7-Zip-JBinding native lib (-)
+Implementation-Vendor: sevenzipjbind.sf.net
+Implementation-Version: 16.02-2.01
+Built-By: Boris Brodski
+Built-Date: 2020-04-24 23:41:29Z

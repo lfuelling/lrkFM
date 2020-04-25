@@ -11,15 +11,15 @@ File manager for Android. It has the following features:
 - full access to filesystem (if permissions are right)
 - can create zip archives
 - can extract zip, rar, 7zip, tar, tar.gz archives
-- can explore all of the above archives
-- file operations (move and so on)
+- can explore almost all of the above archives
+- file operations (move and so on, not working inside archives)
 - shows free space on filesystem
 - add bookmarks to the sidebar
 - share files from app
 - ad free
 - open source
 
-You can join the beta program through [here.](https://play.google.com/apps/testing/io.lerk.lrkfm)
+You can join the beta program through [here](https://play.google.com/apps/testing/io.lerk.lrkfm).
 
 ## Usage
 
