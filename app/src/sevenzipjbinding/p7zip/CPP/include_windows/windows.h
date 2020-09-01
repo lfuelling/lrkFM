@@ -178,7 +178,7 @@ DWORD WINAPI GetTickCount(VOID);
 #define CP_UTF8  65001
 
 /* #include <unknwn.h> */
-#include <basetyps.h>
+#include "basetyps.h"
 
 #ifdef __cplusplus
 extern "C" const IID IID_ISequentialStream;

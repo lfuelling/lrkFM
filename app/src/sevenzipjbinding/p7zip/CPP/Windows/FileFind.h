@@ -6,6 +6,7 @@
 #include "../Common/MyString.h"
 #include "../Common/MyTypes.h"
 #include "Defs.h"
+#include "../include_windows/windows.h"
 
 #include <sys/types.h> /* for DIR */
 #include <dirent.h>

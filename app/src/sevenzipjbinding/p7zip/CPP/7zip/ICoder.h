@@ -356,6 +356,7 @@ CODER_INTERFACE(IHashers, 0xC1)
   STDMETHOD(CreateHasher)(UInt32 index, IHasher **hasher) PURE;
 };
 
+/*
 extern "C"
 {
   typedef HRESULT (WINAPI *Func_GetNumberOfMethods)(UInt32 *numMethods);
@@ -367,5 +368,6 @@ extern "C"
   
   typedef HRESULT (WINAPI *Func_SetCodecs)(ICompressCodecsInfo *compressCodecsInfo);
 }
+*/
 
 #endif

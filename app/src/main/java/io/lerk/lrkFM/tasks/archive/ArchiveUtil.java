@@ -37,6 +37,10 @@ import io.lerk.lrkFM.exceptions.BlockingStuffOnMainThreadException;
  */
 class ArchiveUtil {
 
+    static {
+        System.loadLibrary("sevenzipjbinding");
+    }
+
     private static final String TAG = ArchiveUtil.class.getCanonicalName();
 
     boolean doExtractArchive(String destination, FMFile f) throws BlockingStuffOnMainThreadException {

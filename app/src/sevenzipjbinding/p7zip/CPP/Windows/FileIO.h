@@ -69,10 +69,10 @@ public:
 
   virtual bool Close();
 
-  bool GetLength(UINT64 &length) const;
+  bool GetLength(uint64_t &length) const;
 
-  bool Seek(INT64 distanceToMove, DWORD moveMethod, UINT64 &newPosition);
-  bool Seek(UINT64 position, UINT64 &newPosition);
+  bool Seek(int64_t distanceToMove, DWORD moveMethod, uint64_t &newPosition);
+  bool Seek(uint64_t position, uint64_t &newPosition);
 };
 
 class CInFile: public CFileBase

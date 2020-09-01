@@ -15,45 +15,39 @@
 
 // #include "Windows/DLL.h"
 
-/*
-#include "Common/CommandLineParser.h"
-#include "Common/MyException.h"
-#include "Common/IntToString.h"
-#include "Common/ListFileUtils.h"
-#include "Common/StdInStream.h"
-#include "Common/StdOutStream.h"
-#include "Common/StringConvert.h"
-#include "Common/StringToInt.h"
-#include "Common/Wildcard.h"
 
-#include "Windows/FileDir.h"
-#include "Windows/FileName.h"
-#include "Windows/Defs.h"
-#include "Windows/Error.h"
-#ifdef _WIN32
-#include "Windows/MemoryLock.h"
-#endif
+#include "../p7zip/CPP/Common/CommandLineParser.h"
+#include "../p7zip/CPP/Common/MyException.h"
+#include "../p7zip/CPP/Common/IntToString.h"
+#include "../p7zip/CPP/Common/ListFileUtils.h"
+#include "../p7zip/CPP/Common/StdInStream.h"
+#include "../p7zip/CPP/Common/StdOutStream.h"
+#include "../p7zip/CPP/Common/StringConvert.h"
+#include "../p7zip/CPP/Common/StringToInt.h"
+#include "../p7zip/CPP/Common/Wildcard.h"
 
-#include "7zip/IPassword.h"
-#include "7zip/ICoder.h"
-#include "7zip/UI/Common/UpdateAction.h"
-#include "7zip/UI/Common/Update.h"
-#include "7zip/UI/Common/Extract.h"
-#include "7zip/UI/Common/ArchiveCommandLine.h"
-#include "7zip/UI/Common/ExitCode.h"
+#include "../p7zip/CPP/Windows/FileDir.h"
+#include "../p7zip/CPP/Windows/FileName.h"
+#include "../p7zip/CPP/Windows/Defs.h"
+
+#include "../p7zip/CPP/7zip/IPassword.h"
+#include "../p7zip/CPP/7zip/ICoder.h"
+#include "../p7zip/CPP/7zip/UI/Common/UpdateAction.h"
+#include "../p7zip/CPP/7zip/UI/Common/Update.h"
+#include "../p7zip/CPP/7zip/UI/Common/Extract.h"
+#include "../p7zip/CPP/7zip/UI/Common/ArchiveCommandLine.h"
+#include "../p7zip/CPP/7zip/UI/Common/ExitCode.h"
 #ifdef EXTERNAL_CODECS
 #include "../Common/LoadCodecs.h"
 #endif
 
-#include "7zip/Compress/LZMA_Alone/LzmaBenchCon.h"
+#include "../p7zip/CPP/7zip/UI/Console/List.h"
+#include "../p7zip/CPP/7zip/UI/Console/OpenCallbackConsole.h"
+#include "../p7zip/CPP/7zip/UI/Console/ExtractCallbackConsole.h"
+#include "../p7zip/CPP/7zip/UI/Console/UpdateCallbackConsole.h"
 
-#include "7zip/UI/Console/List.h"
-#include "7zip/UI/Console/OpenCallbackConsole.h"
-#include "7zip/UI/Console/ExtractCallbackConsole.h"
-#include "7zip/UI/Console/UpdateCallbackConsole.h"
+#include "../p7zip/CPP/7zip/MyVersion.h"
 
-#include "7zip/MyVersion.h"
-*/
 /*
 #if defined( _WIN32) && defined( _7ZIP_LARGE_PAGES)
 extern "C"
