@@ -1,25 +1,23 @@
 package io.lerk.lrkFM.tasks.archive;
 
-import android.net.IpSecManager;
 import android.os.Looper;
 import android.util.Log;
 
 import com.github.junrar.Junrar;
 import com.github.junrar.exception.RarException;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
@@ -114,9 +112,9 @@ class ArchiveUtil {
             try (InputStream is = new FileInputStream(fi.getFile())) {
 
                 ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(fileType.getExtension(), is);
-                ZipEntry entry;
+                ArchiveEntry entry;
 
-                while ((entry = (ZipArchiveEntry) ais.getNextEntry()) != null) {
+                while ((entry = (ArchiveEntry) ais.getNextEntry()) != null) {
 
                     if (entry.getName().endsWith("/")) {
                         File dir = new File(path + File.separator + entry.getName());

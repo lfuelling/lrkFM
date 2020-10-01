@@ -654,8 +654,7 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     @SuppressLint("UseSparseArrays")
     private void loadHomeDir() {
-        historyMap = new HashMap<>();
-        historyCounter = 0;
+        resetHistory();
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         Pref<String> homeDirPreference = new Pref<>(HOME_DIR);
         String startDir = homeDirPreference.getValue();
@@ -731,6 +730,10 @@ public class FileActivity extends ThemedAppCompatActivity {
                 emptyText.setVisibility(GONE);
             }
 
+            if(historyMap == null) {
+                resetHistory();
+            }
+
             HistoryEntry entry = historyMap.get(historyCounter);
             if (entry != null && !entry.getPath().equals(currentDirectory)) {
                 historyMap.put(historyCounter++, new HistoryEntry(currentDirectory, null));
@@ -738,6 +741,14 @@ public class FileActivity extends ThemedAppCompatActivity {
             setToolbarText();
             setFreeSpaceText();
         }).execute();
+    }
+
+    /**
+     * Resets {@link #historyMap} and {@link #historyCounter}.
+     */
+    private void resetHistory() {
+        historyMap = new HashMap<>();
+        historyCounter = 0;
     }
 
     /**
