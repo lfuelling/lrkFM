@@ -1,6 +1,6 @@
 # lrkFM
 
-![CI build badge](https://travis-ci.org/lfuelling/lrkFM.svg?branch=master)
+![CI build badge](https://travis-ci.org/lfuelling/lrkFM.svg?branch=main)
 ![License badge](https://img.shields.io/github/license/lfuelling/lrkFM)
 ![Latest version badge](https://img.shields.io/github/v/release/lfuelling/lrkFM?sort=semver)
 [![Github downloads](https://img.shields.io/github/downloads/lfuelling/lrkFM/total?logo=github)](https://github.com/lfuelling/lrkFM/releases/latest)
