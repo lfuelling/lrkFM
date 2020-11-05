@@ -72,7 +72,7 @@ public class UriUtil {
         return extension;
     }
 
-    @Nullable
+    @NonNull
     public static File createTempFileFromUri(Context ctx, Uri uri) throws Exception {
         try (InputStream inputStream = ctx.getContentResolver().openInputStream(uri)) {
             String fullFileName = UriUtil.getFilenameForUri(ctx, uri);

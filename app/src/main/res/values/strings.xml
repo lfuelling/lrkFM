@@ -190,4 +190,6 @@
     <string name="pref_vibration_length_desc_init">Configure the length of vibration when toasts appear.</string>
     <string name="pref_use_storage_access_framework">Use Storage Access Framework</string>
     <string name="pref_use_storage_access_framework_desc"><![CDATA[Use the Android file picker instead of builtin. Helps on Android > 9.]]></string>
+    <string name="extraction_path">Extration Path</string>
+    <string name="path_input_hint_exisiting_dir">Absolute paths only! The path must be an existing directory!</string>
 </resources>

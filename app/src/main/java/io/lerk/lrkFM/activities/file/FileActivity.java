@@ -18,6 +18,7 @@ import android.os.StrictMode;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -283,11 +284,25 @@ public class FileActivity extends ThemedAppCompatActivity {
                 Log.d(TAG, "Intent dataString present: '" + dataString + "'");
                 File iFile = null;
                 if (dataString.startsWith("content://")) {
-                    try {
-                        extractFromUri(dataString);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to extract archive from URI!", e);
-                    }
+
+                    new AlertDialog.Builder(this)
+                            .setView(R.layout.layout_extract_now_prompt)
+                            .setPositiveButton(R.string.yes, (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    extractFromUri(dataString, currentDirectory);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Unable to extract archive from URI!", e);
+                                }
+                            })
+                            .setNegativeButton(R.string.no, (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    extractFromUri(dataString, null);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Unable to extract archive from URI!", e);
+                                }
+                            }).create().show();
                 } else if (dataString.startsWith("file://")) {
                     try {
                         iFile = new File(Uri.decode(dataString.split("://")[1]));
@@ -302,36 +317,41 @@ public class FileActivity extends ThemedAppCompatActivity {
         }
     }
 
-    private void extractFromUri(String dataString) throws Exception {
+    private void extractFromUri(String dataString, @Nullable String targetDir) throws Exception {
         try {
             Uri uri = Uri.parse(dataString);
             Log.d(TAG, "Extracting from uri: '" + dataString + "'...");
             File tempFile = UriUtil.createTempFileFromUri(this, uri);
-            if(tempFile != null) {
 
+            if(targetDir == null) {
                 AlertDialog dia = new AlertDialog.Builder(this)
-                        .setView(R.layout.layout_path_prompt)
+                        .setView(R.layout.layout_path_prompt_dir)
+                        .setTitle(R.string.extraction_path)
                         .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Operation canceled."))
                         .create();
                 dia.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
-                    String targetPath = ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString();
-                    new ArchiveExtractionTask(this, targetPath, new FMFile(tempFile), success -> {
-                        clearFileOpCache();
-                        if (!success) {
-                            reloadCurrentDirectory();
-                            Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
-                        } else {
-                            loadPath(targetPath);
-                        }
-                    }).execute();
+                    String pathFromInput = ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString();
+                    doExtractFromUri(tempFile, pathFromInput);
                 });
                 dia.show();
             } else {
-                throw new Exception("Temp file is null!");
+                doExtractFromUri(tempFile, targetDir);
             }
         } catch (Exception e) {
             throw new Exception("Unable to extract archive from URI!", e);
         }
+    }
+
+    private void doExtractFromUri(File tempFile, String targetPath) {
+        new ArchiveExtractionTask(this, targetPath, new FMFile(tempFile), success -> {
+            clearFileOpCache();
+            if (!success) {
+                reloadCurrentDirectory();
+                Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
+            } else {
+                loadPath(targetPath);
+            }
+        }).execute();
     }
 
     /**
