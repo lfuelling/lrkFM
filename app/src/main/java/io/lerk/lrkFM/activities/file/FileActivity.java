@@ -327,9 +327,10 @@ public class FileActivity extends ThemedAppCompatActivity {
                 AlertDialog dia = new AlertDialog.Builder(this)
                         .setView(R.layout.layout_path_prompt_dir)
                         .setTitle(R.string.extraction_path)
-                        .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Operation canceled."))
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
                         .create();
                 dia.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
+                    dialog.dismiss();
                     String pathFromInput = ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString();
                     doExtractFromUri(tempFile, pathFromInput);
                 });
