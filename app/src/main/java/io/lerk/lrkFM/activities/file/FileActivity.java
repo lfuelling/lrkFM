@@ -18,6 +18,7 @@ import android.os.StrictMode;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -58,6 +59,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.lerk.lrkFM.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
+import io.lerk.lrkFM.UriUtil;
 import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.VibratingToast;
@@ -282,8 +284,25 @@ public class FileActivity extends ThemedAppCompatActivity {
                 Log.d(TAG, "Intent dataString present: '" + dataString + "'");
                 File iFile = null;
                 if (dataString.startsWith("content://")) {
-                    Toast.makeText(this, R.string.error_content_uri, Toast.LENGTH_LONG).show();
-                    reloadCurrentDirectory();
+
+                    new AlertDialog.Builder(this)
+                            .setView(R.layout.layout_extract_now_prompt)
+                            .setPositiveButton(R.string.yes, (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    extractFromUri(dataString, currentDirectory);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Unable to extract archive from URI!", e);
+                                }
+                            })
+                            .setNegativeButton(R.string.no, (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    extractFromUri(dataString, null);
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Unable to extract archive from URI!", e);
+                                }
+                            }).create().show();
                 } else if (dataString.startsWith("file://")) {
                     try {
                         iFile = new File(Uri.decode(dataString.split("://")[1]));
@@ -296,6 +315,47 @@ public class FileActivity extends ThemedAppCompatActivity {
                 }
             }
         }
+    }
+
+    private void extractFromUri(String dataString, @Nullable String targetDir) throws Exception {
+        try {
+            Uri uri = Uri.parse(dataString);
+            Log.d(TAG, "Extracting from uri: '" + dataString + "'...");
+            File tempFile = UriUtil.createTempFileFromUri(this, uri);
+
+            if(targetDir == null) {
+                AlertDialog dia = new AlertDialog.Builder(this)
+                        .setView(R.layout.layout_path_prompt_dir)
+                        .setTitle(R.string.extraction_path)
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                        .create();
+                dia.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
+                    dialog.dismiss();
+                    String pathFromInput = ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString();
+                    doExtractFromUri(tempFile, pathFromInput);
+                });
+                dia.show();
+            } else {
+                doExtractFromUri(tempFile, targetDir);
+            }
+        } catch (Exception e) {
+            throw new Exception("Unable to extract archive from URI!", e);
+        }
+    }
+
+    private void doExtractFromUri(File tempFile, String targetPath) {
+        new ArchiveExtractionTask(this, targetPath, new FMFile(tempFile), success -> {
+            if(!tempFile.delete() && tempFile.exists()) {
+                Log.w(TAG, "Unable to delete temp file!");
+            }
+            clearFileOpCache();
+            if (!success) {
+                reloadCurrentDirectory();
+                Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
+            } else {
+                loadPath(targetPath);
+            }
+        }).execute();
     }
 
     /**
@@ -730,7 +790,7 @@ public class FileActivity extends ThemedAppCompatActivity {
                 emptyText.setVisibility(GONE);
             }
 
-            if(historyMap == null) {
+            if (historyMap == null) {
                 resetHistory();
             }
 

@@ -170,4 +170,9 @@
     <string name="pref_vibration_length">Dauer der Vibration</string>
     <string name="warn_delete_mult_msg_start">Sicher, dass</string>
     <string name="warn_delete_mult_msg_end">Dateien gelöscht werden sollen?</string>
+    <string name="pref_use_storage_access_framework">\"Storage Access Framework\" Nutzen</string>
+    <string name="pref_use_storage_access_framework_desc">Nutzt den integrierten Dateidialog, kann bei Zugriffsproblemen unter Android >=9 helfen.</string>
+    <string name="extraction_path">Zielverzeichnis</string>
+    <string name="path_input_hint_exisiting_dir">Nur absolute Pfade! Der Pfad muss ein existierendes Verzeichnis mit Screibzugriff sein.</string>
+    <string name="intro_text_7">Unter Android 9/10 hat die App Zugriffsprobleme, da Android den Zugriff auf das Dateisystem stark eingeschränkt hat. Die App kann weiterhin zum Entpacken benutzt werden, indem ein Archiv in der \"Files\"-App mittels \"Öffnen mit\" an lrkFM übermittelt wird.</string>
 </resources>
