@@ -58,6 +58,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.lerk.lrkFM.DiskUtil;
 import io.lerk.lrkFM.EditablePair;
+import io.lerk.lrkFM.UriUtil;
 import io.lerk.lrkFM.Pref;
 import io.lerk.lrkFM.R;
 import io.lerk.lrkFM.VibratingToast;
@@ -282,8 +283,11 @@ public class FileActivity extends ThemedAppCompatActivity {
                 Log.d(TAG, "Intent dataString present: '" + dataString + "'");
                 File iFile = null;
                 if (dataString.startsWith("content://")) {
-                    Toast.makeText(this, R.string.error_content_uri, Toast.LENGTH_LONG).show();
-                    reloadCurrentDirectory();
+                    try {
+                        extractFromUri(dataString);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Unable to extract archive from URI!", e);
+                    }
                 } else if (dataString.startsWith("file://")) {
                     try {
                         iFile = new File(Uri.decode(dataString.split("://")[1]));
@@ -295,6 +299,38 @@ public class FileActivity extends ThemedAppCompatActivity {
                     loadFileFromIntent(iFile);
                 }
             }
+        }
+    }
+
+    private void extractFromUri(String dataString) throws Exception {
+        try {
+            Uri uri = Uri.parse(dataString);
+            Log.d(TAG, "Extracting from uri: '" + dataString + "'...");
+            File tempFile = UriUtil.createTempFileFromUri(this, uri);
+            if(tempFile != null) {
+
+                AlertDialog dia = new AlertDialog.Builder(this)
+                        .setView(R.layout.layout_path_prompt)
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> Log.d(TAG, "Operation canceled."))
+                        .create();
+                dia.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay), (dialog, which) -> {
+                    String targetPath = ((EditText) dia.findViewById(R.id.destinationPath)).getText().toString();
+                    new ArchiveExtractionTask(this, targetPath, new FMFile(tempFile), success -> {
+                        clearFileOpCache();
+                        if (!success) {
+                            reloadCurrentDirectory();
+                            Toast.makeText(this, R.string.unable_to_extract_archive, Toast.LENGTH_LONG).show();
+                        } else {
+                            loadPath(targetPath);
+                        }
+                    }).execute();
+                });
+                dia.show();
+            } else {
+                throw new Exception("Temp file is null!");
+            }
+        } catch (Exception e) {
+            throw new Exception("Unable to extract archive from URI!", e);
         }
     }
 
@@ -730,7 +766,7 @@ public class FileActivity extends ThemedAppCompatActivity {
                 emptyText.setVisibility(GONE);
             }
 
-            if(historyMap == null) {
+            if (historyMap == null) {
                 resetHistory();
             }
 
