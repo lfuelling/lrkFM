@@ -345,6 +345,9 @@ public class FileActivity extends ThemedAppCompatActivity {
 
     private void doExtractFromUri(File tempFile, String targetPath) {
         new ArchiveExtractionTask(this, targetPath, new FMFile(tempFile), success -> {
+            if(!tempFile.delete() && tempFile.exists()) {
+                Log.w(TAG, "Unable to delete temp file!");
+            }
             clearFileOpCache();
             if (!success) {
                 reloadCurrentDirectory();
