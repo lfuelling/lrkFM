@@ -78,6 +78,17 @@
             android:id="@+id/introText6"
             android:layout_below="@+id/introText5" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:text="@string/intro_text_7"
+            android:id="@+id/introText7"
+            android:layout_below="@+id/introText6" />
+
     </RelativeLayout>
 
 </androidx.core.widget.NestedScrollView>

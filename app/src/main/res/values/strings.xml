@@ -192,4 +192,5 @@
     <string name="pref_use_storage_access_framework_desc"><![CDATA[Use the Android file picker instead of builtin. Helps on Android > 9.]]></string>
     <string name="extraction_path">Extration Path</string>
     <string name="path_input_hint_exisiting_dir">Absolute paths only! The path must be an existing directory!</string>
+    <string name="intro_text_7">On Android versions newer than Android 9/10, the app can\'t read most directories due to enhanced security. You can still use the app for extraction by navigating to the archive with the Android Files app, selecting \"Open with\" and then \"lrkFM\". This currently does not work for multiple selected files!</string>
 </resources>
