@@ -29,7 +29,7 @@ Obviously this app needs full access to the filesystem to work. This is checked 
 The app also needs internet access to check for updates if this feature is enabled in the settings.
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/io.lerk.lrkFM">
-    <img src="https://gitlab.com/fdroid/artwork/raw/master/badge/get-it-on-en.png" height="100" alt="Get it on F-Droid" />
+    <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="100" alt="Get it on IzzyOnDroid" />
 </a>
 
 <a href="https://play.google.com/store/apps/details?id=io.lerk.lrkFM&utm_source=repo_link&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
