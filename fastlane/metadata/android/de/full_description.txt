@@ -1,0 +1,15 @@
+<i>lrkFM</i> ist ein einfacher Dateimanager mit den folgenden Features:
+
+* Frei/libre und ohne Werbung
+* Zugriff auf alle Dateien, Verzeichnisse und Geräte¹
+* Entpacken von Archiven (Zip, Rar, Tar, Gzip, 7Zip)
+* Erkunden („browsen“) von Archiven (Zip, Rar, Tar, Gzip, 7Zip)
+* Erstellen von Archiven (Zip)
+* Dateioperationen: Kopieren, Ausschneiden, Umbenennen, Löschen
+* Freien Speicherplatz des Dateisystems anzeigen
+* Lesezeichen zur Sidebar hinzufügen
+* Dateien direkt aus der App teilen („sharen“)
+
+¹ wenn die App Zugriff auf den jeweiligen Speicher hat. Für einige Verzeichnisse erfordert dies root-Rechte.
+
+Offensichtlich benötigt die App vollen Zugriff auf das Dateisystem, um zu funktionieren. Dies wird beim Start der App geprüft, und die Berechtigung wird bei Bedarf angefordert. Die App benötigt auch Netzwerk-Zugriff für die Prüfung auf Updates, sofern dieses Feature in den Einstellungen aktiviert ist.
