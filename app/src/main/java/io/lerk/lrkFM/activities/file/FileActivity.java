@@ -19,6 +19,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -124,6 +125,11 @@ public class FileActivity extends ThemedAppCompatActivity {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
     /**
+     * 0 if we have no permission.
+     */
+    private static final int REQUEST_MANAGE_STORAGE = 1;
+
+    /**
      * The rootfs path ('/').
      */
     private static final String ROOT_DIR = "/";
@@ -142,6 +148,16 @@ public class FileActivity extends ThemedAppCompatActivity {
      * Keyword for {@link Activity#onSaveInstanceState(Bundle)}.
      */
     private static final String STATE_KEY_OP_CONTEXT_FILES = "state_current_op_files";
+
+    /**
+     * The permissions we need to do our job on Android R and higher.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.R)
+    private static final String[] PERMISSIONS_STORAGE_R = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.MANAGE_EXTERNAL_STORAGE
+    };
 
     /**
      * The permissions we need to do our job.
@@ -1242,8 +1258,14 @@ public class FileActivity extends ThemedAppCompatActivity {
      * @param context the context
      */
     public static void verifyStoragePermissions(Activity context) {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE_R, REQUEST_EXTERNAL_STORAGE);
+            }
+        } else {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            }
         }
     }
 
