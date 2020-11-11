@@ -150,16 +150,6 @@ public class FileActivity extends ThemedAppCompatActivity {
     private static final String STATE_KEY_OP_CONTEXT_FILES = "state_current_op_files";
 
     /**
-     * The permissions we need to do our job on Android R and higher.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    private static final String[] PERMISSIONS_STORAGE_R = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.MANAGE_EXTERNAL_STORAGE
-    };
-
-    /**
      * The permissions we need to do our job.
      */
     private static String[] PERMISSIONS_STORAGE = {
@@ -339,7 +329,7 @@ public class FileActivity extends ThemedAppCompatActivity {
             Log.d(TAG, "Extracting from uri: '" + dataString + "'...");
             File tempFile = UriUtil.createTempFileFromUri(this, uri);
 
-            if(targetDir == null) {
+            if (targetDir == null) {
                 AlertDialog dia = new AlertDialog.Builder(this)
                         .setView(R.layout.layout_path_prompt_dir)
                         .setTitle(R.string.extraction_path)
@@ -361,7 +351,7 @@ public class FileActivity extends ThemedAppCompatActivity {
 
     private void doExtractFromUri(File tempFile, String targetPath) {
         new ArchiveExtractionTask(this, targetPath, new FMFile(tempFile), success -> {
-            if(!tempFile.delete() && tempFile.exists()) {
+            if (!tempFile.delete() && tempFile.exists()) {
                 Log.w(TAG, "Unable to delete temp file!");
             }
             clearFileOpCache();
@@ -1258,14 +1248,8 @@ public class FileActivity extends ThemedAppCompatActivity {
      * @param context the context
      */
     public static void verifyStoragePermissions(Activity context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE_R, REQUEST_EXTERNAL_STORAGE);
-            }
-        } else {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-            }
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(context, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }
     }
 
