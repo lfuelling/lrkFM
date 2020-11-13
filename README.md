@@ -5,6 +5,8 @@
 ![Latest version badge](https://img.shields.io/github/v/release/lfuelling/lrkFM?sort=semver)
 [![Github downloads](https://img.shields.io/github/downloads/lfuelling/lrkFM/total?logo=github)](https://github.com/lfuelling/lrkFM/releases/latest)
 
+**NOTE: If you are using Android 10 and haave access problems, please use [this beta version](https://github.com/lfuelling/lrkFM/releases/tag/v2.5.0b2) as long as [Google delays the API due to COVID](https://support.google.com/googleplay/android-developer/answer/9956427?hl=en)**
+
 File manager for Android. It has the following features:
 
 - set the directory the app starts in
