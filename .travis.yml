@@ -3,26 +3,37 @@ dist: xenial
 language: android
 android:
   components:
-  - build-tools-28.0.3
-  - build-tools-29.0.0
-  - build-tools-30.0.2
-  - android-28
-  - android-29
-  - android-30
-  - extra-google-google_play_services
-  - extra-google-m2repository
-  - extra-android-m2repository
-  - addon-google_apis-google-28
-  - sys-img-armeabi-v7a-android-29
+    - build-tools-28.0.3
+    - build-tools-29.0.0
+    - build-tools-30.0.2
+    - android-28
+    - android-29
+    - android-30
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-28
+    - sys-img-armeabi-v7a-android-29
+  licenses:
+    - build-tools-28.0.3
+    - build-tools-29.0.0
+    - build-tools-30.0.2
+    - android-28
+    - android-29
+    - android-30
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-28
+    - sys-img-armeabi-v7a-android-29
 env:
   global:
-  - ADB_INSTALL_TIMEOUT=8
+    - ADB_INSTALL_TIMEOUT=8
 script:
-- "./gradlew build -S"
-- "./gradlew assembleRelease"
+  - "./gradlew build -S"
+  - "./gradlew assembleRelease"
 before_install:
-- openssl aes-256-cbc -K $encrypted_9246cef756ee_key -iv $encrypted_9246cef756ee_iv
-  -in keystore.jks.enc -out keystore.jks -d
+  - openssl aes-256-cbc -K $encrypted_9246cef756ee_key -iv $encrypted_9246cef756ee_iv -in keystore.jks.enc -out keystore.jks -d
 deploy:
   provider: releases
   overwrite: true
