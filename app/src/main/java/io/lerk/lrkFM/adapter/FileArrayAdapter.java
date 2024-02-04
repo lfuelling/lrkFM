@@ -165,7 +165,7 @@ public class FileArrayAdapter extends BaseArrayAdapter {
 
             for (FMFile contextFile : activity.getFileOpContext().getSecond()) {
                 if (contextFile.getFile().getAbsolutePath().equals(f.getFile().getAbsolutePath())) {
-                    v.setBackgroundColor(activity.getColorByAttr(R.attr.colorPrimary));
+                    v.setBackgroundColor(activity.getColorByAttr(R.color.primary_light));
                     checkBox.setChecked(true);
                 } else {
                     checkBox.setChecked(false);

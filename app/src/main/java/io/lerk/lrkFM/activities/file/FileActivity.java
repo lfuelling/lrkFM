@@ -19,6 +19,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -1282,7 +1283,10 @@ public class FileActivity extends ThemedAppCompatActivity {
      */
     private void launchBugReportTab() {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setToolbarColor(getColorByAttr(R.attr.colorPrimary));
+        CustomTabColorSchemeParams params = new CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(getColorByAttr(R.color.default_primary_dark))
+                .build();
+        builder.setDefaultColorSchemeParams(params);
         CustomTabsIntent build = builder.build();
         build.launchUrl(this, Uri.parse("https://github.com/lfuelling/lrkFM/issues/new"));
     }
