@@ -43,7 +43,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("com.github.BoD:aLibGlitch:1.0.0")
-    implementation("org.jsoup:jsoup:1.15.4")
+    implementation("org.jsoup:jsoup:1.17.2")
     implementation("org.apache.commons:commons-compress:1.25.0")
     implementation("org.tukaani:xz:1.9")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
